@@ -1,0 +1,131 @@
+<?php
+
+namespace App\Http\Controllers;
+
+use App\Satker;
+use App\SubkomponenDekon;
+use Illuminate\Http\Request;
+
+class SubkomponenController extends Controller
+{
+    public function __construct()
+    {
+        $this->middleware('auth');
+    }
+
+    public function view()
+    {
+        $satker         = new Satker;
+        $subkomponen    = new SubkomponenDekon;
+
+        $modul          = 'Master';
+        $current        = "Data Subkomponen Dekon";
+
+        $data           = $satker->orderBy('provinsi')->get();
+
+        return view('contents.master.subkomponen.dekon', compact('current', 'modul', 'data'));
+    }
+
+    public function data()
+    {
+        $satker         = new Satker;
+        $subkomponen    = new SubkomponenDekon;
+
+        $i      = 0;
+        $data   = $subkomponen->get();
+        
+        foreach($data as $value)
+        {
+            $nama_satker = "ALL";
+
+            if(strtolower($value->kdsatker) != "all")
+            {
+                $nama_satker = $satker->where('kode', $value->kdsatker)->first()->nama_satker;
+            }
+
+            $button     = '<div class="btn-group-vertical">
+                <div class="btn-group">
+                    <button type="button" class="btn btn-success dropdown-toggle" data-toggle="dropdown" aria-expanded="false"></button>
+                    <ul class="dropdown-menu" style="">
+                        <li><a class="dropdown-item" href="javascript:void(0)" onclick="updateForm('.$value->id.',\''.$value->kdsatker.'\', \''.$value->kode_subkomponen.'\', \''.$value->deskripsi.'\')">Ubah</a></li>
+                        <li><a class="dropdown-item text-danger" href="javascript:void(0)" onclick="remove(\''.$value->id.'\')">Hapus</a></li>
+                    </ul>
+                </div>
+            </div>
+            ';
+
+            $data[$i]->button       = $button;
+            $data[$i]->nama_satker  = $nama_satker;
+
+            $i++;
+        }
+
+        return $data;
+    }
+
+    public function destroy(Request $request)
+    {
+        $subkomponen = new SubkomponenDekon;
+
+        try
+        {
+            $subkomponen->where('id', $request->id)->delete();
+
+            return response()->json([
+                'status'    => 'success',
+                'title'     => 'Subkomponen Berhasil Dihapus',
+                'message'   => 'Subkomponen Berhasil Dihapus'
+            ]);
+        }
+        catch (\Illuminate\Database\QueryException $e)
+        {
+
+            return response()->json([
+                'status' => 'error',
+                'message' => $e->getMessage(),
+                'title' => 'Oopps.. Error Processing. Please Try Again'
+            ]);
+        }
+    }
+
+    public function submit(Request $request)
+    {
+        $subkomponen = new SubkomponenDekon;
+
+        try
+        {
+
+            if($request->id == "none")
+            {
+                $subkomponen->create([
+                    'kdsatker'          => $request->kdsatker,
+                    'deskripsi'         => $request->deskripsi,
+                    'kode_subkomponen'  => $request->kode_subkomponen,
+                ]);
+            }
+            else
+            {
+                $subkomponen->where('id', $request->id)->update([
+                    'kdsatker'          => $request->kdsatker,
+                    'deskripsi'         => $request->deskripsi,
+                    'kode_subkomponen'  => $request->kode_subkomponen,
+                ]);
+            }
+
+            return response()->json([
+                'status'    => 'success',
+                'title'     => 'Kode Subkomponen Berhasil Disimpan',
+                'message'   => 'Kode Subkomponen Berhasil Disimpan'
+            ]);
+        }
+        catch (\Illuminate\Database\QueryException $e)
+        {
+
+            return response()->json([
+                'status' => 'error',
+                'message' => $e->getMessage(),
+                'title' => 'Oopps.. Error Processing. Please Try Again'
+            ]);
+        }
+    }
+}

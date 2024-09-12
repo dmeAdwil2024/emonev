@@ -1,0 +1,137 @@
+<?php
+
+    function dateMasked($tanggal)
+    {
+        $tanggal    = date("Y-n-d", strtotime($tanggal));
+        $tanggal    = explode("-", $tanggal);
+
+        $hari       = $tanggal[2];
+        $bulan      = $tanggal[1];
+        $tahun      = $tanggal[0];
+
+        $months     = ['', 'Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni', 'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'];
+
+        $date       = $hari." ".$months[$bulan]." ".$tahun;
+
+        return $date;
+    }
+
+    function getProvinsi($id_provinsi)
+    {
+        $provinsi = new App\Provinsi;
+
+        $nama_prov = $provinsi->where('id_prov', $id_provinsi)->first()->namaprov;
+
+        return $nama_prov;
+    }
+
+    function provinsi()
+    {
+        $provinsi   = new App\Provinsi;
+        $data       = $provinsi->where('id_prov', 'NOT LIKE', 'undefined')->get();
+
+        return $data;
+    }
+
+    function getDirektorat($id_dir)
+    {
+        $dir = new App\Direktorat;
+
+        $nama_dir = $dir->where('id_dir', $id_dir)->first()->nama_dir;
+
+        return $nama_dir;
+    }
+
+    function dataSatker()
+    {
+        $satker         = new App\Satker;
+        
+        $data_satker    = $satker->get();
+
+        return $data_satker;
+    }
+
+    function getSatker($kdsatker, $column)
+    {
+        $satker         = new App\Satker;
+        
+        $nama_satker    = "Satker Belum Disetting";
+        $count          = $satker->where('kode', $kdsatker)->count();
+
+        if($count > 0)
+        {
+            $nama_satker    = $satker->where('kode', $kdsatker)->first()->$column;
+        }
+
+        return $nama_satker;
+    }
+
+    function getLevel($kode_level)
+    {
+        $level  = new App\LevelUser;
+
+        $nama_level = $level->where('id', $kode_level)->first()->nama;
+
+        return $nama_level;
+    }
+
+    function dataDirektorat()
+    {
+        $dir = new App\Direktorat;
+
+        $nama_dir = $dir->where('id_dir', '>', 0)->get();
+
+        return $nama_dir;
+    }
+
+    function randomPassword($length)
+    {
+        $alphabet   = 'ABCDEFGHIJKLMNPQRSTUVWXYZ123456789';
+        $pass       = array();
+
+        $alphaLength = strlen($alphabet) - 1;
+        
+        for ($i = 0; $i < $length; $i++)
+        {
+            $n = rand(0, $alphaLength);
+            $pass[] = $alphabet[$n];
+        }
+        
+        return implode($pass);
+    }
+
+    function getIp()
+    {
+        $ipaddress = '';
+
+        if (getenv('HTTP_CLIENT_IP'))
+            $ipaddress = getenv('HTTP_CLIENT_IP');
+        else if(getenv('HTTP_X_FORWARDED_FOR'))
+            $ipaddress = getenv('HTTP_X_FORWARDED_FOR');
+        else if(getenv('HTTP_X_FORWARDED'))
+            $ipaddress = getenv('HTTP_X_FORWARDED');
+        else if(getenv('HTTP_FORWARDED_FOR'))
+            $ipaddress = getenv('HTTP_FORWARDED_FOR');
+        else if(getenv('HTTP_FORWARDED'))
+           $ipaddress = getenv('HTTP_FORWARDED');
+        else if(getenv('REMOTE_ADDR'))
+            $ipaddress = getenv('REMOTE_ADDR');
+        else
+            $ipaddress = 'UNKNOWN';
+
+        return $ipaddress;
+    }
+
+    function getInfo()
+    {
+        $return = [
+            'IP Address'    => getIp(),
+            'Device Type'   => Browser::deviceType(),
+            'Device Model'  => Browser::deviceModel(),
+            'OS'            => Browser::platformName(),
+            'Browser'       => Browser::browserName(),
+            'From APPS'     => Browser::isInApp()
+        ];
+
+        return $return;
+    }

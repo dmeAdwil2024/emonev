@@ -1,0 +1,149 @@
+<?php
+
+use Illuminate\Support\Facades\Route;
+
+/*
+|--------------------------------------------------------------------------
+| Web Routes
+|--------------------------------------------------------------------------
+|
+| Here is where you can register web routes for your application. These
+| routes are loaded by the RouteServiceProvider within a group which
+| contains the "web" middleware group. Now create something great!
+|
+*/
+
+Auth::routes();
+
+Route::get('/', 'HomeController@index')->name('home');
+Route::get('/registrasi', 'LandersController@viewRegistrasi')->name('registrasi');
+Route::get('/beta-testing', 'LandersController@betaTesting')->name('beta-testing');
+Route::get('/test', 'ToolsController@testing')->name('test');
+Route::get('/{token}/ticketing', 'LandersController@suratPengesahan')->name('pengesahan-ticketing');
+
+// E-Ticketing
+$router->group(['prefix' => 'ticketing',  'as' => 'ticketing.'], function () use ($router) {
+
+    // Revisi
+    $router->get('/revisi-ggwp', 'TicketingController@viewGgwpDaerah')->name('view-ggwp-daerah');
+    $router->get('/revisi-sarpras', 'TicketingController@viewSarprasDaerah')->name('view-sarpras-daerah');
+    $router->get('/revisi-pusat', 'TicketingController@viewRevisiPusat')->name('view-revisi-pusat');
+    $router->get('/revisi-daerah', 'TicketingController@viewRevisiDaerah')->name('view-revisi-daerah');
+
+    // Log Ticketing
+    $router->get('/log', 'TicketingController@loadHistory')->name('view-log');
+    
+    $router->post('/data-revisi', 'TicketingController@dataRevisi')->name('data-revisi');
+    $router->post('/submit-revisi', 'TicketingController@submitRevisi')->name('submit-revisi');
+    $router->post('/update-revisi', 'TicketingController@updateRevisi')->name('update-revisi');
+    $router->post('/detail-revisi', 'TicketingController@detailRevisi')->name('detail-revisi');
+    $router->post('/approval-revisi', 'TicketingController@approvalRevisi')->name('approval-revisi');
+    $router->post('/verifikasi-revisi', 'TicketingController@verifikasiRevisi')->name('verifikasi-revisi');
+    $router->post('/remove-revisi', 'TicketingController@removeRevisi')->name('remove-revisi');
+
+    $router->post('/submit-bagren', 'TicketingController@submitBagren')->name('submit-bagren');
+    $router->post('/submit-fasgub', 'TicketingController@submitFasgub')->name('submit-fasgub');
+    $router->post('/submit-ban', 'TicketingController@submitBan')->name('submit-ban');
+    $router->post('/submit-kpa', 'TicketingController@submitKpa')->name('submit-kpa');
+
+});
+
+
+// POK
+$router->group(['prefix' => 'pok',  'as' => 'pok.'], function () use ($router) {
+
+    // Penerbitan POK
+    $router->get('/terbit-pok', 'PokController@index')->name('terbit-pok');
+
+    // History POK
+    $router->get('/log', 'PokController@loadHistory')->name('view-log');
+
+    // Data Revisi
+    $router->post('/submit-kpa', 'PokController@submitKpa')->name('submit-kpa');
+    $router->post('/data-revisi', 'PokController@dataRevisi')->name('data-revisi');
+    $router->post('/submit-kabagren', 'PokController@submitKabagren')->name('submit-kabagren');
+    $router->post('/submit-kabagkeu', 'PokController@submitKabagKeu')->name('submit-kabagkeu');
+    $router->post('/jumlah-revisi', 'PokController@jumlahRevisiByDirektorat')->name('jumlah-revisi');
+
+    $router->post('/data-pok', 'PokController@dataPok')->name('data-pok');
+    $router->post('/submit-bagren', 'PokController@submitBagren')->name('submit-bagren');
+    $router->post('/submit-bagkeu', 'PokController@submitBagkeu')->name('submit-bagkeu');
+    $router->post('/update-bagren', 'PokController@updateBagren')->name('update-bagren');
+    $router->post('/distribusi-pok', 'PokController@distribusiPok')->name('distribusi-pok');
+});
+
+// Tools
+$router->group(['prefix' => 'tools',  'as' => 'tools.'], function () use ($router) {
+
+    // Provinsi
+    $router->post('/provinsi', 'ToolsController@provinsi')->name('provinsi');
+
+    // Direktorat
+    $router->post('/direktorat', 'ToolsController@direktorat')->name('direktorat');
+
+    // Pejabat
+    $router->post('/pejabat-pptk', 'ToolsController@pejabatPptk')->name('pejabat-pptk');
+    $router->post('/detail-pejabat', 'ToolsController@detailPejabat')->name('detail-pejabat');
+    $router->post('/pejabat-daerah', 'ToolsController@pejabatDaerah')->name('pejabat-daerah');
+    $router->post('/submit-pejabat-daerah', 'ToolsController@submitPejabatDaerah')->name('submit-pejabat-daerah');
+
+    // Jabatan
+    $router->post('/jabatan', 'ToolsController@jabatan')->name('jabatan');
+    $router->post('/submit-jabatan', 'ToolsController@submitJabatan')->name('submit-jabatan');
+
+    // Dokumen
+    $router->post('/upload-master-dokumen', 'ToolsController@uploadMasterDokumen')->name('upload-master-dokumen');
+
+    // Member Register
+    $router->post('/detail-request', 'UserController@detailRequest')->name('detail-request');
+    $router->post('/register', 'LandersController@register')->name('register');
+
+    // Sending WA
+    $router->post('/sending-wa', 'ToolsController@sendWa')->name('sending-wa');
+    // sendingWa($phone_no, $message)
+
+});
+
+// Download
+$router->group(['prefix' => 'download',  'as' => 'download.'], function () use ($router) {
+
+    // Download Dokumen
+    $router->get('/dokumen/{jenis_file}/{nama_file}', 'ToolsController@download')->name('dokumen');
+    $router->get('/dokumen-pok/{pejabat}/{nama_file}', 'ToolsController@downloadPok')->name('dokumen-pok');
+    $router->get('/dokumen-kpa-pok/{pejabat}/{nama_file}', 'ToolsController@downloadKpaPok')->name('dokumen-kpa-pok');
+
+    // Download Master Dokumen
+    $router->get('/master-dokumen/{nama_file}', 'ToolsController@downloadMasterDokumen')->name('master-dokumen');
+
+    // Download POK
+    $router->get('/pok/{nama_file}', 'ToolsController@downloadDokumenPok')->name('pok');
+
+    // FILE
+    $router->get('/all-files', 'ToolsController@downloadFile')->name('all-files');
+});
+
+// Master
+$router->group(['prefix' => 'master',  'as' => 'master.'], function () use ($router) {
+
+    // Data Pengguna
+    $router->get('/users', 'UserController@viewUsers')->name('view-users');
+    $router->post('/data-users', 'UserController@dataUsers')->name('data-users');
+
+    // Permintaan Pengguna
+    $router->get('/users-request', 'UserController@viewRequestUsers')->name('users-request');
+    $router->post('/data-request-user', 'UserController@dataRequestUsers')->name('data-request-user');
+    $router->post('/proses-user', 'UserController@prosesUser')->name('proses-user');
+});
+
+// Usulan Kegiatan
+$router->group(['prefix' => 'usulan',  'as' => 'usulan.'], function () use ($router) {
+
+    $router->get('/kegiatan', 'UsulanController@view')->name('kegiatan');
+    $router->get('/log', 'UsulanController@loadHistory')->name('view-log');
+    
+    $router->post('/data', 'UsulanController@data')->name('data');
+    $router->post('/detail', 'UsulanController@detail')->name('detail');
+    $router->post('/submit', 'UsulanController@submit')->name('submit');
+    $router->post('/submit-ppk', 'UsulanController@submitPpk')->name('submit-ppk');
+    $router->post('/submit-bagren', 'UsulanController@submitBagren')->name('submit-bagren');
+});

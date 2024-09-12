@@ -1,0 +1,218 @@
+<?php
+
+namespace App\Http\Controllers;
+
+use Auth;
+use Validator;
+
+use App\User;
+use App\Provinsi;
+use App\LevelUser;
+use App\MemberRegister;
+use Illuminate\Http\Request;
+use App\Http\Controllers\ToolsController;
+
+class UserController extends Controller
+{
+    public function __construct()
+    {
+        $this->middleware('auth');
+    }
+
+    public function viewUsers()
+    {
+        $modul      = 'Master';
+        $type       = 'data_users';
+        $current    = 'Data Pengguna';
+
+        return view('contents.master.index', compact('current', 'modul', 'type'));
+    }
+
+    public function viewRequestUsers()
+    {
+        $modul      = 'Master';
+        $type       = 'request_user';
+        $current    = "Pengajuan Pengguna";
+
+        return view('contents.master.index', compact('current', 'modul', 'type'));
+    }
+
+    public function dataUsers()
+    {
+        $i      = 0;
+        $no     = 1;
+        $user   = new User;
+        $prov   = new Provinsi;
+        $level  = new LevelUser;
+
+        $data   = $user->get();
+        
+        foreach($data as $value)
+        {
+            $data[$i]->no               = $no.".";
+            $data[$i]->nama_provinsi    = "Pusat";
+
+            if(is_numeric($value->provinsi))
+            {
+                $data[$i]->nama_provinsi    = $prov->where('id_prov', $value->prov)->first()->namaprov;
+            }
+
+            $data[$i]->level            = $level->where('id', $value->level)->first()->nama;
+            $data[$i]->button           = '<div class="btn-group">
+                <button type="button" class="btn btn-primary dropdown-toggle dropdown-icon" data-toggle="dropdown">
+                    <span class="sr-only">Toggle Dropdown</span>
+                </button>
+                <div class="dropdown-menu" role="menu">
+                    <a class="dropdown-item" href="javascript:void(0)" onclick="updateStatus('.$value->id.', \'reject\')">Tolak Pengajuan</a>
+                    <a class="dropdown-item" href="javascript:void(0)" onclick="updateStatus('.$value->id.', \'accept\')">Terima Pengajuan</a>
+                </div>
+            </div>
+            ';
+
+            $i++;
+            $no++;
+        }
+
+        return $data;
+    }
+
+    public function detailRequest(Request $request)
+    {
+        $user   = new MemberRegister;
+        $data   = $user->where('id', $request->id)->first();
+
+        return $data;
+    }
+
+    public function dataRequestUsers(Request $request)
+    {
+        $prov   = new Provinsi;
+        $level  = new LevelUser;
+        $user   = new MemberRegister;
+
+        $i      = 0;
+        $no     = 1;
+        $data   = $user;
+
+        if($request->status != 'all')
+        {
+            if($request->status == 'pending')
+            {
+                $data = $data->whereNull('status');
+            }
+            else
+            {
+                $data = $data->where('status', $request->status);
+            }
+        }
+        
+        if($request->satker != 'all')
+        {
+            $data   = $data->where('satker', 'like', $request->satker);
+        }
+
+        $data   = $data->get();
+
+        foreach($data as $value)
+        {
+            $data[$i]->no               = $no.".";
+            $data[$i]->nama_provinsi    = "Pusat";
+            $data[$i]->nama_format      = '<a href="javascript:void(0)" onclick="rejectForm('.$value->id.')">'.$value->nama.'</a>';
+
+            if(is_numeric($value->provinsi))
+            {
+                $data[$i]->nama_provinsi    = $prov->where('id_prov', $value->provinsi)->first()->namaprov;
+            }
+
+            $data[$i]->download_sk      = '<a href='.route('download.all-files').'?path='.'app/sk/'.$value->sk.'> <i class="fas fa-file"></i> </a>';
+            $data[$i]->level            = $level->where('id', $value->jabatan_dalam_satker)->first()->nama;
+            $data[$i]->button           = '<div class="btn-group">
+                <button type="button" class="btn btn-primary dropdown-toggle dropdown-icon" data-toggle="dropdown">
+                    <span class="sr-only">Toggle Dropdown</span>
+                </button>
+                <div class="dropdown-menu" role="menu">
+                    <a class="dropdown-item" href="javascript:void(0)" onclick="rejectForm('.$value->id.')">Tolak Pengajuan</a>
+                    <a class="dropdown-item" href="javascript:void(0)" onclick="updateStatus('.$value->id.', \'accept\')">Terima Pengajuan</a>
+                </div>
+            </div>';
+
+            if($value->status != NULL)
+            {
+                $data[$i]->button           = "";
+                $data[$i]->nama_format      = $value->nama;
+            }
+
+            if($value->satker == "sekda")
+            {
+                $data[$i]->satker           = "SETDA";
+            }
+
+            $i++;
+            $no++;
+        }
+
+        return $data;
+    }
+
+    public function prosesUser(Request $request)
+    {
+        $user   = new User;
+        $member = new MemberRegister;
+        $tools  = new ToolsController;
+
+        try
+        {
+            $data_member    = $member->where('id', $request->id)->first();
+
+            if($request->status == "accept")
+            {
+                $username   = $data_member->nip;
+                $nama       = $data_member->nama;
+                $email      = $data_member->email;
+                $no_hp      = $data_member->no_hp;
+                $prov       = $data_member->provinsi;
+                $password   = randomPassword(8);
+                $level      = $data_member->jabatan_dalam_satker;
+
+                $user->create([
+                    'nama'      => $nama,
+                    'email'     => $email,
+                    'no_hp'     => $no_hp,
+                    'username'  => $username,
+                    'password'  => bcrypt($password),
+                    'level'     => $level,
+                    'id_group'  => 0,
+                    'id_dir'    => 0,
+                    'id_subdir' => 0,
+                    'prov'      => $prov,
+                    'kab'       => ''
+                ]);
+
+                $message     = 'Permintaan User E-Monev Bina Adwil Anda Sudah Diproses. Silakan login menggunakan informasi berikut \n\n';
+                $message    .= '*Username: '.$username.'* \n';
+                $message    .= '*Password: '.$password.'* \n';
+
+                $tools->sendingWa($no_hp, $message);
+            }
+
+            $member->where('id', $request->id)->update([
+                'status'    => $request->status
+            ]);
+
+            return response()->json([
+                'status' => 'success',
+                'message' => 'User Berhasil Diverifikasi',
+                'title' => 'User Akan Menerima User & Password Melalui Whatsapp'
+            ]);
+        }
+        catch (\Illuminate\Database\QueryException $e)
+        {
+
+            return response()->json([
+                'status' => 'error',
+                'message' => $e->getMessage(),
+                'title' => 'Oopps.. Error Submit. Please Try Again'
+            ]);
+        }
+    }
+}

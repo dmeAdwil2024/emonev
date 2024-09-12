@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8" />
+        <meta name="description" content="Surat Persetujuan Revisi Anggaran" />
+        <meta name="author" content="Ditjen Bina Adwil Kemendagri" />
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+        <title>Surat Persetujuan Revisi Anggaran</title>
+        <style>
+            body
+            {
+                font-size: 12px;
+                font-family: Arial, Helvetica, sans-serif;
+            }
+            tr.border_bottom td
+            {
+                border-bottom: 1px solid black;
+            }
+        </style>
+    </head>
+    <body>
+        <table style="width: 100%">
+            <tr class="border_bottom">
+                <td style="text-align: center">
+                    <img src="{{public_path('images/logo-kemendagri.png')}}" width="100px" alt="Logo Kemendagri">
+                </td>
+                <td style="padding: 20px 0px;text-align: center; font-weight: bolder; line-height: 22px;">
+                    KEMENTRIAN DALAM NEGERI <br>
+                    REPUBLIK INDONESIA <br>
+                    DITJEN BINA ADMINISTRASI KEWILAYAHAN <br>
+                    Jalan Medan Merdeka Utara No. 7 Jakarta Pusat 10110 <br>
+                    Telp/Fax 021 3142917. www.kemendagri.go.id. email: ditjenbinaadwil@kemendagri.go.id
+                </td>
+            </tr>
+            <tr>
+                <td style="padding: 15px 5px; text-align: right" colspan="2">
+                    Jakarta, {{dateMasked($data['tanggal_pengesahan'])}}
+                </td>
+            </tr>
+        </table>
+        
+        <table style="width: 100%">
+            <tr>
+                <td style="width: 50%">
+                    <table>
+                        <tr>
+                            <td style="padding: 2px;">Nomor</td>
+                            <td style="padding: 2px;">:</td>
+                            <td style="padding: 2px;">{{$data['nomor_surat_pengesahan']}}</td>
+                        </tr>
+                        <tr>
+                            <td style="padding: 2px;">Sifat</td>
+                            <td style="padding: 2px;">:</td>
+                            <td style="padding: 2px;">Segera</td>
+                        </tr>
+                        <tr>
+                            <td style="padding: 2px;">Lampiran</td>
+                            <td style="padding: 2px;">:</td>
+                            <td style="padding: 2px;">-</td>
+                        </tr>
+                        <tr>
+                            <td style="padding: 2px;">Hal</td>
+                            <td style="padding: 2px;">:</td>
+                            <td style="text-transform: capitalize">Persetujuan {{strtolower($data['perihal'])}}</td>
+                        </tr>
+                    </table>
+                </td>
+                <td style="padding: 15px 5px;text-align: right; vertical-align: top">
+                    YTH. Kuasa Pengguna Anggaran <br>
+                    Satker {{$data['satker']}}<br>
+                    Provinsi {{getProvinsi($data['provinsi'])}}
+                </td>
+            </tr>
+        </table>
+
+        <table style="margin-top: 25px;">
+            <tr>
+                <td style="width: 10%"></td>
+                <td>Sehubungan surat Saudara Nomor {{$data['nomor_surat']}} Tanggal {{dateMasked($data['tanggal_surat'])}}, bersama ini disampaikan hal-hal berikut:</td>
+            </tr>
+            <tr>
+                <td></td>
+                <td>
+                    <table>
+                        <tr>
+                            <td style="padding: 5px; vertical-align:top">1.</td>
+                            <td style="padding: 5px;">Sesuai dengan peraturan Menteri Keungan Nomor 199/PMK.O2/2021 tentang Tata Cara Revisi Anggaran Tahun Anggaran {{$data['tahun_anggaran']}}, bahwa salah satu pertimbagan revisi anggaran adalah mempercepat pencapaian kinerja Satker dan unit eselon 1 Ditjen Bina Adiminstrasi Kewilayahan.</td>
+                        </tr>
+                        @php $no = 2; @endphp
+                        @foreach($data['deskripsi_pengesahan'] as $deskripsi)
+                        <tr>
+                            <td style="padding: 5px; vertical-align:top">{{$no}}.</td>
+                            <td style="padding: 5px;">{{$deskripsi}}</td>
+                        </tr>
+                        @php $no++; @endphp
+                        @endforeach
+                        <tr>
+                            <td></td>
+                            <td style="padding: 10px"> Demikian disampaikan, atas kerjasamanya diucapkan terima kasih </td>
+                        </tr>
+                    </table>
+
+                    <table style="width: 100%">
+                        <tr>
+                            <td style="width: 60%; text-align:right:; padding: 10px"></td>
+                            <td style="text-align:center; padding: 10px">
+                                Sekretaris Ditjen <br>
+                                Bina Admimistrasi Wilayah<br>
+                                <img src="{{public_path('images/ttd-sekjen.png')}}" width="200px" alt=""> <br>
+                                <!-- <span style="text-decoration: underline">Indra Gunawan SE, M.PA</span> <br> -->
+                                <!-- Pembina Utama Muda (IV/c) <br>
+                                NIP. 19700715 199603 1 001 -->
+                            </td>
+                        </tr>
+                    </table>
+                </td>
+            </tr>
+        </table>
+
+        <table style="margin-top: 5px">
+            <tr>
+                <td colspan="2">Tembusan:</td>
+            </tr>
+            @php $no=1; @endphp
+            @foreach($data['tembusan'] as $tembusan)
+            <tr>
+                <td>{{$no}}.</td>
+                <td>{{$tembusan}}</td>
+            </tr>
+            @php $no++; @endphp
+            @endforeach
+        </table>
+
+        <footer style="margin: 15px">
+            @php $qr_code = 'qr/qr_'.$token.'.png'; @endphp
+            <img src="{{public_path($qr_code)}}" alt="QR Code" width="75px">
+        <footer>
+    </body>
+</html>

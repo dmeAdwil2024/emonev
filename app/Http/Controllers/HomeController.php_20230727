@@ -1,0 +1,101 @@
+<?php
+
+namespace App\Http\Controllers;
+
+use DB;
+use App\PaguHistory;
+use App\SaktiRefSts;
+use App\SaktiAnggaran;
+use App\SaktiRealisasi;
+use Illuminate\Http\Request;
+
+class HomeController extends Controller
+{
+    /**
+     * Create a new controller instance.
+     *
+     * @return void
+     */
+    public function __construct()
+    {
+        $this->middleware('auth');
+    }
+
+    /**
+     * Show the application dashboard.
+     *
+     * @return \Illuminate\Contracts\Support\Renderable
+     */
+    public function index()
+    {
+        $modul      = "Home";
+        $current    = "Dashboard";
+
+        $ang        = new SaktiAnggaran;
+        $pagu       = new PaguHistory;
+        $real       = new SaktiRealisasi;
+
+        $anggaran   = $ang->where([
+            'urutan_header1'    => 0,
+            'urutan_header2'    => 0
+        ])->sum('total');
+
+        $data_pagu  = $pagu->orderBy('tanggal', 'DESC')->first();
+
+        $realisasi  = $real->whereNotNull('no_sp2d')->sum('nilai_rupiah');
+        $selisih    = $anggaran-$realisasi;
+
+        $pagu_pusat = $ang->where([
+            'urutan_header1'    => 0,
+            'urutan_header2'    => 0
+        ])->where('kdsatker', '027486')->sum('total');
+
+        $rm_pusat = $ang->where('kode_register', 'NOT LIKE', '1CZ6CF2A')->where([
+            'urutan_header1'    => 0,
+            'urutan_header2'    => 0
+        ])->where('kdsatker', '027486')->sum('total');
+
+        $phln_pusat = $ang->where([
+            'urutan_header1'    => 0,
+            'urutan_header2'    => 0,
+            'kode_register'     => "1CZ6CF2A"
+        ])->where('kdsatker', '027486')->sum('total');
+
+        $realisasi_phln = $real->where([
+            'kdsatker'      => '027486',
+            'kode_kegiatan' => '1237',
+            'kode_output'   => 'FBA'
+        ])->sum('nilai_rupiah');
+
+        $rm_pusat   = $pagu_pusat-$phln_pusat;
+        
+        $realisasi_pusat = $real->where('kdsatker', '027486')->whereNotNull('no_sp2d')->sum('nilai_rupiah');
+        $sisa_pusat     = $pagu_pusat-$realisasi_pusat;
+        $sisa_rm_pusat  = $rm_pusat-$realisasi_pusat;        
+
+        $pagu_dekon = $ang->where([
+            'urutan_header1'    => 0,
+            'urutan_header2'    => 0
+        ])->whereNotIn('kdsatker', ['027486', '356000', '417936', '690639'])->sum('total');
+        
+        $realisasi_dekon = $real->whereNotIn('kdsatker', ['027486', '356000', '417936', '690639'])->sum('nilai_rupiah');
+        $sisa_dekon = $pagu_dekon-$realisasi_dekon;
+
+        $pagu_tp = $ang->whereIn('kdsatker', ['356000', '417936', '690639'])->sum('total');
+        $realisasi_tp = $real->whereIn('kdsatker', ['356000', '417936', '690639'])->sum('nilai_rupiah');
+        $sisa_tp = $pagu_tp-$realisasi_tp;
+
+        $last_synch_ang = $ang->max('created_at');
+        $last_synch_real = $real->max('created_at');
+
+        $data_dekon = DB::SELECT('SELECT sum(nilai_rupiah) as total, kdsatker, nama_satker FROM tb_sakti_realisasi 
+        LEFT OUTER JOIN tbm_satker ON tbm_satker.kode=tb_sakti_realisasi.kdsatker
+        WHERE kdsatker NOT LIKE \'027486\'
+        GROUP BY kdsatker, nama_satker
+        ORDER BY SUM(nilai_rupiah) DESC');
+
+        $realisasi  = $realisasi_pusat+$realisasi_dekon+$realisasi_tp;
+
+        return view('dashboard', compact('current', 'modul', 'anggaran', 'realisasi', 'selisih', 'pagu_pusat', 'realisasi_pusat', 'sisa_pusat', 'sisa_rm_pusat', 'pagu_dekon', 'realisasi_dekon', 'sisa_dekon', 'pagu_tp', 'realisasi_tp', 'sisa_tp', 'last_synch_ang', 'last_synch_real', 'data_dekon', 'rm_pusat', 'phln_pusat', 'data_pagu', 'realisasi_phln'));
+    }
+}
