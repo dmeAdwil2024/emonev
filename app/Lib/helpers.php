@@ -275,8 +275,6 @@ function getLinkByStatus($status, $level)
         case \App\TicketStatus::DISETUJUI_KPA:
             switch ($level) {
                 case \App\UserAccess::LEVEL_KPA:
-                    $link = route('ticketing.view-daftar-revisi-kpa');
-                    break;
 
                 case \App\UserAccess::LEVEL_FASGUB:
                     $link = route('ticketing.view-revisi-fasgub');

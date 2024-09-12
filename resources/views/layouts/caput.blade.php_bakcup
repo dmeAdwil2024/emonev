@@ -46,7 +46,7 @@
         <!-- SweetAlert2 -->
         <link rel="stylesheet" href="{{ asset('') }}templates/plugins/sweetalert2-theme-bootstrap-4/bootstrap-4.min.css">
         <!-- Sweetalert Css -->
-        <link href="{{ env('APP_URL') }}/templates/plugins/sweetalert/sweetalert.css" rel="stylesheet" />
+        <link href="{{ asset('') }}templates/plugins/sweetalert/sweetalert.css" rel="stylesheet" />
         <!-- Toastr -->
         <link rel="stylesheet" href="{{ asset('') }}templates/plugins/toastr/toastr.min.css">
 

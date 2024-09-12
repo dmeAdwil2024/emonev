@@ -19,58 +19,59 @@
                             <div class="mb-3 row">
                                 <label for="nomor_surat" class="col-4 col-form-label">Nomer Surat</label>
                                 <div class="col-8">
-                                    <span class="form-control" id="nomor_surat">{{ $data->nomor_surat }}</span>
+                                    <span class="form-control">{{ $data->nomor_surat }}</span>
                                 </div>
                             </div>
                             <div class="mb-3 row">
                                 <label for="tanggal_surat" class="col-4 col-form-label">Tanggal Pengajuan</label>
                                 <div class="col-8">
-                                    <span class="form-control" id="tanggal_surat">{{ $data->tanggal_surat }}</span>
+                                    <span class="form-control">{{ $data->tanggal_surat }}</span>
                                 </div>
                             </div>
                             <div class="mb-3 row">
                                 <label for="jenis_revisi" class="col-4 col-form-label">Jenis Revisi</label>
                                 <div class="col-8">
-                                    <span class="form-control"
-                                        id="jenis_revisi">{{ strtoupper($data->jenis_revisi) }}</span>
+                                    <span class="form-control">{{ strtoupper($data->jenis_revisi) }}</span>
                                 </div>
                             </div>
                             <div class="mb-3 row">
                                 <label for="perihal" class="form-label col-4">Perihal</label>
                                 <div class="col-8">
-                                    <div class="form-control" id="perihal">{{ nl2br($data->perihal) }}</div>
+                                    <div class="form-control">{{ nl2br($data->perihal) }}</div>
                                 </div>
                             </div>
                             <div class="mb-3 row">
-                                <label for="nota_dinas_ppk" class="form-label">Nota Dinas PPK Sudah Sign <em>(Maksimal
-                                        10MB)</em></label>
-                                @if (!empty($data->nota_dinas_ppk))
-                                    <a class="mb-3 d-inline-block"
-                                        href="{{ route('download.dokumen', ['jenis_file' => 'nota_dinas_ppk', 'nama_file' => $data->nota_dinas_ppk]) }}">{{ $data->nota_dinas_ppk }}</a>
-                                @endif
-                                <input type="file" class="form-control" name="nota_dinas_ppk" id="nota_dinas_ppk"
-                                    placeholder="" />
+                                <label for="perihal" class="form-label col-4">Nota Dinas PPK Sudah Sign</label>
+                                <div class="col-8">
+                                    <a class="btn btn-success d-flex align-items-center"
+                                        href="{{ route('download.dokumen', ['jenis_file' => 'nota_dinas_ppk', 'nama_file' => $data->nota_dinas_ppk]) }}"
+                                        title="Klik untuk unduh berkas">
+                                        <i class="fas fa-file-arrow-down h2"></i>
+                                        <span class="mx-3">{{ $data->nota_dinas_ppk }}</span>
+                                    </a>
+                                </div>
                             </div>
                             <div class="mb-3 row">
-                                <label for="matrik_rab" class="form-label">Matrix RAB Semula Menjadi <em>(Maksimal
-                                        10MB)</em></label>
-                                @if (!empty($data->matrik_rab))
-                                    <a class="mb-3 d-inline-block"
-                                        href="{{ route('download.dokumen', ['jenis_file' => 'matrik_rab', 'nama_file' => $data->matrik_rab]) }}">{{ $data->matrik_rab }}</a>
-                                @endif
-                                <input type="file" class="form-control" name="matrik_rab" id="matrik_rab"
-                                    placeholder="" />
+                                <label for="perihal" class="form-label col-4">Matrix RAB Semula Menjadi</label>
+                                <div class="col-8">
+                                    <a class="btn btn-success d-flex align-items-center"
+                                        href="{{ route('download.dokumen', ['jenis_file' => 'matrik_rab', 'nama_file' => $data->matrik_rab]) }}"
+                                        title="Klik untuk unduh berkas">
+                                        <i class="fas fa-file-arrow-down h2"></i>
+                                        <span class="mx-3">{{ $data->matrik_rab }}</span>
+                                    </a>
+                                </div>
                             </div>
-
                             <div class="mb-3 row">
-                                <label for="dokumen_pendukung" class="form-label">Dokumen Pendukung Lainnya <em>(Maksimal
-                                        10MB)</em></label>
-                                @if (!empty($data->dokumen_pendukung))
-                                    <a class="mb-3 d-inline-block"
-                                        href="{{ route('download.dokumen', ['jenis_file' => 'dokumen_pendukung', 'nama_file' => $data->dokumen_pendukung]) }}">{{ $data->dokumen_pendukung }}</a>
-                                @endif
-                                <input type="file" class="form-control" name="dokumen_pendukung" id="dokumen_pendukung"
-                                    placeholder="" />
+                                <label for="perihal" class="form-label col-4">Dokumen Pendukung Lainnya</label>
+                                <div class="col-8">
+                                    <a class="btn btn-success d-flex align-items-center"
+                                        href="{{ route('download.dokumen', ['jenis_file' => 'dokumen_pendukung', 'nama_file' => $data->dokumen_pendukung]) }}"
+                                        title="Klik untuk unduh berkas">
+                                        <i class="fas fa-file-arrow-down h2"></i>
+                                        <span class="mx-3">{{ $data->dokumen_pendukung }}</span>
+                                    </a>
+                                </div>
                             </div>
                             <div class="mb-3 row">
                                 <label for="perihal" class="form-label col-4">Keterangan</label>
@@ -164,7 +165,7 @@
         </div>
     </div>
 
-    <script src="{{ asset('') }}landing-pages/js/jquery-3.3.1.min.js"></script>
+    <script src="{{ asset('') }}landing{{ asset('') }}y              -3.3.1.min.js"></script>
     <script>
         $(function() {
             $("#status_fasgub").on('change', function() {
@@ -183,27 +184,12 @@
             var status_fasgub = $('#status_fasgub option:selected').val();
             var id = $('#id').val();
             var catatan_fasgub = $('#catatan_fasgub').val() || '';
-            var catatan_fasgub = $('#catatan_fasgub').val() || '';
-            var catatan_fasgub = $('#catatan_fasgub').val() || '';
-            var catatan_fasgub = $('#catatan_fasgub').val() || '';
-            var catatan_fasgub = $('#catatan_fasgub').val() || '';
-            var catatan_fasgub = $('#catatan_fasgub').val() || '';
-            var catatan_fasgub = $('#catatan_fasgub').val() || '';
-            var catatan_fasgub = $('#catatan_fasgub').val() || '';
-            var catatan_fasgub = $('#catatan_fasgub').val() || '';
 
             var form_data = new FormData();
 
             form_data.append('id', id);
             form_data.append('status_fasgub', status_fasgub);
-            form_data.append('nomor_surat', nomor_surat);
-            form_data.append('tanggal_surat', tanggal_surat);
-            form_data.append('jenis_revisi', jenis_revisi);
-            form_data.append('perihal', perihal);
-            form_data.append('judul_kak', judul_kak);
-            form_data.append('nota_dinas_ppk', nota_dinas_ppk);
-            form_data.append('matrik_rab', matrik_rab);
-            form_data.append('dokumen_pendukung', dokumen_pendukung);
+            form_data.append('catatan_fasgub', catatan_fasgub);
 
             form_data.append('_token', '{{ csrf_token() }}')
 

@@ -52,8 +52,7 @@
                     <div class="bg-tosca p-3 h-100 text-center">
                         <h5 class="text-center">{{ $label[$status] }}<br><br></h5>
                         <p class="h3 text-center" data-status="{{ $status }}">
-                            {{ isset($rekap[$status]) ? $rekap[$status] : 0 }}
-                        </p>
+                            {{ isset($rekap[$status]) ? $rekap[$status] : 0 }}</p>
                         <a href="#" data-status="{{ $status }}"
                             class="btn btn-success rounded-pill btn-list">Lihat Detail</a>
                     </div>

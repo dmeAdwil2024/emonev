@@ -24,7 +24,7 @@
         <link rel="stylesheet" href="{{ asset('') }}templates/plugins/select2/css/select2.min.css">
         <link rel="stylesheet" href="{{ asset('') }}templates/plugins/select2-bootstrap4-theme/select2-bootstrap4.min.css">
         <!-- Sweetalert Css -->
-        <link href="{{ env('APP_URL') }}/templates/plugins/sweetalert/sweetalert.css" rel="stylesheet" />
+        <link href="{{ asset('') }}templates/plugins/sweetalert/sweetalert.css" rel="stylesheet" />
     </head>
     <body data-spy="scroll" data-target=".site-navbar-target" data-offset="300">
         <div class="loader"></div>
@@ -352,9 +352,9 @@
         <!-- Select2 -->
         <script src="{{ asset('') }}templates/plugins/select2/js/select2.full.min.js"></script>
         <!-- SweetAlert Plugin Js -->
-        <script src="{{ env('APP_URL') }}/templates/plugins/sweetalert/sweetalert.min.js"></script>
+        <script src="{{ asset('') }}templates/plugins/sweetalert/sweetalert.min.js"></script>
         <!-- bs-custom-file-input -->
-        <script src="{{ env('APP_URL') }}/templates/plugins/bs-custom-file-input/bs-custom-file-input.min.js"></script>
+        <script src="{{ asset('') }}templates/plugins/bs-custom-file-input/bs-custom-file-input.min.js"></script>
 
         <script>
 

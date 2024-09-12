@@ -20,7 +20,7 @@
     <link rel="stylesheet"
         href="{{ asset('') }}templates/plugins/sweetalert2-theme-bootstrap-4/bootstrap-4.min.css">
     <!-- Sweetalert Css -->
-    <link href="{{ env('APP_URL') }}/templates/plugins/sweetalert/sweetalert.css" rel="stylesheet" />
+    <link href="{{ asset('') }}templates/plugins/sweetalert/sweetalert.css" rel="stylesheet" />
     <!-- Toastr -->
     <link rel="stylesheet" href="{{ asset('') }}templates/plugins/toastr/toastr.min.css">
     <!-- EasyUI -->
@@ -149,7 +149,7 @@
     <!-- Toastr -->
     <script src="{{ asset('') }}templates/plugins/toastr/toastr.min.js"></script>
     <!-- SweetAlert Plugin Js -->
-    <script src="{{ env('APP_URL') }}/templates/plugins/sweetalert/sweetalert.min.js"></script>
+    <script src="{{ asset('') }}templates/plugins/sweetalert/sweetalert.min.js"></script>
 
     <script>
         var Toast = Swal.mixin({
