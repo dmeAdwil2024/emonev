@@ -72,66 +72,6 @@ class CapaianController extends Controller
 
         return view('contents.capaian.target-output', compact('current', 'modul', 'data_direktorat'));
     }
-    
-    public function viewKegiatan(Request $request)
-    {
-        $dir        = new Direktorat;
-
-        $modul      = 'Capaian';
-        $current    = "Kegiatan";
-
-        $data_direktorat    = $dir->where('id_dir', '<>', 0)->get();
-
-        return view('contents.capaian.kegiatan', compact('current', 'modul', 'data_direktorat'));
-    }
-
-    public function viewKRO(Request $request)
-    {
-        $dir        = new Direktorat;
-
-        $modul      = 'Capaian';
-        $current    = "KRO";
-
-        $data_direktorat    = $dir->where('id_dir', '<>', 0)->get();
-
-        return view('contents.capaian.kro', compact('current', 'modul', 'data_direktorat'));
-    }
-
-    public function viewRO(Request $request)
-    {
-        $dir        = new Direktorat;
-
-        $modul      = 'Capaian';
-        $current    = "RO";
-
-        $data_direktorat    = $dir->where('id_dir', '<>', 0)->get();
-
-        return view('contents.capaian.ro', compact('current', 'modul', 'data_direktorat'));
-    }
-
-    public function viewKomponen(Request $request)
-    {
-        $dir        = new Direktorat;
-
-        $modul      = 'Capaian';
-        $current    = "Komponen";
-
-        $data_direktorat    = $dir->where('id_dir', '<>', 0)->get();
-
-        return view('contents.capaian.komponen', compact('current', 'modul', 'data_direktorat'));
-    }
-
-    public function viewSubKomponen(Request $request)
-    {
-        $dir        = new Direktorat;
-
-        $modul      = 'Capaian';
-        $current    = "Sub Komponen";
-
-        $data_direktorat    = $dir->where('id_dir', '<>', 0)->get();
-
-        return view('contents.capaian.subkomponen', compact('current', 'modul', 'data_direktorat'));
-    }
 
     public function dataKegiatan(Request $request)
     {
@@ -551,10 +491,9 @@ class CapaianController extends Controller
 
         $i                = 0;
         $id_dir           = $request->id_dir;
-        $id_subdir        = $request->id_subdir;
         $nama_dir         = $dir->where('id_dir', $id_dir)->first()->nama_dir;
         $triwulan         = $request->triwulan;
-        $kode_subkomponen = $subkomponen->where('kode_direktorat', $id_dir)->where('kode_subdirektorat', $id_subdir)->get();
+        $kode_subkomponen = $subkomponen->where('kode_direktorat', $id_dir)->get();
 
         if($triwulan == "1")
         {
@@ -586,7 +525,6 @@ class CapaianController extends Controller
         {
             $data[$i]->type             = "kegiatan";
             $data[$i]->kode_treegrid    = $value->kode_kegiatan;
-            $data[$i]->kode_input       = $value->kode_kegiatan;
             $data[$i]->uraian_treegrid  = '<br><span style="padding: 5px; border-radius: 4px" class="font-weight-bolder mb-1 bg-warning">Kegiatan</span><br><br>'.$kegiatan->where('kode', $value->kode_kegiatan)->first()->deskripsi;
             
             $j                          = 0;
@@ -595,20 +533,18 @@ class CapaianController extends Controller
 
             foreach($data_output as $value_output)
             {
-                $anak[$j]['type']             = "output";
+                $anak[$j]['type']               = "output";
                 $anak[$j]['kode_treegrid']    = $value_output->kode;
-                $anak[$j]['kode_input']       = $value_output->kode;
                 $anak[$j]['uraian_treegrid']  = '<br><span style="padding: 5px; border-radius: 4px" class="font-weight-bolder mb-1 bg-primary">KRO</span><br><br>'.$value_output->deskripsi;
 
-                $k              = 0;
-                $data_suboutput = $suboutput->where('status', 1)->where('kode', 'like', '%'.$value_output->kode.'%')->get();
-                $cucu           = [];
+                $k                                = 0;
+                $data_suboutput                   = $suboutput->where('status', 1)->where('kode', 'like', '%'.$value_output->kode.'%')->get();
+                $cucu                             = [];
 
                 foreach ($data_suboutput as $value_suboutput)
                 {
-                    $cucu[$k]['type']             = "suboutput";
+                    $cucu[$k]['type']               = "suboutput";
                     $cucu[$k]['kode_treegrid']    = $value_suboutput->kode;
-                    $cucu[$k]['kode_input']       = $value_suboutput->kode;
                     $cucu[$k]['uraian_treegrid']  = '<br><span style="padding: 5px; border-radius: 4px" class="font-weight-bolder mb-1 bg-success">RO</span><br><br>'.$value_suboutput->deskripsi;
 
                     $l              = 0;
@@ -642,43 +578,41 @@ class CapaianController extends Controller
                                             ])      
                                             ->sum('nilai_rupiah');
 
-                        //$target     = '<a href="javascript:void(0)" onclick="openModalTargetPusat(1, \''.$value_komponen->kode.'\')"><i class="fas fa-edit text-danger"></i></a>';
+                        $target     = '<a href="javascript:void(0)" onclick="openModalTargetPusat(1, \''.$value_komponen->kode.'\')"><i class="fas fa-edit text-danger"></i></a>';
                         $bulan1     = '<a href="javascript:void(0)" onclick="openModalUpload(1, \''.$value_komponen->kode.'\', \'komponen\')"><i class="fas fa-edit text-danger"></i></a>';
                         $bulan2     = '<a href="javascript:void(0)" onclick="openModalUpload(2, \''.$value_komponen->kode.'\', \'komponen\')"><i class="fas fa-edit text-danger"></i></a>';
                         $bulan3     = '<a href="javascript:void(0)" onclick="openModalUpload(3, \''.$value_komponen->kode.'\', \'komponen\')"><i class="fas fa-edit text-danger"></i></a>';
                         
                         $cek_matrik =   $matrik->whereIn('bulan', $bulan)->where([
-                                            'kode_subdir'   => $id_subdir,
+                                            'kode_subdir'   => $request->id_subdir,
                                             'tahun'         => date("Y"),
                                             'kode'          => $value_komponen->kode
                                         ])->count();
 
-                        $target = 0;
-                        
                         if($cek_matrik > 0)
                         {
                             $target           = $matrik->whereIn('bulan', $bulan)->where([
-                                'kode_subdir'   => $id_subdir,
+                                'kode_subdir'   => $request->id_subdir,
                                 'tahun'         => date("Y"),
                                 'kode'          => $value_komponen->kode
                             ])->sum('to_volume');
 
                             $cek_bulan1 = $matrik->where([
-                                'kode_subdir'   => $id_subdir,
+                                'kode_subdir'   => $request->id_subdir,
                                 'tahun'         => date("Y"),
                                 'kode'          => $value_komponen->kode,
                                 'bulan'         => $bulan[0]
                             ])->first();
 
                             $cek_bulan2 = $matrik->where([
-                                'kode_subdir'   => $id_subdir,
+                                'kode_subdir'   => $request->id_subdir,
                                 'tahun'         => date("Y"),
                                 'kode'          => $value_komponen->kode,
                                 'bulan'         => $bulan[1]
                             ])->first();
 
                             $cek_bulan3 = $matrik->where([
-                                'kode_subdir'   => $id_subdir,
+                                'kode_subdir'   => $request->id_subdir,
                                 'tahun'         => date("Y"),
                                 'kode'          => $value_komponen->kode,
                                 'bulan'         => $bulan[2]
@@ -719,15 +653,14 @@ class CapaianController extends Controller
                             $cicit[$l]['target']        = number_format($target);
                         }
 
-                        $cicit[$l]['bulan1']          = $bulan1;
-                        $cicit[$l]['bulan2']          = $bulan2;
-                        $cicit[$l]['bulan3']          = $bulan3;
-                        $cicit[$l]['type']            = "komponen";
-                        $cicit[$l]['pagu']            = number_format($pagu);
-                        $cicit[$l]['realisasi']       = number_format($total_realisasi);
-                        $cicit[$l]['kode_treegrid']   = $value_komponen->kode;
-                        $cicit[$l]['kode_input']      = $value_komponen->kode;
-                        $cicit[$l]['uraian_treegrid'] = '<br><span style="padding: 5px; border-radius: 4px" class="font-weight-bolder mb-1 bg-danger">Komponen</span><br><br>'.$value_komponen->deskripsi;
+                        $cicit[$l]['bulan1']            = $bulan1;
+                        $cicit[$l]['bulan2']            = $bulan2;
+                        $cicit[$l]['bulan3']            = $bulan3;
+                        $cicit[$l]['type']              = "komponen";
+                        $cicit[$l]['pagu']              = number_format($pagu);
+                        $cicit[$l]['realisasi']         = number_format($total_realisasi);
+                        $cicit[$l]['kode_treegrid']     = $value_komponen->kode;
+                        $cicit[$l]['uraian_treegrid']   = '<br><span style="padding: 5px; border-radius: 4px" class="font-weight-bolder mb-1 bg-danger">Komponen</span><br><br>'.$value_komponen->deskripsi;
 
                         $kode               = explode(".", $value_komponen->kode);
                         $kode_kegiatan      = $kode[0];
@@ -746,7 +679,7 @@ class CapaianController extends Controller
                                                 ->groupBy('kode_subkomponen')
                                                 ->get();
 
-                        $canggah = [];
+                        $canggah    = [];
 
                         foreach ($data_subkomponen as $value_subkomponen)
                         {
@@ -771,88 +704,68 @@ class CapaianController extends Controller
                                                 ])      
                                                 ->sum('nilai_rupiah');
 
-                            $canggah[$m]['type']            = "subkomponen";
-                            $canggah[$m]['pagu']            = number_format($pagu);
-                            $canggah[$m]['realisasi']       = number_format($total_realisasi);
-                            $canggah[$m]['kode_treegrid']   = $value_subkomponen->kode_subkomponen;
-                            $canggah[$m]['kode_input']      = implode('.', [$cicit[$l]['kode_input'] , $value_subkomponen->kode_subkomponen]);
-                            $canggah[$m]['uraian_treegrid'] = '<br><span style="padding: 5px; border-radius: 4px" class="font-weight-bolder mb-1 bg-purple">Subkomponen</span><br><br>'.$value_subkomponen->uraian_subkomponen;
-
-                            $full_kode_subkomponen = $canggah[$m]['kode_input'];
-
-                            //$target     = '<a href="javascript:void(0)" onclick="openModalTargetPusat(1, \''.$value_komponen->kode.'\')"><i class="fas fa-edit text-danger"></i></a>';
-                            $cek_matrik = $matrik->whereIn('bulan', $bulan)->where([
-                                                'kode_subdir'   => $id_subdir,
+                            $target     = '<a href="javascript:void(0)" onclick="openModalTargetPusat(1, \''.$value_komponen->kode.'\')"><i class="fas fa-edit text-danger"></i></a>';
+                            $bulan1     = '<a href="javascript:void(0)" onclick="openModalUpload(1, \''.$value_komponen->kode.'\', \'komponen\')"><i class="fas fa-edit text-danger"></i></a>';
+                            $bulan2     = '<a href="javascript:void(0)" onclick="openModalUpload(2, \''.$value_komponen->kode.'\', \'komponen\')"><i class="fas fa-edit text-danger"></i></a>';
+                            $bulan3     = '<a href="javascript:void(0)" onclick="openModalUpload(3, \''.$value_komponen->kode.'\', \'komponen\')"><i class="fas fa-edit text-danger"></i></a>';
+                            
+                            $cek_matrik =   $matrik->whereIn('bulan', $bulan)->where([
+                                                'kode_subdir'   => $request->id_subdir,
                                                 'tahun'         => date("Y"),
                                                 'kode'          => $value_komponen->kode
                                             ])->count();
 
-                            $edit_class1 = $edit_class2 = $edit_class3 = "text-danger";
-                            $target = 0;
                             if($cek_matrik > 0)
                             {
-                                $target = $matrik->whereIn('bulan', $bulan)->where([
-                                    'kode_subdir'   => $id_subdir,
+                                $target           = $matrik->whereIn('bulan', $bulan)->where([
+                                    'kode_subdir'   => $request->id_subdir,
                                     'tahun'         => date("Y"),
-                                    'kode'          => $full_kode_subkomponen
+                                    'kode'          => $value_subkomponen->kode_subkomponen
                                 ])->sum('to_volume');
 
                                 $cek_bulan1 = $matrik->where([
-                                    'kode_subdir'   => $id_subdir,
+                                    'kode_subdir'   => $request->id_subdir,
                                     'tahun'         => date("Y"),
-                                    'kode'          => $full_kode_subkomponen,
+                                    'kode'          => $value_subkomponen->kode_subkomponen,
                                     'bulan'         => $bulan[0]
                                 ])->first();
 
                                 $cek_bulan2 = $matrik->where([
-                                    'kode_subdir'   => $id_subdir,
+                                    'kode_subdir'   => $request->id_subdir,
                                     'tahun'         => date("Y"),
-                                    'kode'          => $full_kode_subkomponen,
+                                    'kode'          => $value_subkomponen->kode_subkomponen,
                                     'bulan'         => $bulan[1]
                                 ])->first();
 
                                 $cek_bulan3 = $matrik->where([
-                                    'kode_subdir'   => $id_subdir,
+                                    'kode_subdir'   => $request->id_subdir,
                                     'tahun'         => date("Y"),
-                                    'kode'          => $full_kode_subkomponen,
+                                    'kode'          => $value_subkomponen->kode_subkomponen,
                                     'bulan'         => $bulan[2]
                                 ])->first();
 
                                 if($cek_bulan1)
                                 {
-                                    $edit_class1 = "text-success";
-                                    /*
                                     $nama_file  = $cek_bulan1->evidence;
                                     $link       = route("download.all-files", ['path' => "app/assets/files/$nama_dir/$nama_file"]);
                                     $bulan1     = '<a href="'.$link.'"><i class="fas fa-edit text-success"></i></a>';
-                                    */
                                 }
 
                                 if($cek_bulan2)
                                 {
-                                    $edit_class2 = "text-success";
-                                    /*
                                     $nama_file  = $cek_bulan2->evidence;
                                     $link       = route("download.all-files", ['path' => "app/assets/files/$nama_dir/$nama_file"]);
                                     $bulan2     = '<a href="'.$link.'"><i class="fas fa-edit text-success"></i></a>';
-                                    */
                                 }
 
                                 if($cek_bulan3)
                                 {
-                                    $edit_class3 = "text-success";
-                                    /*
                                     $nama_file  = $cek_bulan3->evidence;
                                     $link       = route("download.all-files", ['path' => "app/assets/files/$nama_dir/$nama_file"]);
                                     $bulan3     = '<a href="'.$link.'"><i class="fas fa-edit text-success"></i></a>';
-                                    */
                                 }
                             }
 
-                            $bulan1 = '<a href="javascript:void(0)" onclick="openModalUpload(1, \''.$full_kode_subkomponen.'\', \''.$canggah[$m]['type'].'\')"><i class="fas fa-edit '.$edit_class1.'"></i></a>';
-                            $bulan2 = '<a href="javascript:void(0)" onclick="openModalUpload(2, \''.$full_kode_subkomponen.'\', \''.$canggah[$m]['type'].'\')"><i class="fas fa-edit '.$edit_class2.'"></i></a>';
-                            $bulan3 = '<a href="javascript:void(0)" onclick="openModalUpload(3, \''.$full_kode_subkomponen.'\', \''.$canggah[$m]['type'].'\')"><i class="fas fa-edit '.$edit_class3.'"></i></a>';
-                            
                             $canggah[$m]['target']          = $target;
                             
                             if(is_numeric($target))
@@ -863,6 +776,12 @@ class CapaianController extends Controller
                             $canggah[$m]['bulan1']          = $bulan1;
                             $canggah[$m]['bulan2']          = $bulan2;
                             $canggah[$m]['bulan3']          = $bulan3;
+                            $canggah[$m]['type']            = "subkomponen";
+                            $canggah[$m]['pagu']            = number_format($pagu);
+                            $canggah[$m]['realisasi']       = number_format($total_realisasi);
+                            $canggah[$m]['kode_treegrid']   = $value_subkomponen->kode_subkomponen;
+                            $canggah[$m]['uraian_treegrid'] = '<br><span style="padding: 5px; border-radius: 4px" class="font-weight-bolder mb-1 bg-purple">Subkomponen</span><br><br>'.$value_subkomponen->uraian_subkomponen;
+
                             $m++;
                         }
 
@@ -916,7 +835,7 @@ class CapaianController extends Controller
             'tahun' => date("Y")
         ])->count();
             
-        $detail = $capaian->where('kode', $request->kode)->get();
+        $detail     = $capaian->where('kode', $request->kode)->get();
         
         if($count > 0)
         {
@@ -926,7 +845,7 @@ class CapaianController extends Controller
                 'tahun' => date("Y")
             ])->first();
 
-            $data->data = $detail; // data upload evidence
+            $data->data = $detail;
         }
 
         return $data;
@@ -966,41 +885,39 @@ class CapaianController extends Controller
     public function submitTarget(Request $request)
     {
         $matrik = new MatriksPengendalian;
-        $selected = [
+
+        try
+        {
+            $count  = $matrik->where([
                 'kode'          => $request->kode,
                 'kode_subdir'   => $request->kode_subdir,
                 'bulan'         => $request->bulan,
                 'tahun'         => $request->tahun
-        ];
-
-        try
-        {
-            $count  = $matrik->where($selected)->count();
+            ])->count();
     
             if($count == 0)
             {
                 $matrik->create([
-                    'created_by'            => Auth::user()->id_akses,
+                    'created_by'            => Auth::user()->akses_id,
                     'kode'                  => $request->kode,
                     'kode_subdir'           => $request->kode_subdir,
                     'bulan'                 => $request->bulan,
                     'tahun'                 => $request->tahun,
                     'to_volume'             => $request->target,
-                    'co_volume'             => $request->realisasi,
-                    'co_satuan'             => $request->satuan_realisasi_target,
-                    'keterangan'            => $request->keterangan,
-                    'kendala'               => $request->kendala,
-                    'tinjut'                => $request->tinjut,
-                    'persen_kinerja'        => $request->persen_kinerja,
+                    'to_satuan'             => $request->satuan_realisasi_target
                     // 'deadline'              => date("Y-m-d", strtotime($request->deadline))
                 ]);
             }    
             else
             {
-                $matrik->where($selected)->update([
+                $matrik->where([
+                    'kode'          => $request->kode,
+                    'kode_subdir'   => $request->kode_subdir,
+                    'bulan'         => $request->bulan,
+                    'tahun'         => $request->tahun
+                ])->update([
                     // 'to_volume'             => $request->target,
                     'co_volume'             => $request->realisasi,
-                    'co_satuan'             => $request->satuan_realisasi_target,
                     'pemanfaatan'           => $request->pemanfaatan,
                     'status_pemanfaatan'    => $request->status_pemanfaatan,
                     'keterangan'            => $request->keterangan,
@@ -1100,7 +1017,7 @@ class CapaianController extends Controller
                 $matrik->create([
                     'kode'          => $request->kode,
                     'kode_subdir'   => $request->kode_subdir,
-                    'created_by'    => Auth::user()->id_akses,
+                    'created_by'    => Auth::user()->akses_id,
                     'bulan'         => $bulan,
                     'tahun'         => $request->tahun,
                     'evidence'      => $evidence
@@ -1137,7 +1054,7 @@ class CapaianController extends Controller
 
         $validation = [
             // 'pertanyaan'        => 'required',
-            'evidence' => 'max:2048',
+            'evidence'          => 'max:2048',
         ];
 
         $message    = [
@@ -1165,8 +1082,8 @@ class CapaianController extends Controller
         
         try
         {
-            $evidence   = "";
-            $direktorat = $dir->where('id_dir', Auth::user()->id_dir)->first()->nama_dir;
+            $evidence           = "";
+            $direktorat         = $dir->where('id_dir', Auth::user()->id_dir)->first()->nama_dir;
 
             if($request->hasFile('evidence'))
             {
@@ -1187,26 +1104,6 @@ class CapaianController extends Controller
                 'status'    => 'success',
                 'title'     => 'Data Berhasil Disimpan',
                 'message'   => 'Data Capaian Output Berhasil Diupload'
-            ]);
-        } 
-        catch (\Throwable $th)
-        {
-            return $th->getMessage();
-        }
-    }
-
-    public function deleteUploadEvidence(Request $request)
-    {
-        try
-        {
-            $deleted = EvidenceCapaian::destroy($request->id);
-
-            $msg = $deleted ? 'berhasil' : 'gagal';
-
-            return response()->json([
-                'status'    => $msg,
-                'title'     => 'Data ' . $msg .' dihapus',
-                'message'   => 'Data Evidence ' . $msg .' dihapus'
             ]);
         } 
         catch (\Throwable $th)

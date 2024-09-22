@@ -48,6 +48,9 @@
         </div>
         <div class="row bg-tosca py-3 d-flex align-content-stretch">
             @foreach ($opsi as $status)
+                @if ($status == 4)
+                    @dd($status)
+                @endif
                 <div style="width: calc(100%/5);">
                     <div class="bg-tosca p-3 h-100 text-center">
                         <h5 class="text-center">{{ $label[$status] }}<br><br></h5>

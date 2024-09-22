@@ -613,12 +613,14 @@
         var id = $('#id_revisi_proses').val()
         var nota_dinas_ppk = $('#nota_dinas_ppk_revisi').prop('files')[0];
         var dokumen_pendukung = $('#dokumen_pendukung_revisi').prop('files')[0];
+        var matrik_rab = $('#matrik_rab_revisi').prop('files')[0];
 
         var form_data = new FormData();
 
         form_data.append('id', id);
         form_data.append('nota_dinas_ppk', nota_dinas_ppk);
         form_data.append('dokumen_pendukung', dokumen_pendukung);
+        form_data.append('matrik_rab', matrik_rab);
 
         form_data.append('_token', '{{ csrf_token() }}')
 
@@ -637,7 +639,8 @@
                         title: e.title
                     })
 
-                    openDetail(id)
+                    reload()
+                    $('.fa-backspace').click()
                 } else {
                     Toast.fire({
                         icon: 'error',
@@ -1399,7 +1402,7 @@
             contentType: false,
             success: function(e) {
                 $('#content-surat-pengesahan').load(
-                    '{{ asset('') }}ticketing/preview-pengesahan?token=' + token,
+                    '{{ env('APP_URL') }}/ticketing/preview-pengesahan?token=' + token,
                     function() {
                         $('#modal-preview-surat-pengesahan').modal({
                             show: true
@@ -1412,6 +1415,6 @@
 
     function downloadPreview() {
         var token = $('#token_revisi_proses').val()
-        window.open('{{ asset('') }}download/preview-pengesahan?token=' + token);
+        window.open('{{ env('APP_URL') }}/download/preview-pengesahan?token=' + token);
     }
 </script>

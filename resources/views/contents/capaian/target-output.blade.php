@@ -1,288 +1,415 @@
-@extends('layouts.caput')
+@extends('layouts.main-easyui')
+@extends('contents.capaian.template-parts.modal-input-target')
+@extends('contents.capaian.template-parts.modal-target-pusat')
+@extends('contents.capaian.template-parts.modal-upload-evidence')
 
-@section('contents')
-	<div class="main">
-		<div class="topbar">
-			<div class="toggle col-md-1"  id="menuNav">
-				<a href="#menuNav">
-					<i class="fas fa-bars"></i>
-				</a>
-			</div>
-			<div class="col-md-8 d-flex logo-admin">
-				<img src="{{asset('newdashboard/images/logo-emonev.png')}}" alt="logo emonev" class="img-fluid margin-auto logo-smaller">
-				<div class="text-center">
-					<h1 class="title">E-MONEV</h1>
-					<h2 class="subtitle">DITJEN BINA ADMINISTRASI KEWILAYAHAN</h2>
-				</div>
-			</div>
-			<div class="avatar col-md-3 p-2 d-flex">
-				<img src="{{asset('newdashboard/images/user-avatar.png')}}" alt="" class="img-fluid avatar-img me-2">
-				<div class="avatar-name small fw-bold">
-					Selamat Datang Admin,<br>
-					Bagian Perencanaan
-				</div>
-			</div>
-		</div>
-		<div class="row">
-			<div class="col-md-5 p-2 font-tebala" style="background-color:#ebebeb;">
-				Validasi
-			</div>
-			<div class="col-md-6 p-2 font-tebala" style="background-color:#ebebeb;text-align:right">
-				Capaian Output > Capaian Pusat > Komponen Input > Validasi
-			</div>
-		</div>
-		<div style="height:10px"></div>
-		<div class="row">
-			<div class="col-md-11 p-2" style="background-image: linear-gradient(to right, rgba(204,204,255,0.7) , rgba(102,255,204,0.7));">
-				<div class="row">
-					<div class="col-md-11 font-tebala font-tebal">
-						Informasi Cascading Output
-					</div>
-				</div>
-				<div class="row">
-					<div class="col-md-2 font-tebal">
-						Direktorat
-					</div>
-					<div class="col-md-10 font-tebal">
-						<font class="font-tebala">Dekonsentrasi, Tugas Pembantuan dan Kerjasama</font>
-					</div>
-				</div>
-				<div class="row">
-					<div class="col-md-2 font-tebal">
-						Tahun
-					</div>
-					<div class="col-md-10 font-tebal">
-						<font class="font-tebala">2024</font>
-					</div>
-				</div>
-				<div class="row">
-					<div class="col-md-2 font-tebal">
-						K/L
-					</div>
-					<div class="col-md-10 font-tebal">
-						<font class="font-tebala">[00]</font>-Kementerian Dalam Negeri
-					</div>
-				</div>
-				<div class="row">
-					<div class="col-md-2 font-tebal">
-						UK Eselon I
-					</div>
-					<div class="col-md-10 font-tebal">
-						<font class="font-tebala">[04]</font>-Ditjen Bina Administrasi Kewilayahan
-					</div>
-				</div>
-				<div class="row">
-					<div class="col-md-2 font-tebal">
-						Program
-					</div>
-					<div class="col-md-10 font-tebal">
-						<font class="font-tebala">[CM]</font>-Program Pembinaan Kapasitas Pemerintahan dan Desa
-					</div>
-				</div>
-				<div class="row">
-					<div class="col-md-2 font-tebal">
-						Sasaran Program
-					</div>
-					<div class="col-md-10 font-tebal">
-						<font class="font-tebala">[04]</font>-Meningkatnya tertib administrasi kewilayahan, penyelenggaraan pelayanan perizinan dan non perizinan yang terintegrasi dan terpadu, kinerja Gubernur sebagai Wakil Pemerintah Pusat, serta pengelolaan kawasan dan perbatasan negara
-					</div>
-				</div>
-				<div class="row">
-					<div class="col-md-2 font-tebal">
-						Indikator Kinerja Program
-					</div>
-					<div class="col-md-10 font-tebal">
-						<font class="font-tebala">[04]</font>-Jumlah Provinsi dengan indeks kinerja Gubernur sebagai wakil pemerintahan pusat kategori Baik
-					</div>
-				</div>
-				<div class="row">
-					<div class="col-md-2 font-tebal">
-						Kegiatan
-					</div>
-					<div class="col-md-10 font-tebal">
-						<font class="font-tebala">[1237]</font>-Pembinaan Pennyelenggaraan Hubungan Pusat dan Daerah serta Kerja Sama Daerah
-					</div>
-				</div>
-				<div class="row">
-					<div class="col-md-2 font-tebal">
-						Sasaran Kegiatan
-					</div>
-					<div class="col-md-10 font-tebal">
-						<font class="font-tebala">[01]</font>-Meningkatnya kinerja GWPP, dekonsentrasi dan tugas pembantuan, penyelenggaraan pelayanan perizinan dan non perizinan yang terintegrasi dan terpadu
-					</div>
-				</div>
-				<div class="row">
-					<div class="col-md-2 font-tebal">
-						Indikator Kinerja Kegiatan
-					</div>
-					<div class="col-md-10 font-tebal">
-						<font class="font-tebala">[1]</font>-Jumlah tugas dan wewenang yang dilaksanakan Gubernur sebagai wakil Pemerintah pusat dengan kinerja baik
-					</div>
-				</div>
-				<div class="row">
-					<div class="col-md-2 font-tebal">
-						KRO
-					</div>
-					<div class="col-md-10 font-tebal">
-						<font class="font-tebala">[PGL]</font>-Pembinaan Penyelenggaraan Pusat dan Daerah serta Kerja Sama Daerah
-					</div>
-				</div>
-				<div class="row">
-					<div class="col-md-2 font-tebal">
-						Rincian Output
-					</div>
-					<div class="col-md-10 font-tebal">
-						<font class="font-tebala">[001]</font>-Pelaksanaan Tugas dan Wewenang Gubernur sebagai wakil Pemerintahan Pusat dengan kinerja baik
-					</div>
-				</div>
-				<div class="row">
-					<div class="col-md-2 font-tebal">
-						Komponen
-					</div>
-					<div class="col-md-10 font-tebal">
-						<font class="font-tebala">[061]</font>-Penguatan Sekertariat Bersama Pembinaan Gubernur sebagai wakil Pemerintahan pusat
-					</div>
-				</div>
-				<div class="row">
-					<div class="col-md-2 font-tebal">
-						Sub Komponen
-					</div>
-					<div class="col-md-10 font-tebal">
-						<font class="font-tebala">[AB]</font>-Koordinasi Sekertariat Bersama Pembinaan GWPP (Kebijakan)
-					</div>
-				</div>
-			</div>
-		</div>
-		<div style="height:10px"></div>
-		<div class="row">
-			<div class="col-md-11 p-2">
-				<div class="row">
-					<div class="col-md-8 p-2 font-tebala font-tebal">
-						Capaian Output (subkomponen)
-					</div>
-					<div class="col-md-4 p-2 font-tebala" style="background-color:#ebebeb;text-align:center">
-				Presentase progress capaiaon RO sesuai dengan KI yang dibidangnya
-					</div>
-				</div>
-				<div class="row">
-					<div class="col-md-4 font-tebal" style="background-color:#ebebeb;text-align:center">
-						Progress Capaian Terhadap Target
-					</div>
-				</div>
-				<div class="row">
-					<div class="col-md-2 font-tebal" style="background-color:rgba(102,255,204,0.7);text-align:center">
-						1
-					</div>
-					<div class="col-md-2 font-tebal" style="background-color:rgba(204,204,255,0.7);text-align:center">
-						<font class="font-tebala">Kebijakan</font>
-					</div>
-				</div>
-				<div style="height:10px"></div>
-				<div class="row">
-					<div class="col-md-4 font-tebal" style="background-color:#ebebeb;text-align:center">
-						Realisasi Anggaran
-					</div>
-				</div>
-				<div class="row">
-					<div class="col-md-2 font-tebal" style="background-color:rgba(102,255,204,0.7);text-align:center">
-						Rp. 123.456.789.123
-					</div>
-					<div class="col-md-2 font-tebal" style="background-color:rgba(204,204,255,0.7);text-align:center">
-						<font class="font-tebala">Anggaran</font>
-					</div>
-				</div>
-				<div style="height:10px"></div>
-				<div class="row">
-					<div class="col-md-4 font-tebal" style="background-color:#ebebeb;text-align:center">
-						Progress Pelaksanaan
-					</div>
-					<div class="col-md-4 font-tebal" style="text-align:Left">
-						Keterangan
-					</div>
-					<div class="col-md-2 font-tebal" style="text-align:center">
-						setujui
-					</div>
-					<div class="col-md-2 font-tebal" style="text-align:center">
-						perbaikan
-					</div>
-				</div>
-				<div style="height:10px"></div>
-				<div class="row">
-					<div class="col-md-2 font-tebal" style="background-color:rgba(102,255,204,0.7);text-align:center">
-						Perencanaan
-					</div>
-					<div class="col-md-2 font-tebal" style="background-color:rgba(204,204,255,0.7);text-align:center">
-						<font class="font-tebala">%</font>
-					</div>
-					<div class="col-md-4 font-tebal" style="background-color:rgba(102,255,204,0.7);">
-						:
-					</div>
-					<div class="col-md-4 font-tebal" style="text-align:center">
-						catatan perbaikan
-					</div>
-				</div>
-				<div style="height:10px"></div>
-				<div class="row">
-					<div class="col-md-4 font-tebal" style="background-color:#ebebeb;text-align:center">
-						Permasalahan
-					</div>
-					<div class="col-md-4 font-tebal" style="text-align:Left">
-						Keterangan
-					</div>
-					<div class="col-md-4 font-tebal" style="text-align:center">
-						*Muncul ketika dikilk perbaikan
-					</div>
-				</div>
-				<div style="height:10px"></div>
-				<div class="row">
-					<div class="col-md-4 font-tebal" >
-						Tidak Ada Permasalahan
-					</div>
-					
-					<div class="col-md-4 font-tebal" style="background-color:rgba(102,255,204,0.7);">
-						:
-					</div>
-				</div>
-				<div style="height:10px"></div>
-				<div class="row">
-					<div class="col-md-4 font-tebal" style="background-color:#ebebeb;text-align:center">
-						Upload Evidence/Data Dukung
-					</div>
-				</div>
-				<div style="height:10px"></div>
-				<div class="row">
-					<div class="col-md-4 font-tebal" >
-						Klik untuk melihat dokumen
-					</div>
-					
-					<div class="col-md-4 font-tebal" >
-						Klik untuk membuka tautan
-					</div>
-				</div>
-			</div>
-		</div>
-	</div>		
+@section('content')
+    <section class="content-header">
+        <div class="container-fluid">
+            <div class="row mb-2">
+                <div class="col-sm-6">
+                    <h1>{{$current}}</h1>
+                </div>
+                <div class="col-sm-6">
+                    <ol class="breadcrumb float-sm-right">
+                        <li class="breadcrumb-item"><a href="#">{{$modul}}</a></li>
+                        <li class="breadcrumb-item active">{{$current}}</li>
+                    </ol>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Main content -->
+    <section class="content" id="wrap-data">
+        <div class="container-fluid">
+            <div class="row">
+                <div class="col-md-12 col-xs-12">
+                    <div class="card card-outline card-primary">
+                        <div class="overlay" id="loader-datatable" style="display: none">
+                            <i class="text-navy fas fa-2x fa-spinner fa-spin"></i> &nbsp;
+                        </div>
+
+                        <div class="card-header">
+                            <div class="row">
+                                <div class="col-md-5 col-sm-12 mt-3">
+                                    <select data-options="onChange: function(){
+                                            loadSubdit();
+                                        }" style="height: 40px; width: 100%" name="direktorat" class="easyui-combobox" id="direktorat">
+                                            <option value="" disabled selected>Pilih Unit Kerja Eselon 2</option>
+                                        @foreach($data_direktorat as $direktorat)
+                                            <option value="{{$direktorat->id_dir}}" @if($direktorat->id_dir == Auth::user()->id_dir) selected @endif>{{$direktorat->nama_dir}}</option>
+                                        @endforeach
+                                    </select>
+                                </div>
+                                <div class="col-md-5 col-sm-12 mt-3">
+                                    <select data-options="onChange: function(){loadData();}" name="subdit" class="easyui-combobox" style="height: 40px; width: 100%" id="subdit">
+                                            <option value="" disabled selected>Pilih Unit Kerja Eselon 3</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-2 col-sm-12 mt-3">
+                                    <select data-options="onChange: function(){loadData();}" name="triwulan" class="easyui-combobox" style="height: 40px; width: 100%" id="triwulan">
+                                            <option value="1" selected>Triwulan 1</option>
+                                            <option value="2">Triwulan 2</option>
+                                            <option value="3">Triwulan 3</option>
+                                            <option value="4">Triwulan 4</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="card-body">
+                            <div class="row" id="wrap-datatable" style="display:none">
+                                <div class="col-md-12 col-xs-12 col-sm-12">
+                                    <div class="table-responsive" style="overflow-x: auto;white-space: nowrap;">
+                                        <table class="table-responsive easyui-treegrid" id="data-capaian" style="width:100%;height:500px"
+                                        data-options="
+                                            data: '',
+                                            rownumbers: false,
+                                            idField: 'kode_treegrid',
+                                            treeField: 'kode_treegrid',
+                                            loadFilter: myLoadFilter,
+                                            toolbar:'#toolbar'
+                                        ">
+                                            <thead frozen="true">
+                                                <th data-options="halign:'center', align:'left', field:'kode_treegrid'"  width="200px">KODE</th>
+                                            </thead>
+                                            <thead>
+                                                <th data-options="halign:'center', align:'left', field:'uraian_treegrid'"  width="400px">KEGIATAN/KLASIFIKASI RINCIAN OUTPUT/OUTPUT/KOMPONEN</th>
+                                                <th data-options="halign:'center', align:'right', field:'kewenangan'"  width="150px">KEWENANGAN</th>
+                                                <th data-options="halign:'center', align:'right', field:'pagu'"  width="150px">PAGU</th>
+                                                <th data-options="halign:'center', align:'right', field:'target'"  width="150px">Target</th>
+                                            </thead>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <div id="mm" class="easyui-menu" style="width:175px;">
+        <div onclick="loadData()" data-options="iconCls:'icon-reload'">Reload Data</div>
+        <div onclick="formTarget()" data-options="iconCls:'icon-add'">Input Capaian</div>
+        <div class="menu-sep"></div>
+        <div onclick="remove()" data-options="iconCls:'icon-cancel'">Remove</div>
+    </div>
+
+    <div id="toolbar" style="padding:10px; text-align:right">
+        <!-- <a href="javascript:void(0)" onclick="remove()" class="easyui-linkbutton" iconCls="icon-cancel"></a>
+        <a href="javascript:void(0)" onclick="loadData()" class="easyui-linkbutton" iconCls="icon-reload"></a>
+        <a href="javascript:void(0)" onclick="formTarget()" class="easyui-linkbutton" iconCls="icon-add"> Target Capaian</a> -->
+        Total Rincian Output (RO): <span class="font-weight-bolder" id="total_ro">0</span> <br>
+        Total Komponen Input (KI): <span class="font-weight-bolder" id="total_ki">0</span>
+    </div>
+
 @endsection
 
 @section('js')
-	<script>
-		// menu togle
-		let toggle = document.querySelector('.toggle');
-		let navigation = document.querySelector('.navigation');
-		let main = document.querySelector('.main');
+    <script>
+        $(function () {
+            // loadData()
+            window.setTimeout( function() {
+                loadSubdit()
+            }, 300);
+        });
 
-		toggle.onclick = function(){
-			navigation.classList.toggle('active');
-			main.classList.toggle('active');
-		}
-		// add hovered class in selected list items 
-		let list = document.querySelectorAll('.navigation li');
-		function activelink(){
-			list.forEach((item) =>
-			item.classList.remove('hovered'));
-			this.classList.add('hovered');
-		}
-		list.forEach((item) =>
-		item.addEventListener('mouseover', activelink));
-	</script>
+        function openModalInputCo()
+        {
+            $('#modal-capaian-output').modal('show')
+        }
+
+        function countRo()
+        {
+            var id_dir      = $('#direktorat').combobox('getValue')
+            var id_subdir   = $('#subdit').combobox('getValue')
+            var triwulan    = $('#triwulan').combobox('getValue')
+            
+            $.post('{{ route('capaian.count-ro') }}', {id_dir, id_subdir, triwulan, _token: '{{csrf_token()}}'}, function(e){
+
+                $('#total_ro').empty().append(e.ro)
+                $('#total_ki').empty().append(e.input)
+
+            });
+        }
+
+        function formTarget()
+        {
+            var data    = $('#data-capaian').treegrid('getSelected');
+            
+            if(!data)
+            {
+                swal({
+                    title: "Data Belum Dipilih",
+                    text:  "Klik Pada Data yang Akan Diproses",
+                    type:  "error"
+                })
+            }
+            else
+            {
+                if(data.type == "kegiatan" || data.type == "output" || data.type == "suboutput")
+                {
+                    swal({
+                        title: "Kategori yang Dipilih Salah",
+                        text:  "Piih Hanya Pada Kategori Data Komponen/Subkomponen",
+                        type:  "error"
+                    })
+                }
+                else
+                {
+                    openModalTarget(data.type, data.kode_treegrid)
+                }
+            }
+        }
+
+        function openModalTarget(type, kode, bulan = null)
+        {
+            $("#modal-input-target").modal("show")
+            $("#type_target").val(type)
+            $("#kode_target").val(kode)
+            loadDetailInput(kode, bulan)
+
+            if(bulan != null)
+            {
+                if(parseInt(bulan) < 10)
+                {
+                    $('#bulan_target').val("0"+bulan)
+                }
+                else
+                {
+                    $('#bulan_target').val(bulan)
+                }
+            }
+        }
+
+        function openModalTargetPusat(type, kode, bulan = null)
+        {
+            $("#modal-input-target-pusat").modal("show")
+            $("#kode_target_pusat").val(kode)
+            
+            if(bulan != null)
+            {
+                if(parseInt(bulan) < 10)
+                {
+                    $('#bulan_target').val("0"+bulan)
+                }
+                else
+                {
+                    $('#bulan_target').val(bulan)
+                }
+            }
+        }
+        
+        function loadDetailInput(kode, month)
+        {
+            var bulan   = 1
+
+            if(month != null)
+            {
+                var bulan = month
+            }
+
+            $.post('{{ route('capaian.detail-input') }}', {kode, bulan, _token: '{{csrf_token()}}'}, function(e){
+
+                $('#target_target').val(0)
+
+                if(e != "none")
+                {
+                    if(parseInt(e.bulan) < 10)
+                    {
+                        $('#bulan_target').val("0"+e.bulan)
+                    }
+                    else
+                    {
+                        $('#bulan_target').val(e.bulan)
+                    }
+
+                    $('#target_target').val(e.to_volume)
+                    $('#tahun_target').val(e.tahun)
+                    $('#realisasi_target').val(e.co_volume)
+                    $('#keterangan_target').val(e.keterangan)
+                    $('#kendala_target').val(e.kendala)
+                    $('#tinjut_target').val(e.tinjut)
+
+                    $('#wrap-table-form-target').show()
+
+                    var i;
+                    var table = document.getElementById("table-form-target");
+                    
+                    for (i = 0; i < e.data.length; ++i) {
+                        
+                        var row = table.insertRow(i+1);
+                    
+                        var cell1 = row.insertCell(0);
+                        var cell2 = row.insertCell(1);
+                        // var cell3 = row.insertCell(2);
+                        // var cell4 = row.insertCell(3);
+
+                        // cell1.innerHTML = e.data[i]['pertanyaan'];
+                        // cell2.innerHTML = e.data[i]['jawaban'];
+                        cell1.innerHTML = e.data[i]['evidence'];
+                        cell2.innerHTML = '<button class="btn btn-danger" onclick="removeFormTarget(this)"> <i class="font-weight-bolder fas fa-times-circle"></i> </button>';
+                    }
+                }
+
+            });
+        }
+
+        function openModalUpload(bulan, kode, type)
+        {
+            // $("#modal-input-upload").modal("show")
+            $("#bulan_upload").val(bulan)
+            $("#type_upload").val(type)
+            $("#kode_upload").val(kode)
+
+            openModalTarget(type, kode, bulan)
+        }
+
+        function remove()
+        {
+            
+            var data    = $('#data-capaian').treegrid('getSelected');
+            
+            if(!data)
+            {
+                swal({
+                    title: "Data Belum Dipilih",
+                    text:  "Klik Pada Data yang Akan Dihapus",
+                    type:  "error"
+                })
+            }
+            else
+            {
+                var type    = data.type;
+                var kode    = data.kode_treegrid;
+
+                swal({
+                    title: "Hapus Data Ini?",
+                    text: "Data yang Sudah Dihapus Tidak Dapat Dirollback. Lanjutkan?",
+                    type: "warning",
+                    showCancelButton: true,
+                    confirmButtonColor: "#2b982b",
+                    confirmButtonText: "Ya, Lanjutkan!",
+                    closeOnConfirm: true
+                }, function () {
+
+                    $('#data-capaian').treegrid('loading');-
+
+                    $.post('{{ route('capaian.hide-data') }}', {type, kode, _token: '{{csrf_token()}}'}, function(e){
+
+                        if(e.status == "success")
+                        {
+                            Toast.fire({
+                                icon: 'success',
+                                title: e.title
+                            })
+
+                            loadData()
+                        }
+                        else
+                        {
+                            Toast.fire({
+                                icon: 'error',
+                                title: e.message
+                            })
+                        }
+
+                    });
+
+                });
+            }
+        }
+        
+        function loadSubdit()
+        {
+            var id_dir  = $('#direktorat').combobox('getValue')
+
+            $('#subdit').combobox({
+		        valueField: "id",
+		        textField: "text",
+		        method: 'get',
+		        url:'{{ route('tools.subdirektorat') }}?id_dir='+id_dir
+		    }).combobox('setValue', {{Auth::user()->id_subdir}})
+        }
+
+        function loadData()
+        {
+            $('#loader-datatable').show()
+            $('#wrap-datatable').show()
+
+            var id_dir      = $('#direktorat').combobox('getValue')
+            var id_subdir   = $('#subdit').combobox('getValue')
+            var triwulan    = $('#triwulan').combobox('getValue')
+
+            $('#data-capaian').treegrid('loading');
+            countRo()
+
+            $.post('{{ route('capaian.data-treegrid') }}', {id_dir, id_subdir, triwulan, _token: '{{csrf_token()}}'}, function(e){
+
+                $('#data-capaian').treegrid('loaded');
+				$('#data-capaian').treegrid('reload');
+				$('#data-capaian').treegrid({
+                    data:e,
+                    nowrap:false,
+                    animate: true,
+                    autoHeight:true
+                });
+
+                $('#loader-datatable').hide()
+            });
+        }
+
+        function addPadding(value,row,index)
+        {
+            return 'text-align: justify; padding: 8px';
+        }
+
+        function myLoadFilter(data,parentId){
+            function setData(data){
+                var todo = [];
+                for(var i=0; i<data.length; i++){
+                    todo.push(data[i]);
+                }
+                while(todo.length){
+                    var node = todo.shift();
+                    if (node.children && node.children.length){
+                        node.state = 'closed';
+                        node.children1 = node.children;
+                        node.children = undefined;
+                        todo = todo.concat(node.children1);
+                    }
+                }
+            }
+            
+            setData(data);
+            var tg = $(this);
+            var opts = tg.treegrid('options');
+            opts.onBeforeExpand = function(row){
+                if (row.children1){
+                    tg.treegrid('append',{
+                        parent: row[opts.idField],
+                        data: row.children1
+                    });
+                    row.children1 = undefined;
+                    tg.treegrid('expand', row[opts.idField]);
+                }
+                return row.children1 == undefined;
+            };
+            return data;
+        }
+
+        function onContextMenu(e,row){
+            if (row){
+                e.preventDefault();
+                $('#data-capaian').treegrid('select', row.kode_treegrid);
+                $('#mm').menu('show',{
+                    left: e.pageX,
+                    top: e.pageY
+                });                
+            }
+        }
+    </script>
 @endsection

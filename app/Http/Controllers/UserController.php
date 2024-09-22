@@ -48,33 +48,27 @@ class UserController extends Controller
         $current        = "Profile";
         $data_satker    = $satker->get();
 
-        if(is_numeric(Auth::user()->prov))
-        {
+        if (is_numeric(Auth::user()->prov)) {
             $nama_provinsi  = $provinsi->where('id_prov', Auth::user()->prov)->first()->namaprov;
             $data_satker    = $satker->where('provinsi', $nama_provinsi)->get();
         }
 
         return view('profile', compact('current', 'modul', 'data_satker'));
-
     }
 
     public function update(Request $request)
     {
         $user   = new User;
-        
-        try
-        {
-            if($request->has('username'))
-            {
+
+        try {
+            if ($request->has('username')) {
                 $user->where('id_akses', Auth::user()->id_akses)->update([
                     'username'  => $request->username,
                     'nama'      => $request->nama,
                     'email'     => $request->email,
                     'no_hp'     => $request->no_hp
                 ]);
-            }
-            else
-            {
+            } else {
                 $user->where('id_akses', Auth::user()->id_akses)->update([
                     'nama'      => $request->nama,
                     'email'     => $request->email,
@@ -88,9 +82,7 @@ class UserController extends Controller
                 'message' => 'Profile User Berhasil Diubah',
                 'title' => 'Proses Berhasil'
             ]);
-        }
-        catch (\Illuminate\Database\QueryException $e)
-        {
+        } catch (\Illuminate\Database\QueryException $e) {
 
             return response()->json([
                 'status' => 'error',
@@ -110,21 +102,18 @@ class UserController extends Controller
         $level  = new LevelUser;
 
         $data   = $user->where('status', 1)->get();
-        
-        foreach($data as $value)
-        {
-            $username                   = '<a class="font-weight-bolder" href="javascript:void(0)" onclick="hideUser(\''.$value->id_akses.'\')">'.$value->username.'</a>';
 
-            $data[$i]->no               = '<a href="javascript:void(0)" onclick="hideUser(\''.$value->id_akses.'\')">'.$no.".</a>";
+        foreach ($data as $value) {
+            $username                   = '<a class="font-weight-bolder" href="javascript:void(0)" onclick="hideUser(\'' . $value->id_akses . '\')">' . $value->username . '</a>';
+
+            $data[$i]->no               = '<a href="javascript:void(0)" onclick="hideUser(\'' . $value->id_akses . '\')">' . $no . ".</a>";
             $data[$i]->nama_provinsi    = "Pusat";
             $data[$i]->username         = $username;
 
-            if(is_numeric($value->prov))
-            {
+            if (is_numeric($value->prov)) {
                 $data[$i]->nama_provinsi    = $prov->where('id_prov', $value->prov)->first()->namaprov;
 
-                if(is_numeric($value->kab))
-                {
+                if (is_numeric($value->kab)) {
                     $data[$i]->nama_provinsi    = $kota->where('id_kab', $value->kab)->first()->namakab;
                 }
             }
@@ -135,9 +124,9 @@ class UserController extends Controller
                     <span class="sr-only">Toggle Dropdown</span>
                 </button>
                 <div class="dropdown-menu" role="menu">
-                    <a class="dropdown-item" href="javascript:void(0)" onclick="openFormUpdateUser('.$value->id_akses.')">Ubah User</a>
-                    <a class="dropdown-item" href="javascript:void(0)" onclick="resetPassword(\''.$value->id_akses.'\')">Update Password</a>
-                    <a class="dropdown-item" href="javascript:void(0)" onclick="hideUser('.$value->id_akses.')">Hapus User</a>
+                    <a class="dropdown-item" href="javascript:void(0)" onclick="openFormUpdateUser(' . $value->id_akses . ')">Ubah User</a>
+                    <a class="dropdown-item" href="javascript:void(0)" onclick="resetPassword(\'' . $value->id_akses . '\')">Update Password</a>
+                    <a class="dropdown-item" href="javascript:void(0)" onclick="hideUser(' . $value->id_akses . ')">Hapus User</a>
                 </div>
             </div>
             ';
@@ -153,7 +142,7 @@ class UserController extends Controller
     {
         $user   = new User;
         $data   = $user->where('id_akses', $request->id)->first();
-        
+
         return $data;
     }
 
@@ -176,65 +165,53 @@ class UserController extends Controller
         $no     = 1;
         $data   = $user;
 
-        if($request->status != 'all')
-        {
-            if($request->status == 'pending')
-            {
+        if ($request->status != 'all') {
+            if ($request->status == 'pending') {
                 $data = $data->whereNull('status');
-            }
-            else
-            {
+            } else {
                 $data = $data->where('status', $request->status);
             }
         }
-        
-        if($request->satker != 'all')
-        {
+
+        if ($request->satker != 'all') {
             $data   = $data->where('satker', 'like', $request->satker);
         }
 
         $data   = $data->get();
 
-        foreach($data as $value)
-        {
-            $data[$i]->no               = $no.".";
+        foreach ($data as $value) {
+            $data[$i]->no               = $no . ".";
             $data[$i]->nama_provinsi    = "Pusat";
-            $data[$i]->nama_format      = '<a href="javascript:void(0)" onclick="rejectForm('.$value->id.')">'.$value->nama.'</a>';
+            $data[$i]->nama_format      = '<a href="javascript:void(0)" onclick="rejectForm(' . $value->id . ')">' . $value->nama . '</a>';
 
-            if(is_numeric($value->provinsi))
-            {
+            if (is_numeric($value->provinsi)) {
                 $data[$i]->nama_provinsi    = $prov->where('id_prov', $value->provinsi)->first()->namaprov;
             }
 
-            if(is_numeric($value->kota))
-            {
+            if (is_numeric($value->kota)) {
                 $data[$i]->nama_provinsi    = $kota->where('id_kab', $value->kota)->first()->namakab;
             }
 
-            $data[$i]->download_sk      = '<a href='.route('download.all-files').'?path='.'app/sk/'.$value->sk.'> <i class="fas fa-file"></i> </a>';
+            $data[$i]->download_sk      = '<a href=' . route('download.all-files') . '?path=' . 'app/sk/' . $value->sk . '> <i class="fas fa-file"></i> </a>';
             $data[$i]->level            = $level->where('id', $value->jabatan_dalam_satker)->first()->nama;
             $data[$i]->button           = '<div class="btn-group">
                 <button type="button" class="btn btn-primary dropdown-toggle dropdown-icon" data-toggle="dropdown">
                     <span class="sr-only">Toggle Dropdown</span>
                 </button>
                 <div class="dropdown-menu" role="menu">
-                    <a class="dropdown-item" href="javascript:void(0)" onclick="rejectForm('.$value->id.')">Tolak Pengajuan</a>
-                    <a class="dropdown-item" href="javascript:void(0)" onclick="updateStatus('.$value->id.', \'accept\')">Terima Pengajuan</a>
+                    <a class="dropdown-item" href="javascript:void(0)" onclick="rejectForm(' . $value->id . ')">Tolak Pengajuan</a>
+                    <a class="dropdown-item" href="javascript:void(0)" onclick="updateStatus(' . $value->id . ', \'accept\')">Terima Pengajuan</a>
                 </div>
             </div>';
 
-            if($value->status != NULL)
-            {
+            if ($value->status != NULL) {
                 $data[$i]->button           = "";
                 $data[$i]->nama_format      = $value->nama;
             }
 
-            if($value->satker == "sekda")
-            {
+            if ($value->satker == "sekda") {
                 $data[$i]->satker           = "SETDA";
-            }
-            else if($value->satker == "dpuprpkp")
-            {
+            } else if ($value->satker == "dpuprpkp") {
                 $data[$i]->satker           = "Dinas Pekerjaan Umum, Penataan Ruang, Perumahan dan Kawasan Permukiman";
             }
 
@@ -251,12 +228,10 @@ class UserController extends Controller
         $member = new MemberRegister;
         $tools  = new ToolsController;
 
-        try
-        {
+        try {
             $data_member    = $member->where('id', $request->id)->first();
 
-            if($request->status == "accept")
-            {
+            if ($request->status == "accept") {
                 $username       = $data_member->nip;
                 $nama           = $data_member->nama;
                 $kab            = $data_member->kota;
@@ -283,8 +258,8 @@ class UserController extends Controller
                 ]);
 
                 $message     = 'Permintaan User E-Monev Bina Adwil Anda Sudah Diproses. Silakan login menggunakan informasi berikut \n\n';
-                $message    .= '*Username: '.$username.'* \n';
-                $message    .= '*Password: '.$password.'* \n';
+                $message    .= '*Username: ' . $username . '* \n';
+                $message    .= '*Password: ' . $password . '* \n';
 
                 $tools->sendingWa($no_hp, $message);
             }
@@ -298,9 +273,7 @@ class UserController extends Controller
                 'message' => 'User Berhasil Diverifikasi',
                 'title' => 'User Akan Menerima User & Password Melalui Whatsapp'
             ]);
-        }
-        catch (\Illuminate\Database\QueryException $e)
-        {
+        } catch (\Illuminate\Database\QueryException $e) {
 
             return response()->json([
                 'status' => 'error',
@@ -316,16 +289,12 @@ class UserController extends Controller
 
         $data = $user->where('id_akses', $request->id_akses)->first();
 
-        try
-        {
-            if($request->password == "SUSPEND")
-            {
+        try {
+            if ($request->password == "SUSPEND") {
                 $user->where('id_akses', $request->id_akses)->update([
                     'password' => "SUSPEND"
                 ]);
-            }
-            else
-            {
+            } else {
                 $user->where('id_akses', $request->id_akses)->update([
                     'password' => bcrypt($request->password)
                 ]);
@@ -336,14 +305,12 @@ class UserController extends Controller
                 'message'   => 'Update Password Berhasil',
                 'title'     => 'Proses Sukses'
             ]);
-        }
-        catch (\Throwable $th)
-        {
+        } catch (\Throwable $th) {
             return response()->json([
                 'status' => 'error',
                 'message' => $th->getMessage(),
                 'title' => 'Oopps.. Gagal Memproses Data'
-            ]);    
+            ]);
         }
     }
 
@@ -351,8 +318,7 @@ class UserController extends Controller
     {
         $user = new User;
 
-        try
-        {
+        try {
             $user->where('id_akses', $request->id)->update([
                 'status' => 0
             ]);
@@ -362,14 +328,12 @@ class UserController extends Controller
                 'message'   => 'User Berhasil Dihapus',
                 'title'     => 'Proses Sukses'
             ]);
-        }
-        catch (\Throwable $th)
-        {
+        } catch (\Throwable $th) {
             return response()->json([
                 'status' => 'error',
                 'message' => $th->getMessage(),
                 'title' => 'Oopps.. Gagal Memproses Data'
-            ]);    
+            ]);
         }
     }
 }

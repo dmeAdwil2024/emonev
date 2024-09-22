@@ -119,18 +119,12 @@
                                 <label for="jawaban_target">Evidence <small>(Maksimal 2MB)</small></label>
                                 <div class="input-group">
                                     <div class="custom-file">
-                                        <input type="file" class="custom-file-input" id="evidence_target" onchange="getFileData(this);">
+                                        <input type="file" class="custom-file-input" id="evidence_target">
                                         <label class="custom-file-label" for="evidence_target">Pilih File</label>
                                     </div>
                                 </div>
                             </div>
-                            <div class="form-group col-sm-10">
-                                <div id="evidence-info" class="d-none">
-                                    File terpilih untuk diunggah: <span class="text-danger" id="evidence-willbe"></span>.  Klik <span class="text-success">icon save</span> untuk mulai mengunggah.
-                                    <p class="text-info">Nama file akan direname setelah diunggah.</p>
-                                </div>
-                            </div>
-                            <div class="form-group col-sm-2 text-right">
+                            <div class="form-group col-sm-12 text-right">
                                 <button class="btn btn-success" onclick="addFormTarget()"> <i class="font-weight-bolder fas fa-save"></i> </button>
                             </div>
                         </div>
@@ -190,12 +184,6 @@
 </div>
 
 <script>
-    function getFileData(myFile){
-        var file = myFile.files[0];  
-        var filename = file.name;
-        $("#evidence-willbe").html('').html(filename);
-        $('#evidence-info').removeClass('d-none');
-    }
     function submitTarget()
     {
         var type                = $('#type_target').val()
@@ -342,9 +330,6 @@
         $('#keterangan_target').val("")
         $('#kendala_target').val("")
         $('#tinjut_target').val("")
-
-        $("#evidence-willbe").html('')
-        $('#evidence-info').addClass('d-none')
     }
 
     function addFormTarget()
@@ -384,20 +369,22 @@
     function loadTableCapaian(data)
     {
         $('#wrap-table-form-target').show()
-        $("#table-form-target").find("tr:gt(0)").remove();
 
         var table = document.getElementById("table-form-target");
         var row = table.insertRow();
         
         var cell1 = row.insertCell(0);
         var cell2 = row.insertCell(1);
+        // var cell3 = row.insertCell(2);
+        // var cell4 = row.insertCell(3);
 
         var i;
         
         for (i = 0; i < data.length; ++i) {
+            // cell1.innerHTML = data[i]['pertanyaan'];
+            // cell2.innerHTML = data[i]['jawaban'];
             cell1.innerHTML = data[i]['evidence'];
-            cell2.innerHTML = '<button class="btn btn-danger" onclick="removeFormTarget(this,' + data[i]['id'] +')"> <i class="font-weight-bolder fas fa-times-circle"></i> </button>';   
-            // <button class="btn btn-success" onclick="addFormTarget()"> <i class="font-weight-bolder fas fa-plus-circle"></i> </button> 
+            cell2.innerHTML = '<button class="btn btn-success" onclick="addFormTarget()"> <i class="font-weight-bolder fas fa-plus-circle"></i> </button> <button class="btn btn-danger" onclick="removeFormTarget(this)"> <i class="font-weight-bolder fas fa-times-circle"></i> </button>';    
         }
     }
 
@@ -418,15 +405,9 @@
 
     }
 
-    function removeFormTarget(r,id)
+    function removeFormTarget(r)
     {
-        $.post("{{route('capaian.delete-upload-evidence')}}", {
-                id: id
-            }, function (e)
-            {
-                var i = r.parentNode.parentNode.rowIndex;
-                document.getElementById("table-form-target").deleteRow(i);
-            }
-        );
+        var i = r.parentNode.parentNode.rowIndex;
+        document.getElementById("table-form-target").deleteRow(i);
     }
 </script>

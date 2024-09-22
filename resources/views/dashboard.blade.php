@@ -164,9 +164,12 @@
                                         <div class="card-body">
                                             <table class="table table-borderless" style="font-size: 0.7em">
                                                 @php
-                                                    $persen_pagu_pusat      = $pagu_pusat/$anggaran*100;
-                                                    $persen_realisasi_pusat = $realisasi_pusat/$pagu_pusat*100;
-                                                    $persen_sisa_pusat      = $sisa_pusat/$pagu_pusat*100;
+                                                    // $persen_pagu_pusat      = $pagu_pusat/$anggaran*100;
+                                                    // $persen_realisasi_pusat = $realisasi_pusat/$pagu_pusat*100;
+                                                    // $persen_sisa_pusat      = $sisa_pusat/$pagu_pusat*100;
+                                                    $persen_pagu_pusat      = 100;
+                                                    $persen_realisasi_pusat = 100;
+                                                    $persen_sisa_pusat      = 100;
                                                 @endphp
                                                 <tr>
                                                     <td class="align-middle">Pagu (Total)</td>
@@ -601,15 +604,25 @@
                                                         <div class="card-body">
                                                             <table class="text-sm table table-borderless">
                                                                 @php
-                                                                    $persen_rm_pusat        = $rm_pusat/$pagu_pusat*100;
-                                                                    $persen_realisasi_rm    = $realisasi_pusat/$rm_pusat*100;
-                                                                    $persen_sisa_rm         = $sisa_rm_pusat/$rm_pusat*100;
+                                                                    // $persen_rm_pusat        = $rm_pusat/$pagu_pusat*100;
+                                                                    // $persen_realisasi_rm    = $realisasi_pusat/$rm_pusat*100;
+                                                                    // $persen_sisa_rm         = $sisa_rm_pusat/$rm_pusat*100;
 
-                                                                    $realisasi_rm_pusat     = $realisasi_pusat-$realisasi_phln;
-                                                                    $sisa_rm_pusat          = $rm_pusat-$realisasi_rm_pusat;
+                                                                    // $realisasi_rm_pusat     = $realisasi_pusat-$realisasi_phln;
+                                                                    // $sisa_rm_pusat          = $rm_pusat-$realisasi_rm_pusat;
 
-                                                                    $persen_sisa_rm         = ($sisa_rm_pusat/$rm_pusat)*100;
-                                                                    $persen_realisasi_rm    = 100-$persen_sisa_rm;
+                                                                    // $persen_sisa_rm         = ($sisa_rm_pusat/$rm_pusat)*100;
+                                                                    // $persen_realisasi_rm    = 100-$persen_sisa_rm;
+                                                                    //
+                                                                    $persen_rm_pusat        = 100;
+                                                                    $persen_realisasi_rm    = 100;
+                                                                    $persen_sisa_rm         = 100;
+
+                                                                    $realisasi_rm_pusat     = 0;
+                                                                    $sisa_rm_pusat          = 0;
+
+                                                                    $persen_sisa_rm         = 100;
+                                                                    $persen_realisasi_rm    = 100;
                                                                 @endphp
                                                                 <tr>
                                                                     <td class="align-middle">Pagu (RM)</td>
@@ -650,9 +663,13 @@
                                                     <div class="card-body">
                                                         <table class="text-sm table table-borderless">
                                                             @php
-                                                                $persen_pagu_phln       = $phln_pusat/$pagu_pusat*100;
-                                                                $persen_realisasi_phln  = $realisasi_phln/$phln_pusat*100;
-                                                                $persen_sisa_phln       = (($phln_pusat-$realisasi_phln)/$phln_pusat)*100;
+                                                                // $persen_pagu_phln       = $phln_pusat/$pagu_pusat*100;
+                                                                // $persen_realisasi_phln  = $realisasi_phln/$phln_pusat*100;
+                                                                // $persen_sisa_phln       = (($phln_pusat-$realisasi_phln)/$phln_pusat)*100;
+                                                                //
+                                                                $persen_pagu_phln       = 100;
+                                                                $persen_realisasi_phln  = 100;
+                                                                $persen_sisa_phln       = 100;
                                                             @endphp
                                                             <tr>
                                                                 <td class="align-middle">Pagu (PHLN)</td>

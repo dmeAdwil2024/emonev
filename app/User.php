@@ -40,16 +40,4 @@ class User extends Authenticatable
         'prov_handle'       => 'array',
         'direktorat_handle' => 'array'
     ];
-
-    public function getDetail($id_akses)
-    {
-        $user = $this->find($id_akses);
-        $user->direktorat = $this->find($id_akses)->direktorat;
-
-        return $user;
-    }
-    public function direktorat()
-    {
-        return $this->hasOne('App\Direktorat', 'id_dir', 'id_dir');
-    }
 }

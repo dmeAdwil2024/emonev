@@ -885,7 +885,7 @@ class UsulanController extends Controller
                     ]);    
                 }
 
-                if(Auth::user()->username == "alpi")
+                if(Auth::user()->username == "tia")
                 {
                     $usulan->where('id', $request->id)->update([
                         'status_bagren3'    => "disetujui",
@@ -914,7 +914,6 @@ class UsulanController extends Controller
                         'verified_by'           => Auth::user()->id_akses,
                         'tolak'                 => $jumlah_tolak
                     ]);
-                    error_log('jumlah tolakan : '.$jumlah_tolak);
                     $status             = "DITOLAK";
                     $status_verifikasi  = "DITOLAK";
                 }
@@ -929,7 +928,6 @@ class UsulanController extends Controller
                         'verified_by'           => Auth::user()->id_akses,
                         'tolak'                 => $jumlah_tolak
                     ]);
-                    error_log('jumlah tolakan di else : '.$jumlah_tolak);
                     $status             = "BUTUH PERBAIKAN";
                     $status_verifikasi  = "BUTUH PERBAIKAN";
                 }

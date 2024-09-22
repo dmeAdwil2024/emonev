@@ -1,455 +1,397 @@
-@extends('layouts.caput')
-@section('contents')
-<div class="main">
-	<div class="topbar">
-		<div class="toggle col-md-1"  id="menuNav">
-			<a href="#menuNav">
-				<i class="fas fa-bars"></i>
-			</a>
-		</div>
-		<div class="col-md-8 d-flex logo-admin">
-			<img src="{{asset('newdashboard/images/logo-emonev.png')}}" alt="logo emonev" class="img-fluid margin-auto logo-smaller">
-			<div class="text-center">
-				<h1 class="title">E-MONEV</h1>
-				<h2 class="subtitle">DITJEN BINA ADMINISTRASI KEWILAYAHAN</h2>
-			</div>
-		</div>
-		<div class="avatar col-md-3 p-2 d-flex">
-			<img src="{{asset('newdashboard/images/user-avatar.png')}}" alt="" class="img-fluid avatar-img me-2">
-			<div class="avatar-name small fw-bold">
-				Selamat Datang Admin,<br>
-				Bagian Perencanaan
-			</div>
-		</div>
-	</div>
-	<div class="row">
-		<div class="col-md-5 p-2 font-tebala" style="background-color:#ebebeb;">
-			Komponen Input
-		</div>
-		<div class="col-md-6 p-2 font-tebala" style="background-color:#ebebeb;text-align:right">
-			Capaian Output > Capaian Pusat > Komponen Input
-		</div>
-	</div>
-	<div style="height:10px"></div>
-	<div class="row">
-		<div class="col-md-11 p-2" style="background-image: linear-gradient(to right, rgba(204,204,255,0.7) , rgba(102,255,204,0.7));">
-			<div class="row">
-				<div class="col-md-11 font-tebala font-tebal">
-					Informasi Cascading Output
-				</div>
-			</div>
-			<div class="row">
-				<div class="col-md-2 font-tebal">
-					Direktorat
-				</div>
-				<div class="col-md-10 font-tebal">
-					<font class="font-tebala">Dekonsentrasi, Tugas Pembantuan dan Kerjasama</font>
-				</div>
-			</div>
-			<div class="row">
-				<div class="col-md-2 font-tebal">
-					Tahun
-				</div>
-				<div class="col-md-10 font-tebal">
-					<font class="font-tebala">2024</font>
-				</div>
-			</div>
-			<div class="row">
-				<div class="col-md-2 font-tebal">
-					K/L
-				</div>
-				<div class="col-md-10 font-tebal">
-					<font class="font-tebala">[00]</font>-Kementerian Dalam Negeri
-				</div>
-			</div>
-			<div class="row">
-				<div class="col-md-2 font-tebal">
-					UK Eselon I
-				</div>
-				<div class="col-md-10 font-tebal">
-					<font class="font-tebala">[04]</font>-Ditjen Bina Administrasi Kewilayahan
-				</div>
-			</div>
-		</div>
-	</div>
-	<div style="height:10px"></div>
-	
-	<div class="row">
-		<div class="col-md-11" style="background-image: linear-gradient(to right, rgba(204,204,255,0.7) , rgba(102,255,204,0.7));"><br>
-			<table cellpadding=3 class="tbl_caput" width=100%>
-				<tr>
-					<td rowspan=2 width=7% align=center><div class="hd_caputa">+</div></td>
-					<td rowspan=2 class="hd_caput" width=20% align=center>Kode dan Nomenklatur</td>
-					<td rowspan=2 class="hd_caput" width=10% align=center>Capaian Output<br>(% kumulatif)</td>
-					<td class="hd_caput" width=24% colspan=3 align=center>Anggaran</td>
-					<td rowspan=2 class="hd_caput" width="absolute" align=center>Capaian Output</td>
-				</tr>
-				<tr>
-					<td align=center class="hd_caput" width=8% align=center>Alokasi</td>
-					<td align=center class="hd_caput" width=8% align=center>Realisasi</td>
-					<td align=center class="hd_caput" width=8% align=center>%</td>
-				</tr>
-				<tr>
-					<td align=center><div class="isi_caputa">+</div></td>
-					<td><div class="isi_caput"><a href="{{route('capaian.kegiatan')}}" class="btn">01<br>Diretorat Dekonsentrasi, Tugas Pembantuan dan Kerjasama</a></div></td>
-					<td><div class="isi_caput">100%</div></td>
-					<td><div class="isi_caput">539427293</div></td>
-					<td><div class="isi_caput">539427293</div></td>
-					<td><div class="isi_caput">100%</div></td>
-					<td>
-						<div class="chart-box" style="height:90px; width:100%;">
-							<canvas id="graph1"></canvas>
-						</div>
-					</td>
-				</tr>
-				<tr>
-					<td align=center><div class="isi_caputa">+</div></td>
-					<td><div class="isi_caput">02<br>Diretorat Kawasan Perkotaan dan Batas Negara</div></td>
-					<td><div class="isi_caput">100%</div></td>
-					<td><div class="isi_caput">539427293</div></td>
-					<td><div class="isi_caput">539427293</div></td>
-					<td><div class="isi_caput">100%</div></td>
-					<td>
-						<div class="chart-box" style="height:90px; width:100%;">
-							<canvas id="graph2"></canvas>
-						</div>
-					</td>
-				</tr>
-				<tr>
-					<td align=center><div class="isi_caputa">+</div></td>
-					<td><div class="isi_caput">03<br>Diretorat Polisi Pamong Praja dan Perlindungan Masyarakat</div></td>
-					<td><div class="isi_caput">100%</div></td>
-					<td><div class="isi_caput">539427293</div></td>
-					<td><div class="isi_caput">539427293</div></td>
-					<td><div class="isi_caput">100%</div></td>
-					<td>
-						<div class="chart-box" style="height:90px; width:100%;">
-							<canvas id="graph3"></canvas>
-						</div>
-					</td>
-				</tr>
-				<tr>
-					<td align=center><div class="isi_caputa">+</div></td>
-					<td><div class="isi_caput">04<br>Diretorat Manajemen Penanggulangan Bencana dan Kebakaran</div></td>
-					<td><div class="isi_caput">100%</div></td>
-					<td><div class="isi_caput">539427293</div></td>
-					<td><div class="isi_caput">539427293</div></td>
-					<td><div class="isi_caput">100%</div></td>
-					<td>
-						<div class="chart-box" style="height:90px; width:100%;">
-							<canvas id="graph4"></canvas>
-						</div>
-					</td>
-				</tr>
-				<tr>
-					<td align=center><div class="isi_caputa">+</div></td>
-					<td><div class="isi_caput">05<br>Diretorat Toponimi dan Batas Daerah</div></td>
-					<td><div class="isi_caput">100%</div></td>
-					<td><div class="isi_caput">539427293</div></td>
-					<td><div class="isi_caput">539427293</div></td>
-					<td><div class="isi_caput">100%</div></td>
-					<td>
-						<div class="chart-box" style="height:90px; width:100%;">
-							<canvas id="graph5"></canvas>
-						</div>
-					</td>
-				</tr>
-				<tr>
-					<td align=center><div class="isi_caputa">+</div></td>
-					<td><div class="isi_caput">06<br>Sekertariat Ditjen Bina Administrasi Kewilayahan</div></td>
-					<td><div class="isi_caput">100%</div></td>
-					<td><div class="isi_caput">539427293</div></td>
-					<td><div class="isi_caput">539427293</div></td>
-					<td><div class="isi_caput">100%</div></td>
-					<td>
-						<div class="chart-box" style="height:90px; width:100%;">
-							<canvas id="graph6"></canvas>
-						</div>
-					</td>
-				</tr>
-			</table><br>
-		</div>
-	</div>
-</div>
+@extends('layouts.main-easyui')
+@extends('contents.capaian.template-parts.modal-input-target')
+@extends('contents.capaian.template-parts.modal-upload-evidence')
+
+@section('content')
+    <section class="content-header">
+        <div class="container-fluid">
+            <div class="row mb-2">
+                <div class="col-sm-6">
+                    <h1>{{$current}}</h1>
+                </div>
+                <div class="col-sm-6">
+                    <ol class="breadcrumb float-sm-right">
+                        <li class="breadcrumb-item"><a href="#">{{$modul}}</a></li>
+                        <li class="breadcrumb-item active">{{$current}}</li>
+                    </ol>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Main content -->
+    <section class="content" id="wrap-data">
+        <div class="container-fluid">
+            <div class="row">
+                <div class="col-md-12 col-xs-12">
+                    <div class="card card-outline card-primary">
+                        <div class="overlay" id="loader-datatable" style="display: none">
+                            <i class="text-navy fas fa-2x fa-spinner fa-spin"></i> &nbsp;
+                        </div>
+
+                        <div class="card-header">
+                            <div class="row">
+                                <div class="col-md-5 col-sm-12 mt-3">
+                                    <select data-options="onChange: function(){
+                                            loadSubdit();
+                                        }" style="height: 40px; width: 100%" name="direktorat" class="easyui-combobox" id="direktorat">
+                                            <option value="" disabled selected>Pilih Unit Kerja Eselon 2</option>
+                                        @foreach($data_direktorat as $direktorat)
+                                            <option value="{{$direktorat->id_dir}}" @if($direktorat->id_dir == Auth::user()->id_dir) selected @endif>{{$direktorat->nama_dir}}</option>
+                                        @endforeach
+                                    </select>
+                                </div>
+                                <div class="col-md-5 col-sm-12 mt-3">
+                                    <select data-options="onChange: function(){loadData();}" name="subdit" class="easyui-combobox" style="height: 40px; width: 100%" id="subdit">
+                                            <option value="" disabled selected>Pilih Unit Kerja Eselon 3</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-2 col-sm-12 mt-3">
+                                    <select data-options="onChange: function(){loadData();}" name="triwulan" class="easyui-combobox" style="height: 40px; width: 100%" id="triwulan">
+                                            <option value="1" selected>Triwulan 1</option>
+                                            <option value="2">Triwulan 2</option>
+                                            <option value="3">Triwulan 3</option>
+                                            <option value="4">Triwulan 4</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="card-body">
+                            <div class="row" id="wrap-datatable" style="display:none">
+                                <div class="col-md-12 col-xs-12 col-sm-12">
+                                    <div class="table-responsive" style="overflow-x: auto;white-space: nowrap;">
+                                        <table class="table-responsive easyui-treegrid" id="data-capaian" style="width:100%;height:500px"
+                                        data-options="
+                                            data: '',
+                                            rownumbers: false,
+                                            idField: 'kode_treegrid',
+                                            treeField: 'kode_treegrid',
+                                            loadFilter: myLoadFilter,
+                                            toolbar:'#toolbar'
+                                        ">
+                                            <thead frozen="true">
+                                                <th data-options="halign:'center', align:'left', field:'kode_treegrid'"  width="200px">KODE</th>
+                                            </thead>
+                                            <thead>
+                                                <th data-options="halign:'center', align:'left', field:'uraian_treegrid'"  width="400px">KEGIATAN/KLASIFIKASI RINCIAN OUTPUT/OUTPUT/KOMPONEN</th>
+                                                <th data-options="halign:'center', align:'right', field:'kewenangan'"  width="150px">KEWENANGAN</th>
+                                                <th data-options="halign:'center', align:'right', field:'pagu'"  width="150px">PAGU</th>
+                                                <th data-options="halign:'center', align:'right', field:'realisasi'"  width="150px">REALISASI</th>
+                                                <th data-options="halign:'center', align:'center', field:'bulan1'"  width="100px">BULAN 1</th>
+                                                <th data-options="halign:'center', align:'center', field:'bulan2'"  width="100px">BULAN 2</th>
+                                                <th data-options="halign:'center', align:'center', field:'bulan3'"  width="100px">BULAN 3</th>
+                                            </thead>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <div id="mm" class="easyui-menu" style="width:175px;">
+        <div onclick="loadData()" data-options="iconCls:'icon-reload'">Reload Data</div>
+        <div onclick="formTarget()" data-options="iconCls:'icon-add'">Input Capaian</div>
+        <div class="menu-sep"></div>
+        <div onclick="remove()" data-options="iconCls:'icon-cancel'">Remove</div>
+    </div>
+
+    <div id="toolbar" style="padding:10px; text-align:right">
+        <!-- <a href="javascript:void(0)" onclick="remove()" class="easyui-linkbutton" iconCls="icon-cancel"></a>
+        <a href="javascript:void(0)" onclick="loadData()" class="easyui-linkbutton" iconCls="icon-reload"></a>
+        <a href="javascript:void(0)" onclick="formTarget()" class="easyui-linkbutton" iconCls="icon-add"> Target Capaian</a> -->
+        Total Rincian Output (RO): <span class="font-weight-bolder" id="total_ro">0</span> <br>
+        Total Komponen Input (KI): <span class="font-weight-bolder" id="total_ki">0</span>
+    </div>
+
 @endsection
+
 @section('js')
-<script>
-	const graph1 = document.getElementById('graph1');
-	const graph2 = document.getElementById('graph2');
-	const graph3 = document.getElementById('graph3');
-	const graph4 = document.getElementById('graph4');
-	const graph5 = document.getElementById('graph5');
-	const graph6 = document.getElementById('graph6');
-	
-	new Chart(graph1, {
-		type: 'bar',
-		data: {
-			responsive:false,
-			maintainAspectRatio: false,
-			labels: ["JAN","FEB","MAR","APR","MEI","JUN","JUL","AGU","SEP","OKT","NOV","DES"],
-			datasets: [{
-				data: ["8","9","9","10","10","10","11","11","12","13","15","16"],
-				backgroundColor: ["#005ebb"],
-			},
-			{
-				data: ["92","91","91","90","90","90","89","89","88","87","85","84"],
-				backgroundColor: ["#007bff"],
-			}],
-		},
-		options: {
-			maintainAspectRatio: false,
-			plugins: {
-				legend: {
-					display: false,
-				}
-			},
-				scales: {
-				x: {
-					stacked: true,
-				},
-				y: {
-					stacked: true,
-					beginAtZero: true,
-					min: 0,
-					max: 100,
-					ticks: {
-						stepSize: 20
-					},
-					grid: {
-						display: false
-					}
-				}
-			}
-		}
-	});
-	
-	new Chart(graph2, {
-		type: 'bar',
-		data: {
-			responsive:false,
-			maintainAspectRatio: false,
-			labels: ["JAN","FEB","MAR","APR","MEI","JUN","JUL","AGU","SEP","OKT","NOV","DES"],
-			datasets: [{
-				data: ["8","9","9","10","10","10","11","11","12","13","15","16"],
-				backgroundColor: ["#005ebb"],
-			},
-			{
-				data: ["92","91","91","90","90","90","89","89","88","87","85","84"],
-				backgroundColor: ["#007bff"],
-			}],
-		},
-		options: {
-			maintainAspectRatio: false,
-			plugins: {
-				legend: {
-					display: false,
-				}
-			},
-				scales: {
-				x: {
-					stacked: true,
-				},
-				y: {
-					stacked: true,
-					beginAtZero: true,
-					min: 0,
-					max: 100,
-					ticks: {
-						stepSize: 20
-					},
-					grid: {
-						display: false
-					}
-				}
-			}
-		}
-	});
-	
-	new Chart(graph3, {
-		type: 'bar',
-		data: {
-			responsive:false,
-			maintainAspectRatio: false,
-			labels: ["JAN","FEB","MAR","APR","MEI","JUN","JUL","AGU","SEP","OKT","NOV","DES"],
-			datasets: [{
-				data: ["8","9","9","10","10","10","11","11","12","13","15","16"],
-				backgroundColor: ["#005ebb"],
-			},
-			{
-				data: ["92","91","91","90","90","90","89","89","88","87","85","84"],
-				backgroundColor: ["#007bff"],
-			}],
-		},
-		options: {
-			maintainAspectRatio: false,
-			plugins: {
-				legend: {
-					display: false,
-				}
-			},
-				scales: {
-				x: {
-					stacked: true,
-				},
-				y: {
-					stacked: true,
-					beginAtZero: true,
-					min: 0,
-					max: 100,
-					ticks: {
-						stepSize: 20
-					},
-					grid: {
-						display: false
-					}
-				}
-			}
-		}
-	});
+    <script>
+        $(function () {
+            // loadData()
+            window.setTimeout( function() {
+                loadSubdit()
+            }, 300);
+        });
 
-	new Chart(graph4, {
-		type: 'bar',
-		data: {
-			responsive:false,
-			maintainAspectRatio: false,
-			labels: ["JAN","FEB","MAR","APR","MEI","JUN","JUL","AGU","SEP","OKT","NOV","DES"],
-			datasets: [{
-				data: ["8","9","9","10","10","10","11","11","12","13","15","16"],
-				backgroundColor: ["#005ebb"],
-			},
-			{
-				data: ["92","91","91","90","90","90","89","89","88","87","85","84"],
-				backgroundColor: ["#007bff"],
-			}],
-		},
-		options: {
-			maintainAspectRatio: false,
-			plugins: {
-				legend: {
-					display: false,
-				}
-			},
-				scales: {
-				x: {
-					stacked: true,
-				},
-				y: {
-					stacked: true,
-					beginAtZero: true,
-					min: 0,
-					max: 100,
-					ticks: {
-						stepSize: 20
-					},
-					grid: {
-						display: false
-					}
-				}
-			}
-		}
-	});
+        function openModalInputCo()
+        {
+            $('#modal-capaian-output').modal('show')
+        }
 
-	new Chart(graph5, {
-		type: 'bar',
-		data: {
-			responsive:false,
-			maintainAspectRatio: false,
-			labels: ["JAN","FEB","MAR","APR","MEI","JUN","JUL","AGU","SEP","OKT","NOV","DES"],
-			datasets: [{
-				data: ["8","9","9","10","10","10","11","11","12","13","15","16"],
-				backgroundColor: ["#005ebb"],
-			},
-			{
-				data: ["92","91","91","90","90","90","89","89","88","87","85","84"],
-				backgroundColor: ["#007bff"],
-			}],
-		},
-		options: {
-			maintainAspectRatio: false,
-			plugins: {
-				legend: {
-					display: false,
-				}
-			},
-				scales: {
-				x: {
-					stacked: true,
-				},
-				y: {
-					stacked: true,
-					beginAtZero: true,
-					min: 0,
-					max: 100,
-					ticks: {
-						stepSize: 20
-					},
-					grid: {
-						display: false
-					}
-				}
-			}
-		}
-	});
+        function countRo()
+        {
+            var id_dir      = $('#direktorat').combobox('getValue')
+            var id_subdir   = $('#subdit').combobox('getValue')
+            var triwulan    = $('#triwulan').combobox('getValue')
+            
+            $.post('{{ route('capaian.count-ro') }}', {id_dir, id_subdir, triwulan, _token: '{{csrf_token()}}'}, function(e){
 
-	new Chart(graph6, {
-		type: 'bar',
-		data: {
-			responsive:false,
-			maintainAspectRatio: false,
-			labels: ["JAN","FEB","MAR","APR","MEI","JUN","JUL","AGU","SEP","OKT","NOV","DES"],
-			datasets: [{
-				data: ["8","9","9","10","10","10","11","11","12","13","15","16"],
-				backgroundColor: ["#005ebb"],
-			},
-			{
-				data: ["92","91","91","90","90","90","89","89","88","87","85","84"],
-				backgroundColor: ["#007bff"],
-			}],
-		},
-		options: {
-			maintainAspectRatio: false,
-			plugins: {
-				legend: {
-					display: false,
-				}
-			},
-				scales: {
-				x: {
-					stacked: true,
-				},
-				y: {
-					stacked: true,
-					beginAtZero: true,
-					min: 0,
-					max: 100,
-					ticks: {
-						stepSize: 20
-					},
-					grid: {
-						display: false
-					}
-				}
-			}
-		}
-	});
+                $('#total_ro').empty().append(e.ro)
+                $('#total_ki').empty().append(e.input)
 
-	// menu togle
-	let toggle = document.querySelector('.toggle');
-	let navigation = document.querySelector('.navigation');
-	let main = document.querySelector('.main');
+            });
+        }
 
-	toggle.onclick = function(){
-		navigation.classList.toggle('active');
-		main.classList.toggle('active');
-	}
-	// add hovered class in selected list items 
-	let list = document.querySelectorAll('.navigation li');
-	function activelink(){
-		list.forEach((item) =>
-		item.classList.remove('hovered'));
-		this.classList.add('hovered');
-	}
-	list.forEach((item) =>
-	item.addEventListener('mouseover', activelink));
-</script>
+        function formTarget()
+        {
+            var data    = $('#data-capaian').treegrid('getSelected');
+            
+            if(!data)
+            {
+                swal({
+                    title: "Data Belum Dipilih",
+                    text:  "Klik Pada Data yang Akan Diproses",
+                    type:  "error"
+                })
+            }
+            else
+            {
+                if(data.type == "kegiatan" || data.type == "output" || data.type == "suboutput")
+                {
+                    swal({
+                        title: "Kategori yang Dipilih Salah",
+                        text:  "Piih Hanya Pada Kategori Data Komponen/Subkomponen",
+                        type:  "error"
+                    })
+                }
+                else
+                {
+                    openModalTarget(data.type, data.kode_treegrid)
+                }
+            }
+        }
+
+        function openModalTarget(type, kode, bulan = null)
+        {
+            $("#modal-input-target").modal("show")
+            $("#type_target").val(type)
+            $("#kode_target").val(kode)
+            loadDetailInput(kode, bulan)
+
+            if(bulan != null)
+            {
+                if(parseInt(bulan) < 10)
+                {
+                    $('#bulan_target').val("0"+bulan)
+                }
+                else
+                {
+                    $('#bulan_target').val(bulan)
+                }
+            }
+        }
+        
+        function loadDetailInput(kode, month)
+        {
+            var bulan   = 1
+
+            if(month != null)
+            {
+                var bulan = month
+            }
+
+            $.post('{{ route('capaian.detail-input') }}', {kode, bulan, _token: '{{csrf_token()}}'}, function(e){
+
+                if(e != "none")
+                {
+                    if(parseInt(e.bulan) < 10)
+                    {
+                        $('#bulan_target').val("0"+e.bulan)
+                    }
+                    else
+                    {
+                        $('#bulan_target').val(e.bulan)
+                    }
+
+                    $('#tahun_target').val(e.tahun)
+                    $('#target_target').val(e.to_volume)
+                    $('#realisasi_target').val(e.co_volume)
+                    $('#keterangan_target').val(e.keterangan)
+                    $('#kendala_target').val(e.kendala)
+                    $('#tinjut_target').val(e.tinjut)
+
+                    $('#wrap-table-form-target').show()
+
+                    var i;
+                    var table = document.getElementById("table-form-target");
+                    
+                    for (i = 0; i < e.data.length; ++i) {
+                        
+                        var row = table.insertRow(i+1);
+                    
+                        var cell1 = row.insertCell(0);
+                        var cell2 = row.insertCell(1);
+                        // var cell3 = row.insertCell(2);
+                        // var cell4 = row.insertCell(3);
+
+                        // cell1.innerHTML = e.data[i]['pertanyaan'];
+                        // cell2.innerHTML = e.data[i]['jawaban'];
+                        cell1.innerHTML = e.data[i]['evidence'];
+                        cell2.innerHTML = '<button class="btn btn-danger" onclick="removeFormTarget(this)"> <i class="font-weight-bolder fas fa-times-circle"></i> </button>';
+                    }
+                }
+
+            });
+        }
+
+        function openModalUpload(bulan, kode, type)
+        {
+            // $("#modal-input-upload").modal("show")
+            $("#bulan_upload").val(bulan)
+            $("#type_upload").val(type)
+            $("#kode_upload").val(kode)
+
+            openModalTarget(type, kode, bulan)
+        }
+
+        function remove()
+        {
+            
+            var data    = $('#data-capaian').treegrid('getSelected');
+            
+            if(!data)
+            {
+                swal({
+                    title: "Data Belum Dipilih",
+                    text:  "Klik Pada Data yang Akan Dihapus",
+                    type:  "error"
+                })
+            }
+            else
+            {
+                var type    = data.type;
+                var kode    = data.kode_treegrid;
+
+                swal({
+                    title: "Hapus Data Ini?",
+                    text: "Data yang Sudah Dihapus Tidak Dapat Dirollback. Lanjutkan?",
+                    type: "warning",
+                    showCancelButton: true,
+                    confirmButtonColor: "#2b982b",
+                    confirmButtonText: "Ya, Lanjutkan!",
+                    closeOnConfirm: true
+                }, function () {
+
+                    $('#data-capaian').treegrid('loading');-
+
+                    $.post('{{ route('capaian.hide-data') }}', {type, kode, _token: '{{csrf_token()}}'}, function(e){
+
+                        if(e.status == "success")
+                        {
+                            Toast.fire({
+                                icon: 'success',
+                                title: e.title
+                            })
+
+                            loadData()
+                        }
+                        else
+                        {
+                            Toast.fire({
+                                icon: 'error',
+                                title: e.message
+                            })
+                        }
+
+                    });
+
+                });
+            }
+        }
+        
+        function loadSubdit()
+        {
+            var id_dir  = $('#direktorat').combobox('getValue')
+
+            $('#subdit').combobox({
+		        valueField: "id",
+		        textField: "text",
+		        method: 'get',
+		        url:'{{ route('tools.subdirektorat') }}?id_dir='+id_dir
+		    }).combobox('setValue', {{Auth::user()->id_subdir}})
+        }
+
+        function loadData()
+        {
+            $('#loader-datatable').show()
+            $('#wrap-datatable').show()
+
+            var id_dir      = $('#direktorat').combobox('getValue')
+            var id_subdir   = $('#subdit').combobox('getValue')
+            var triwulan    = $('#triwulan').combobox('getValue')
+
+            $('#data-capaian').treegrid('loading');
+            countRo()
+
+            $.post('{{ route('capaian.data-treegrid') }}', {id_dir, id_subdir, triwulan, _token: '{{csrf_token()}}'}, function(e){
+
+                $('#data-capaian').treegrid('loaded');
+				$('#data-capaian').treegrid('reload');
+				$('#data-capaian').treegrid({
+                    data:e,
+                    nowrap:false,
+                    animate: true,
+                    autoHeight:true
+                });
+
+                $('#loader-datatable').hide()
+            });
+        }
+
+        function addPadding(value,row,index)
+        {
+            return 'text-align: justify; padding: 8px';
+        }
+
+        function myLoadFilter(data,parentId){
+            function setData(data){
+                var todo = [];
+                for(var i=0; i<data.length; i++){
+                    todo.push(data[i]);
+                }
+                while(todo.length){
+                    var node = todo.shift();
+                    if (node.children && node.children.length){
+                        node.state = 'closed';
+                        node.children1 = node.children;
+                        node.children = undefined;
+                        todo = todo.concat(node.children1);
+                    }
+                }
+            }
+            
+            setData(data);
+            var tg = $(this);
+            var opts = tg.treegrid('options');
+            opts.onBeforeExpand = function(row){
+                if (row.children1){
+                    tg.treegrid('append',{
+                        parent: row[opts.idField],
+                        data: row.children1
+                    });
+                    row.children1 = undefined;
+                    tg.treegrid('expand', row[opts.idField]);
+                }
+                return row.children1 == undefined;
+            };
+            return data;
+        }
+
+        function onContextMenu(e,row){
+            if (row){
+                e.preventDefault();
+                $('#data-capaian').treegrid('select', row.kode_treegrid);
+                $('#mm').menu('show',{
+                    left: e.pageX,
+                    top: e.pageY
+                });                
+            }
+        }
+    </script>
 @endsection

@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers;
 
-use App\Satker;
 use Auth;
 use Validator;
 
@@ -14,28 +13,16 @@ use App\Direktorat;
 use App\TicketRevisi;
 use App\MasterPejabat;
 use App\MasterDokumen;
-use App\TicketStatus;
 
-use Illuminate\Support\Facades\DB;
 use Illuminate\Http\Request;
 use Barryvdh\DomPDF\Facade\Pdf;
 use App\Http\Controllers\ToolsController;
-use Illuminate\Support\Facades\View;
 
 class TicketingController extends Controller
 {
-    var $user;
-
     public function __construct()
     {
         $this->middleware('auth');
-        $this->middleware(function ($request, $next) {
-            $u = new User;
-            $this->user = $u->getDetail(Auth()->user()->id_akses);
-
-            View::share('user', $this->user);
-            return $next($request);
-        });
     }
 
     public function viewRevisiPusat()
@@ -57,1106 +44,6 @@ class TicketingController extends Controller
         return view('contents.e-ticketing.index', compact('current', 'modul', 'type', 'kegiatan'));
     }
 
-    /**
-     * 1 - Halaman Utama Revisi GWPP Daerah
-     */
-    public function viewGwppDaerah()
-    {
-        $type     = "Daerah";
-        $kegiatan = "GWPP";
-        $modul    = "E-Ticketing";
-        $current  = "Revisi Kegiatan Daerah";
-        $provinsi = (new Provinsi())->getById($this->user->prov);
-
-        $opsi = TicketStatus::OPSI;
-        $label = TicketStatus::LABEL;
-
-        $months     = ['Semua', 'Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni', 'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'];
-
-        $isPPK = $this->user->level == \App\UserAccess::LEVEL_PPK;
-
-        return view('contents.e-ticketing.index-new', compact('current', 'modul', 'type', 'kegiatan', 'provinsi', 'opsi', 'label', 'months', 'isPPK'));
-    }
-
-    /**
-     * 2.A - Halaman Pengajuan baru
-     */
-    public function viewTicketBaru($tahun, $provinsi, $satker)
-    {
-        $type     = "Daerah";
-        $kegiatan = "GWPP";
-        $modul    = "E-Ticketing";
-        $current  = "Formulir Pengajuan Baru";
-
-        $aProv    = explode('-', $provinsi);
-        $id_prov  = $aProv[0];
-        $namaprov = $aProv[1];
-
-        $aSatker  = explode('-', $satker);
-        $kode_satker = $aSatker[0];
-        $nama_satker = $aSatker[1];
-
-        $isPPK = $this->user->level == \App\UserAccess::LEVEL_PPK;
-
-        return view('contents.e-ticketing.daerah.form-baru', compact('current', 'modul', 'type', 'kegiatan', 'tahun', 'id_prov', 'namaprov', 'kode_satker', 'nama_satker', 'isPPK'));
-    }
-
-    /**
-     * 2.B - Simpan Pengajuan baru
-     */
-    public function submitTicketBaru(Request $request)
-    {
-        $user       = new User;
-        $dir        = new Direktorat;
-        $revisi     = new TicketRevisi;
-        $pejabat    = new MasterPejabat;
-        $tools      = new ToolsController;
-
-        $validation = [
-            'tahun_anggaran'    => 'required|integer',
-            'nomor_surat'       => 'required',
-            'tanggal_surat'     => 'required|date',
-            'satker'            => 'required',
-            'kode_satker'       => 'required',
-            'nama_satker'       => 'required',
-            'provinsi'          => 'required',
-            'direktorat'        => 'required',
-            'jenis_revisi'      => 'required',
-            'perihal'           => 'required',
-            'judul_kak'         => 'required',
-            'nota_dinas_ppk'    => 'max:10240|required',
-            'matrik_rab'        => 'max:10240|required',
-            'dokumen_pendukung' => 'max:10240|required',
-        ];
-
-        $message    = [
-            'required'  => ':attribute tidak boleh kosong',
-            'integer'   => ':attribute tidak valid',
-            'date'      => ':attribute tidak valid',
-            'max'       => ':attribute Ukuran Maksimal 10 MB'
-        ];
-
-        $names      = [
-            'tahun_anggaran'    => 'Tahun Anggaran',
-            'nomor_surat'       => 'Nomor Surat',
-            'tanggal_surat'     => 'Tanggal Surat',
-            'satker'            => 'Satuan Kerja',
-            'kode_satker'       => 'Kode Satuan Kerja',
-            'nama_satker'       => 'Nama Satuan Kerja',
-            'provinsi'          => 'Provinsi',
-            'direktorat'        => 'Unit Kerja',
-            'jenis_revisi'      => 'Jenis Revisi',
-            'perihal'           => 'Perihal',
-            'judul_kak'         => 'Judul KAK',
-            'nota_dinas_ppk'    => 'Nota Dinas PPK',
-            'matrik_rab'        => 'Matrik RAB',
-            'dokumen_pendukung' => 'Dokumen Pendukung',
-        ];
-
-        $validator = Validator::make($request->all(), $validation, $message, $names);
-
-        if ($validator->fails()) {
-            return response()->json([
-                'status'    => 'error',
-                'title'     => 'Validasi Error',
-                'message'   => $validator->errors()->all()
-            ]);
-        }
-
-        try {
-            $matrik_rab         = "Tidak Ada File";
-            $nota_dinas_ppk     = "Tidak Ada File";
-            $dokumen_pendukung  = "Tidak Ada File";
-
-            $direktorat         = $dir->where('id_dir', $request->direktorat)->first()->nama_dir;
-
-            if ($request->hasFile('nota_dinas_ppk')) {
-                $nota_dinas_ppk = $this->uploadFileFormatted($request, 'nota_dinas_ppk', $direktorat);
-            }
-
-            if ($request->hasFile('matrik_rab')) {
-                $matrik_rab     = $this->uploadFileFormatted($request, 'matrik_rab', $direktorat);
-            }
-
-            if ($request->hasFile('dokumen_pendukung')) {
-                $dokumen_pendukung = $this->uploadFileFormatted($request, 'dokumen_pendukung', $direktorat);
-            }
-
-            $current_status = TicketStatus::BARU;
-
-            $id_ticketing = $revisi->create([
-                'token'             => md5($request->nomor_surat . strtotime(date("ymdhis"))) . random_int(100000, 99999999),
-                'key'               => random_int(100000, 999999),
-                'tahun_anggaran'    => $request->tahun_anggaran,
-                'nomor_surat'       => $request->nomor_surat,
-                'tanggal_surat'     => $request->tanggal_surat,
-                'satker'            => $request->satker,
-                'kode_satker'       => $request->kode_satker,
-                'nama_satker'       => $request->nama_satker,
-                'provinsi'          => $request->provinsi,
-                'direktorat'        => $request->direktorat,
-                'jenis_revisi'      => $request->jenis_revisi,
-                'perihal'           => $request->perihal,
-                'judul_kak'         => $request->judul_kak,
-                'nota_dinas_ppk'    => $nota_dinas_ppk,
-                'matrik_rab'        => $matrik_rab,
-                'dokumen_pendukung' => $dokumen_pendukung,
-                'nota_dinas_pptk_old'   => ["BELUM ADA DOKUMEN LAMA"],
-                'nota_dinas_ppk_old'    => ["BELUM ADA DOKUMEN LAMA"],
-                'matrik_rab_old'        => ["BELUM ADA DOKUMEN LAMA"],
-                'kak_old'               => ["BELUM ADA DOKUMEN LAMA"],
-                'dokumen_pendukung_old' => ["BELUM ADA DOKUMEN LAMA"],
-                'keterangan'        => $request->keterangan,
-                'status'            => $current_status,
-                'current_status'    => $current_status,
-                'type'              => $request->type,
-                'created_by'        => Auth::user()->id_akses
-            ]);
-
-
-            if ($id_ticketing) {
-                DB::table('tb_ticket_stats')->insert([
-                    'ticket_id'  => $id_ticketing->id,
-                    'status'     => $current_status,
-                    'created_at' => date('Y-m-d'),
-                    'created_by' => Auth::user()->id_akses,
-                ]);
-            }
-
-            /**
-             * change $sendMail value to true to test email notification,
-             * please make sure to set your own email for testing
-             * !! DO NOT spam other user email for testing !!
-             */
-            $sendEmail      = false;
-
-            $data_pejabat   = $pejabat->where('id_dir', Auth::user()->id_dir)->first();
-            $email_pejabat  = isset($data_pejabat->email) ? $data_pejabat->email : '';
-
-            $text = Auth::user()->nama . " telah mengajukan revisi baru. Mohon segera ditindak lanjut";
-
-            if (!empty($email_pejabat) && $sendEmail) {
-                $tools->sendingEmail($text, $email_pejabat, $request->nomor_surat);
-            }
-
-            $this->record($id_ticketing->id, TicketStatus::ACTIVITY[$current_status], Auth::user()->id_akses, $nota_dinas_ppk, $matrik_rab, $dokumen_pendukung);
-
-
-            if ($request->provinsi == "undefined") {
-                $message_pptk   = "Pengajuan Revisi E-Ticketing Anda Berhasil Dikirim. Nomor Surat: " . $request->nomor_surat;
-                $message_ppk    = Auth::user()->nama . " telah mengajukan revisi E-Ticketing baru dengan Nomor Surat: " . $request->nomor_surat . ". Mohon segera ditindak lanjut";
-
-                $no_hp_ppk = $user->where([
-                    'id_dir'    => Auth::user()->id_dir,
-                    'level'     => 2,
-                    //'prov'      => $request->provinsi
-                    'prov'      => ''
-                ])->first()->no_hp;
-
-                $tools->sendingWa($no_hp_ppk, $message_ppk, $request->nomor_surat, "Ticketing Revisi");
-                $tools->sendingWa(Auth::user()->no_hp, $message_pptk, $request->nomor_surat, "Ticketing Revisi");
-            } else {
-                $message_ppk    = "Pengajuan Revisi E-Ticketing Anda Berhasil Dikirim. Nomor Surat: " . $request->nomor_surat;
-                $message_bagren = Auth::user()->nama . " telah mengajukan revisi E-Ticketing daerah baru dengan Nomor Surat: " . $request->nomor_surat . ". Mohon segera ditindak lanjut";
-
-                $tools->sendingWa(Auth::user()->no_hp, $message_ppk, $request->nomor_surat, "Ticketing Revisi");
-                $tools->sendingWa(Auth::user()->no_hp, $message_bagren, $request->nomor_surat, "Ticketing Revisi");
-            }
-
-            $message_bang_arief = "Ijin Bang Arief, " . Auth::user()->nama . " telah mengajukan Ticketing Revisi Pusat baru dengan Nomor Surat: " . $request->nomor_surat;
-            $tools->sendingWa("081213833316", $message_bang_arief, $request->nomor_surat, "Tickting Revisi");
-
-            return response()->json([
-                'status'    => 'success',
-                'title'     => 'Tiket Revisi Berhasil Dibuat',
-                'message'   => 'Pengajuan Revisi Akan Segera Diproses'
-            ]);
-        } catch (\Illuminate\Database\QueryException $e) {
-            return response()->json([
-                'status' => 'error',
-                'message' => $e->getMessage(),
-                'title' => 'Oopps.. Error Submit. Please Try Again'
-            ]);
-        }
-    }
-
-    /**
-     * 3 - List Revisi E-Ticketing Daerah
-     */
-    public function viewListGwppDaerah($tahun, $bulan, $provinsi, $satker, $status)
-    {
-        $type       = "Daerah";
-        $kegiatan   = "GWPP";
-        $modul      = "E-Ticketing";
-        $current    = $status;
-
-        $aProv    = explode('-', $provinsi);
-        $id_prov  = isset($aProv[0]) ? $aProv[0] : null;
-        $namaprov = isset($aProv[1]) ? $aProv[1] : 'SEMUA PROVINSI';
-
-        $aSatker  = explode('-', $satker);
-        $kode_satker = isset($aSatker[0]) ? $aSatker[0] : '';
-        $nama_satker = isset($aSatker[1]) ? $aSatker[1] : 'SEMUA SATUAN KERJA';
-
-        $t = new TicketRevisi;
-        $list = $t->getListBy($status, $tahun, $bulan, $id_prov, $satker);
-
-        $isPPK = $this->user->level == \App\UserAccess::LEVEL_PPK;
-        $isKPA = $this->user->level == \App\UserAccess::LEVEL_KPA;
-        $level = Auth()->user()->level;
-
-        return view('contents.e-ticketing.daerah.daftar-revisi', compact('current', 'modul', 'type', 'kegiatan', 'list', 'id_prov', 'namaprov', 'kode_satker', 'nama_satker', 'isPPK', 'isKPA', 'level'));
-    }
-
-    /**
-     * 4.A - Halaman Revisi KPA
-     */
-    public function viewRevisiKpa($id = null)
-    {
-        if ($this->user->level != \App\UserAccess::LEVEL_KPA) {
-            return redirect('ticketing/revisi-gwpp');
-        }
-
-        $type     = "Daerah";
-        $kegiatan = "GWPP";
-        $modul    = "E-Ticketing";
-        $current  = "Formulir Tindak Lanjut Revisi oleh KPA";
-
-        $t = new TicketRevisi;
-        $data = $t->find($id);
-
-        $l = new LogTicket;
-        $filelog = $l->getFileLogs($id);
-        $log = $l->getLogs($id);
-
-        return view('contents.e-ticketing.daerah.form-revisi-kpa', compact('current', 'modul', 'type', 'kegiatan', 'data', 'log', 'filelog'));
-    }
-
-    /**
-     * 4.A - Halaman View PPK
-     */
-    public function viewPpk($id = null)
-    {
-        if ($this->user->level != \App\UserAccess::LEVEL_PPK) {
-            return redirect('ticketing/revisi-gwpp');
-        }
-
-        $type     = "Daerah";
-        $kegiatan = "GWPP";
-        $modul    = "E-Ticketing";
-        $current  = "Formulir Tindak Lanjut Revisi oleh KPA";
-
-        $t = new TicketRevisi;
-        $data = $t->find($id);
-
-        $l = new LogTicket;
-        $filelog = $l->getFileLogs($id);
-        $log = $l->getLogs($id);
-
-        return view('contents.e-ticketing.daerah.form-ppk', compact('current', 'modul', 'type', 'kegiatan', 'data', 'log', 'filelog'));
-    }
-
-    /**
-     * 4.A - Halaman View KPA
-     */
-    public function viewKpa($id = null)
-    {
-        if ($this->user->level != \App\UserAccess::LEVEL_KPA) {
-            return redirect('ticketing/revisi-gwpp');
-        }
-
-        $type     = "Daerah";
-        $kegiatan = "GWPP";
-        $modul    = "E-Ticketing";
-        $current  = "Formulir Tindak Lanjut Perbaikan";
-
-        $t = new TicketRevisi;
-        $data = $t->find($id);
-
-        $l = new LogTicket;
-        $filelog = $l->getFileLogs($id);
-        $log = $l->getLogs($id);
-
-        return view('contents.e-ticketing.daerah.form-kpa', compact('current', 'modul', 'type', 'kegiatan', 'data', 'log', 'filelog'));
-    }
-
-    /**
-     * 4.A - Halaman View Fasgub
-     */
-    public function viewFasgub($id = null)
-    {
-        if ($this->user->level != \App\UserAccess::LEVEL_FASGUB) {
-            return redirect('ticketing/revisi-gwpp');
-        }
-
-        $type     = "Daerah";
-        $kegiatan = "GWPP";
-        $modul    = "E-Ticketing";
-        $current  = "Formulir Tindak Lanjut Revisi oleh Bagren";
-
-        $t = new TicketRevisi;
-        $data = $t->find($id);
-
-        $l = new LogTicket;
-        $filelog = $l->getFileLogs($id);
-        $log = $l->getLogs($id);
-
-        return view('contents.e-ticketing.daerah.form-fasgub', compact('current', 'modul', 'type', 'kegiatan', 'data', 'log', 'filelog'));
-    }
-
-    /**
-     * 4.A - Halaman View Bagren
-     */
-    public function viewBagren($id = null)
-    {
-        if ($this->user->level != \App\UserAccess::LEVEL_BAGREN) {
-            return redirect('ticketing/revisi-gwpp');
-        }
-
-        $type     = "Daerah";
-        $kegiatan = "GWPP";
-        $modul    = "E-Ticketing";
-        $current  = "Formulir Tindak Lanjut Revisi oleh Bagren";
-
-        $t = new TicketRevisi;
-        $data = $t->find($id);
-
-        $l = new LogTicket;
-        $filelog = $l->getFileLogs($id);
-        $log = $l->getLogs($id);
-
-        return view('contents.e-ticketing.daerah.form-bagren', compact('current', 'modul', 'type', 'kegiatan', 'data', 'log', 'filelog'));
-    }
-    /**
-     * 4.B - Simpan Revisi KPA (disetujui / dikembalikan untuk perbaikan)
-     */
-
-    public function submitRevisiKpa(Request $request)
-    {
-        try {
-            $user         = new User;
-            $dir          = new Direktorat;
-            $revisi       = new TicketRevisi;
-            $tools        = new ToolsController;
-            $lampiran_kpa = "Tidak Ada File";
-
-            $dataRevisi = $revisi->where('id', $request->id)->first();
-
-            $validation = [];
-
-            $message = [
-                'required' => ':attribute tidak boleh kosong',
-                'max'      => ':attribute Ukuran Maksimal 10 MB'
-            ];
-
-            $names = [
-                'no_nota_kpa'  => 'Nomer Nota Dinas',
-                'lampiran_kpa' => 'Nota Dinas KPA',
-                'catatan_kpa'  => 'Catatan',
-            ];
-
-            if ($request->status_kpa === TicketStatus::DISETUJUI_KPA) {
-                $validation = [
-                    'no_nota_kpa'  => 'required',
-                    'lampiran_kpa' => 'max:10240|required',
-                ];
-
-                if (! empty($dataRevisi->lampiran_kpa)) {
-                    unset($validation['lampiran_kpa']);
-                }
-            } else {
-                $validation = [
-                    'catatan_kpa' => 'required',
-                ];
-            }
-
-            $validator = Validator::make($request->all(), $validation, $message, $names);
-
-            if ($validator->fails()) {
-                return response()->json([
-                    'status'    => 'error',
-                    'title'     => 'Validasi Error',
-                    'message'   => $validator->errors()->all()
-                ]);
-            }
-
-            $nomor_surat = $dataRevisi->nomor_surat;
-
-            if ($request->hasFile('lampiran_kpa')) {
-                $direktorat   = $dir->where('id_dir', $dataRevisi->direktorat)->first()->nama_dir;
-                $lampiran_kpa = $this->uploadFile($request, 'lampiran_kpa', $direktorat);
-            }
-
-            $revisi->where('id', $request->id)->update([
-                'catatan_kpa'    => [$request->catatan_kpa],
-                'lampiran_kpa'   => $lampiran_kpa,
-                'status_kpa'     => $request->status_kpa,
-                'no_nota_kpa'    => $request->no_nota_kpa,
-                'status'         => $request->status_kpa,
-                'current_status' => $request->status_kpa,
-                'kpa_at'         => date("Y-m-d H:i:s"),
-                'kpa_by'         => Auth::user()->id_akses
-            ]);
-
-            if ($request->status_kpa === TicketStatus::DISETUJUI_KPA) {
-                $no_hp_bagren = $user->where('prov_handle', 'like', '%' . $dataRevisi->provinsi . '%')->where([
-                    'level'     => 5
-                ])->first()->no_hp;
-
-                $message_ppk        = "Pengajuan Revisi E-Ticketing Anda dengan Nomor Surat: " . $nomor_surat . " Disetujui Oleh KPA";
-                $message_bagren     = "Pengajuan Revisi E-Ticketing dengan Nomor Surat: " . $nomor_surat . " Disetujui Oleh KPA dan diteruskan ke Bagren. Silakan diproses";
-
-                $tools->sendingWa(Auth::user()->no_hp, $message_ppk, $nomor_surat, "Tickting Revisi");
-                $tools->sendingWa($no_hp_bagren, $message_bagren, $nomor_surat, "Tickting Revisi");
-            } else {
-                $message_ppk   = "Pengajuan Revisi E-Ticketing Anda dengan Nomor Surat: " . $nomor_surat . " *DITOLAK* oleh KPA. Mohon segera diperbaiki sesuai catatan dari Fasgub";
-
-                $tools->sendingWa(Auth::user()->no_hp, $message_ppk, $nomor_surat, "Tickting Revisi");
-            }
-
-            $this->record($request->id, TicketStatus::ACTIVITY[$request->status_kpa], Auth::user()->id_akses);
-
-            return response()->json([
-                'status'  => 'success',
-                'title'   => 'Status Revisi E-Ticketing Berhasil Diubah',
-                'message' => 'Status Revisi E-Ticketing Berhasil Diubah'
-            ]);
-        } catch (\Illuminate\Database\QueryException $e) {
-            return response()->json([
-                'status'  => 'error',
-                'message' => $e->getMessage(),
-                'title'   => 'Oopps.. Error Processing. Please Try Again'
-            ]);
-        }
-    }
-
-    /**
-     * 5.A - Halaman Perbaikan oleh PPK
-     */
-    public function viewRevisiPpk($id = null)
-    {
-        $isPPK = $this->user->level == \App\UserAccess::LEVEL_PPK;
-
-        if (! $isPPK) {
-            return redirect('ticketing/revisi-gwpp');
-        }
-
-        $t = new TicketRevisi;
-        $p = new Provinsi;
-        $l = new LogTicket;
-
-        $data = $t->find($id);
-        $prov = $p->find($data->provinsi);
-
-        $id_prov  = $data->provinsi;
-        $namaprov = isset($prov->namaprov) ? $prov->namaprov : 'SEMUA';
-
-        $satker      = $data->satker;
-        $kode_satker = $data->kode_satker;
-        $nama_satker = $data->nama_satker;
-        $tahun       = $data->tahun_anggaran;
-
-        $totalRevisi = $l->where([
-            'id_ticketing' => $data->id,
-            'user'         => Auth()->user()->id_akses,
-        ])
-            ->whereIn('activity', [TicketStatus::ACTIVITY[TicketStatus::BARU], TicketStatus::ACTIVITY[TicketStatus::PERBAIKAN_FIX]])
-            ->count();
-
-        if ($totalRevisi > 2) {
-            return redirect('ticketing/baru/' . $tahun . '/' . $id_prov . '-' . $namaprov . '/' . $satker);
-        }
-
-        $type     = "Daerah";
-        $kegiatan = "GWPP";
-        $modul    = "E-Ticketing";
-        $current  = "Formulir Perbaikan ke-" . $totalRevisi;
-
-        return view('contents.e-ticketing.daerah.form-edit', compact('current', 'modul', 'type', 'kegiatan', 'tahun', 'id_prov', 'namaprov', 'kode_satker', 'nama_satker', 'isPPK', 'data'));
-    }
-
-    /**
-     * 5.B - Simpan update revisi oleh PPK
-     * Dikirim kembali ke KPAs
-     */
-    public function submitRevisiPpk(Request $request)
-    {
-        $user       = new User;
-        $dir        = new Direktorat;
-        $revisi     = new TicketRevisi;
-        $pejabat    = new MasterPejabat;
-        $tools      = new ToolsController;
-
-        $dataRevisi = $revisi->find($request->id);
-
-        $validation = [
-            'nomor_surat'       => 'required',
-            'tanggal_surat'     => 'required|date',
-            'jenis_revisi'      => 'required',
-            'perihal'           => 'required',
-            'judul_kak'         => 'required',
-            'nota_dinas_ppk'    => 'max:10240|required',
-            'matrik_rab'        => 'max:10240|required',
-            'dokumen_pendukung' => 'max:10240|required',
-        ];
-
-        if (! empty($dataRevisi->nota_dinas_ppk)) {
-            unset($validation['nota_dinas_ppk']);
-        }
-
-        if (! empty($dataRevisi->matrik_rab)) {
-            unset($validation['matrik_rab']);
-        }
-
-        if (! empty($dataRevisi->dokumen_pendukung)) {
-            unset($validation['dokumen_pendukung']);
-        }
-
-        $message    = [
-            'required'  => ':attribute tidak boleh kosong',
-            'integer'   => ':attribute tidak valid',
-            'date'      => ':attribute tidak valid',
-            'max'       => ':attribute Ukuran Maksimal 10 MB'
-        ];
-
-        $names      = [
-            'nomor_surat'       => 'Nomor Surat',
-            'tanggal_surat'     => 'Tanggal Surat',
-            'jenis_revisi'      => 'Jenis Revisi',
-            'perihal'           => 'Perihal',
-            'judul_kak'         => 'Judul KAK',
-            'nota_dinas_ppk'    => 'Nota Dinas PPK',
-            'matrik_rab'        => 'Matrik RAB',
-            'dokumen_pendukung' => 'Dokumen Pendukung',
-        ];
-
-        $validator = Validator::make($request->all(), $validation, $message, $names);
-
-        if ($validator->fails()) {
-            return response()->json([
-                'status'    => 'error',
-                'title'     => 'Validasi Error',
-                'message'   => $validator->errors()->all()
-            ]);
-        }
-
-        try {
-            $hasNodinBaru = false;
-            $hasRabBaru   = false;
-            $hasDokBaru   = false;
-
-            $matrik_rab         = "Tidak Ada File";
-            $nota_dinas_ppk     = "Tidak Ada File";
-            $dokumen_pendukung  = "Tidak Ada File";
-
-            $direktorat         = $dir->where('id_dir', $request->direktorat)->first()->nama_dir;
-
-            if ($request->hasFile('nota_dinas_ppk')) {
-                $hasNodinBaru   = true;
-                $nota_dinas_ppk = $this->uploadFileFormatted($request, 'nota_dinas_ppk', $direktorat);
-            }
-
-            if ($request->hasFile('matrik_rab')) {
-                $hasRabBaru = true;
-                $matrik_rab = $this->uploadFileFormatted($request, 'matrik_rab', $direktorat);
-            }
-
-            if ($request->hasFile('dokumen_pendukung')) {
-                $hasDokBaru        = true;
-                $dokumen_pendukung = $this->uploadFileFormatted($request, 'dokumen_pendukung', $direktorat);
-            }
-
-            $current_status = TicketStatus::PERBAIKAN;
-
-            $fixRevisi = [
-                'nomor_surat'       => $request->nomor_surat,
-                'tanggal_surat'     => $request->tanggal_surat,
-                'direktorat'        => $request->direktorat,
-                'jenis_revisi'      => $request->jenis_revisi,
-                'perihal'           => $request->perihal,
-                'judul_kak'         => $request->judul_kak,
-                'nota_dinas_ppk'    => $nota_dinas_ppk,
-                'matrik_rab'        => $matrik_rab,
-                'dokumen_pendukung' => $dokumen_pendukung,
-                'nota_dinas_pptk_old'   => [$dataRevisi->nota_dinas_pptk],
-                'nota_dinas_ppk_old'    => [$dataRevisi->nota_dinas_ppk],
-                'matrik_rab_old'        => [$dataRevisi->matrik_rab],
-                'kak_old'               => [$dataRevisi->kak],
-                'dokumen_pendukung_old' => [$dataRevisi->dokumen_pendukung],
-                'keterangan'        => $request->keterangan,
-                'status'            => TicketStatus::PERBAIKAN_FIX,
-                'current_status'    => $current_status,
-                'type'              => $request->type,
-                'created_by'        => Auth::user()->id_akses
-            ];
-
-            if (! $hasNodinBaru) {
-                unset($fixRevisi['nota_dinas_ppk']);
-                unset($fixRevisi['nota_dinas_ppk_old']);
-            }
-
-            if (! $hasRabBaru) {
-                unset($fixRevisi['matrik_rab']);
-                unset($fixRevisi['matrik_rab_old']);
-            }
-            if (! $hasDokBaru) {
-                unset($fixRevisi['dokumen_pendukung']);
-                unset($fixRevisi['dokumen_pendukung_old']);
-            }
-
-            $revisi->where('id', $request->id)->update($fixRevisi);
-
-            DB::table('tb_ticket_stats')->insert([
-                'ticket_id'  => $request->id,
-                'status'     => $current_status,
-                'created_at' => date('Y-m-d'),
-                'created_by' => Auth::user()->id_akses,
-            ]);
-
-            /**
-             * change $sendMail value to true to test email notification,
-             * please make sure to set your own email for testing
-             * !! DO NOT spam other user email for testing !!
-             */
-            $sendEmail      = false;
-
-            $data_pejabat   = $pejabat->where('id_dir', Auth::user()->id_dir)->first();
-            $email_pejabat  = isset($data_pejabat->email) ? $data_pejabat->email : '';
-
-            $text = Auth::user()->nama . " telah mengajukan revisi baru. Mohon segera ditindak lanjut";
-
-            if (!empty($email_pejabat) && $sendEmail) {
-                $tools->sendingEmail($text, $email_pejabat, $request->nomor_surat);
-            }
-
-            $this->record($request->id, TicketStatus::ACTIVITY[$current_status], Auth::user()->id_akses, $nota_dinas_ppk, $matrik_rab, $dokumen_pendukung);
-
-
-            if ($request->provinsi == "undefined") {
-                $message_pptk   = "Pengajuan Revisi E-Ticketing Anda Berhasil Dikirim. Nomor Surat: " . $request->nomor_surat;
-                $message_ppk    = Auth::user()->nama . " telah mengajukan perbaikan E-Ticketing dengan Nomor Surat: " . $request->nomor_surat . ". Mohon segera ditindak lanjut";
-
-                $no_hp_ppk = $user->where([
-                    'id_dir'    => Auth::user()->id_dir,
-                    'level'     => 2,
-                    //'prov'      => $request->provinsi
-                    'prov'      => ''
-                ])->first()->no_hp;
-
-                $tools->sendingWa($no_hp_ppk, $message_ppk, $request->nomor_surat, "Ticketing Revisi");
-                $tools->sendingWa(Auth::user()->no_hp, $message_pptk, $request->nomor_surat, "Ticketing Revisi");
-            } else {
-                $message_ppk    = "Pengajuan Revisi E-Ticketing Anda Berhasil Dikirim. Nomor Surat: " . $request->nomor_surat;
-                $message_bagren = Auth::user()->nama . " telah mengajukan perbaikan E-Ticketing daerah baru dengan Nomor Surat: " . $request->nomor_surat . ". Mohon segera ditindak lanjut";
-
-                $tools->sendingWa(Auth::user()->no_hp, $message_ppk, $request->nomor_surat, "Ticketing Revisi");
-                $tools->sendingWa(Auth::user()->no_hp, $message_bagren, $request->nomor_surat, "Ticketing Revisi");
-            }
-
-            $message_bang_arief = "Ijin Bang Arief, " . Auth::user()->nama . " telah mengajukan Ticketing Revisi Pusat baru dengan Nomor Surat: " . $request->nomor_surat;
-            $tools->sendingWa("081213833316", $message_bang_arief, $request->nomor_surat, "Tickting Revisi");
-
-            return response()->json([
-                'status'    => 'success',
-                'title'     => 'Tiket Revisi Berhasil diperbaiki',
-                'message'   => 'Pengajuan Revisi Akan Segera Diproses'
-            ]);
-        } catch (\Illuminate\Database\QueryException $e) {
-            return response()->json([
-                'status' => 'error',
-                'message' => $e->getMessage(),
-                'title' => 'Oopps.. Error Submit. Please Try Again'
-            ]);
-        }
-    }
-
-    /**
-     * 5.B - Simpan update revisi oleh PPK
-     * Dikirim kembali ke KPAs
-     */
-    public function submitRevisiFasgub(Request $request)
-    {
-        $user       = new User;
-        $dir        = new Direktorat;
-        $revisi     = new TicketRevisi;
-        $pejabat    = new MasterPejabat;
-        $tools      = new ToolsController;
-
-        $dataRevisi = $revisi->find($request->id);
-
-        $validation = [
-            'nomor_surat'       => 'required',
-            'tanggal_surat'     => 'required|date',
-            'jenis_revisi'      => 'required',
-            'perihal'           => 'required',
-            'judul_kak'         => 'required',
-            'nota_dinas_ppk'    => 'max:10240|required',
-            'matrik_rab'        => 'max:10240|required',
-            'dokumen_pendukung' => 'max:10240|required',
-        ];
-
-        if (! empty($dataRevisi->nota_dinas_ppk)) {
-            unset($validation['nota_dinas_ppk']);
-        }
-
-        if (! empty($dataRevisi->matrik_rab)) {
-            unset($validation['matrik_rab']);
-        }
-
-        if (! empty($dataRevisi->dokumen_pendukung)) {
-            unset($validation['dokumen_pendukung']);
-        }
-
-        $message    = [
-            'required'  => ':attribute tidak boleh kosong',
-            'integer'   => ':attribute tidak valid',
-            'date'      => ':attribute tidak valid',
-            'max'       => ':attribute Ukuran Maksimal 10 MB'
-        ];
-
-        $names      = [
-            'nomor_surat'       => 'Nomor Surat',
-            'tanggal_surat'     => 'Tanggal Surat',
-            'jenis_revisi'      => 'Jenis Revisi',
-            'perihal'           => 'Perihal',
-            'judul_kak'         => 'Judul KAK',
-            'nota_dinas_ppk'    => 'Nota Dinas PPK',
-            'matrik_rab'        => 'Matrik RAB',
-            'dokumen_pendukung' => 'Dokumen Pendukung',
-        ];
-
-        $validator = Validator::make($request->all(), $validation, $message, $names);
-
-        if ($validator->fails()) {
-            return response()->json([
-                'status'    => 'error',
-                'title'     => 'Validasi Error',
-                'message'   => $validator->errors()->all()
-            ]);
-        }
-
-        try {
-            $hasNodinBaru = false;
-            $hasRabBaru   = false;
-            $hasDokBaru   = false;
-
-            $matrik_rab         = "Tidak Ada File";
-            $nota_dinas_ppk     = "Tidak Ada File";
-            $dokumen_pendukung  = "Tidak Ada File";
-
-            $direktorat         = $dir->where('id_dir', $request->direktorat)->first()->nama_dir;
-
-            if ($request->hasFile('nota_dinas_ppk')) {
-                $hasNodinBaru   = true;
-                $nota_dinas_ppk = $this->uploadFileFormatted($request, 'nota_dinas_ppk', $direktorat);
-            }
-
-            if ($request->hasFile('matrik_rab')) {
-                $hasRabBaru = true;
-                $matrik_rab = $this->uploadFileFormatted($request, 'matrik_rab', $direktorat);
-            }
-
-            if ($request->hasFile('dokumen_pendukung')) {
-                $hasDokBaru        = true;
-                $dokumen_pendukung = $this->uploadFileFormatted($request, 'dokumen_pendukung', $direktorat);
-            }
-
-            $current_status = $request->status_fasgub;
-
-            $fixRevisi = [
-                'nomor_surat'       => $request->nomor_surat,
-                'tanggal_surat'     => $request->tanggal_surat,
-                'direktorat'        => $request->direktorat,
-                'jenis_revisi'      => $request->jenis_revisi,
-                'perihal'           => $request->perihal,
-                'judul_kak'         => $request->judul_kak,
-                'nota_dinas_ppk'    => $nota_dinas_ppk,
-                'matrik_rab'        => $matrik_rab,
-                'dokumen_pendukung' => $dokumen_pendukung,
-                'nota_dinas_pptk_old'   => [$dataRevisi->nota_dinas_pptk],
-                'nota_dinas_ppk_old'    => [$dataRevisi->nota_dinas_ppk],
-                'matrik_rab_old'        => [$dataRevisi->matrik_rab],
-                'kak_old'               => [$dataRevisi->kak],
-                'dokumen_pendukung_old' => [$dataRevisi->dokumen_pendukung],
-                'keterangan'        => $request->keterangan,
-                'status'            => $current_status,
-                'current_status'    => $current_status,
-                'type'              => $request->type,
-                'created_by'        => Auth::user()->id_akses
-            ];
-
-            if (! $hasNodinBaru) {
-                unset($fixRevisi['nota_dinas_ppk']);
-                unset($fixRevisi['nota_dinas_ppk_old']);
-            }
-
-            if (! $hasRabBaru) {
-                unset($fixRevisi['matrik_rab']);
-                unset($fixRevisi['matrik_rab_old']);
-            }
-            if (! $hasDokBaru) {
-                unset($fixRevisi['dokumen_pendukung']);
-                unset($fixRevisi['dokumen_pendukung_old']);
-            }
-
-            $revisi->where('id', $request->id)->update($fixRevisi);
-
-            DB::table('tb_ticket_stats')->insert([
-                'ticket_id'  => $request->id,
-                'status'     => $current_status,
-                'created_at' => date('Y-m-d'),
-                'created_by' => Auth::user()->id_akses,
-            ]);
-
-            /**
-             * change $sendMail value to true to test email notification,
-             * please make sure to set your own email for testing
-             * !! DO NOT spam other user email for testing !!
-             */
-            // $sendEmail      = false;
-
-            // $data_pejabat   = $pejabat->where('id_dir', Auth::user()->id_dir)->first();
-            // $email_pejabat  = isset($data_pejabat->email) ? $data_pejabat->email : '';
-
-            // $text = Auth::user()->nama . " telah mengajukan revisi baru. Mohon segera ditindak lanjut";
-
-            // if (!empty($email_pejabat) && $sendEmail) {
-            //     $tools->sendingEmail($text, $email_pejabat, $request->nomor_surat);
-            // }
-
-            $this->record($request->id, TicketStatus::ACTIVITY[$current_status], Auth::user()->id_akses, $nota_dinas_ppk, $matrik_rab, $dokumen_pendukung);
-
-
-            if ($request->provinsi == "undefined") {
-                $message_pptk   = "Pengajuan Revisi E-Ticketing Anda Berhasil Dikirim. Nomor Surat: " . $request->nomor_surat;
-                $message_ppk    = Auth::user()->nama . " telah mengajukan perbaikan E-Ticketing dengan Nomor Surat: " . $request->nomor_surat . ". Mohon segera ditindak lanjut";
-
-                $no_hp_ppk = $user->where([
-                    'id_dir'    => Auth::user()->id_dir,
-                    'level'     => 2,
-                    //'prov'      => $request->provinsi
-                    'prov'      => ''
-                ])->first()->no_hp;
-
-                $tools->sendingWa($no_hp_ppk, $message_ppk, $request->nomor_surat, "Ticketing Revisi");
-                $tools->sendingWa(Auth::user()->no_hp, $message_pptk, $request->nomor_surat, "Ticketing Revisi");
-            } else {
-                $message_ppk    = "Pengajuan Revisi E-Ticketing Anda Berhasil Dikirim. Nomor Surat: " . $request->nomor_surat;
-                $message_bagren = Auth::user()->nama . " telah mengajukan perbaikan E-Ticketing daerah baru dengan Nomor Surat: " . $request->nomor_surat . ". Mohon segera ditindak lanjut";
-
-                $tools->sendingWa(Auth::user()->no_hp, $message_ppk, $request->nomor_surat, "Ticketing Revisi");
-                $tools->sendingWa(Auth::user()->no_hp, $message_bagren, $request->nomor_surat, "Ticketing Revisi");
-            }
-
-            // $message_bang_arief = "Ijin Bang Arief, " . Auth::user()->nama . " telah mengajukan Ticketing Revisi Pusat baru dengan Nomor Surat: " . $request->nomor_surat;
-            // $tools->sendingWa("081213833316", $message_bang_arief, $request->nomor_surat, "Tickting Revisi");
-
-            return response()->json([
-                'status'    => 'success',
-                'title'     => 'Tiket Revisi Berhasil diperbaiki',
-                'message'   => 'Pengajuan Revisi Akan Segera Diproses'
-            ]);
-        } catch (\Illuminate\Database\QueryException $e) {
-            return response()->json([
-                'status' => 'error',
-                'message' => $e->getMessage(),
-                'title' => 'Oopps.. Error Submit. Please Try Again'
-            ]);
-        }
-    }
-
-    /**
-     * 6.A - Halamaan review oleh Bagren
-     * setelah disetujui KPA
-     */
-    public function viewRevisiBagren($id = null)
-    {
-        if ($this->user->level != \App\UserAccess::LEVEL_BAGREN) {
-            return redirect('ticketing/revisi-gwpp');
-        }
-
-        $type     = "Daerah";
-        $kegiatan = "GWPP";
-        $modul    = "E-Ticketing";
-        $current  = "Formulir Verifikasi oleh BAGREN";
-
-        $t = new TicketRevisi;
-        $data = $t->find($id);
-
-        $l = new LogTicket;
-        $filelog = $l->getFileLogs($id);
-        $log = $l->getLogs($id);
-
-        return view('contents.e-ticketing.daerah.form-revisi-bagren', compact('current', 'modul', 'type', 'kegiatan', 'data', 'log', 'filelog'));
-    }
-
-    /**
-     * 6.B - Simpan Revisi Bagren (disetujui / Diteliti / Ditolak)
-     */
-    public function submitRevisiBagren(Request $request)
-    {
-        try {
-            $user         = new User;
-            $dir          = new Direktorat;
-            $revisi       = new TicketRevisi;
-            $tools        = new ToolsController;
-
-            $dataRevisi = $revisi->where('id', $request->id)->first();
-
-            $validation = [];
-
-            $message = [
-                'required' => ':attribute tidak boleh kosong',
-                'max'      => ':attribute Ukuran Maksimal 10 MB'
-            ];
-
-            $names = [
-                'catatan_verifikasi' => 'Catatan Verifikasi',
-            ];
-
-            if ($request->status_verifikasi === TicketStatus::PERBAIKAN) {
-                $validation = [
-                    'catatan_verifikasi' => 'required',
-                ];
-            }
-
-            $validator = Validator::make($request->all(), $validation, $message, $names);
-
-            if ($validator->fails()) {
-                return response()->json([
-                    'status'    => 'error',
-                    'title'     => 'Validasi Error',
-                    'message'   => $validator->errors()->all()
-                ]);
-            }
-
-            $nomor_surat = $dataRevisi->nomor_surat;
-
-            $data = [
-                'catatan_verifikasi' => $request->catatan_verifikasi,
-                'status_verifikasi'  => $request->status_verifikasi,
-                'status'             => $request->status_verifikasi,
-                'current_status'     => $request->status_verifikasi,
-                'verified_at'        => date("Y-m-d H:i:s"),
-                'verified_by'        => Auth::user()->id_akses
-            ];
-
-            if ($request->status_verifikasi == TicketStatus::PERBAIKAN) {
-                $data['status_kpa'] = null;
-                $data['no_nota_kpa'] = null;
-                $data['lampiran_kpa'] = null;
-                $data['catatan_kpa'] = [null];
-            }
-
-            $revisi->where('id', $request->id)->update($data);
-
-            if ($request->status_verifikasi === TicketStatus::DISETUJUI_BAGREN) {
-                $no_hp_bagren = $user->where('prov_handle', 'like', '%' . $dataRevisi->provinsi . '%')->where([
-                    'level'     => 5
-                ])->first()->no_hp;
-
-                $message_ppk    = "Pengajuan Revisi E-Ticketing Anda dengan Nomor Surat: {$nomor_surat} Disetujui Oleh Bagren";
-                $message_bagren = "Pengajuan Revisi E-Ticketing dengan Nomor Surat: {$nomor_surat} Disetujui Oleh Bagren dan diteruskan ke Fasgub. Silakan diproses";
-
-                $tools->sendingWa(Auth::user()->no_hp, $message_ppk, $nomor_surat, "Tickting Revisi");
-                $tools->sendingWa($no_hp_bagren, $message_bagren, $nomor_surat, "Tickting Revisi");
-            } else {
-                $message_ppk = "Pengajuan Revisi E-Ticketing Anda dengan Nomor Surat: {$nomor_surat} *DITOLAK* oleh Bagren. Mohon segera diperbaiki.";
-
-                $tools->sendingWa(Auth::user()->no_hp, $message_ppk, $nomor_surat, "Tickting Revisi");
-            }
-
-            $this->record($request->id, TicketStatus::ACTIVITY[$request->status_verifikasi], Auth::user()->id_akses);
-
-            return response()->json([
-                'status'  => 'success',
-                'title'   => 'Status Revisi E-Ticketing Berhasil Diubah',
-                'message' => 'Status Revisi E-Ticketing Berhasil Diubah'
-            ]);
-        } catch (\Illuminate\Database\QueryException $e) {
-            return response()->json([
-                'status'  => 'error',
-                'message' => $e->getMessage(),
-                'title'   => 'Oopps.. Error Processing. Please Try Again'
-            ]);
-        }
-    }
-
-    /**
-     * 7.A - Halamaan review oleh Fasgub
-     * setelah disetujui KPA
-     */
-    public function viewRevisiFasgub($id = null)
-    {
-        if ($this->user->level != \App\UserAccess::LEVEL_FASGUB) {
-            return redirect('ticketing/revisi-gwpp');
-        }
-
-        $type     = "Daerah";
-        $kegiatan = "GWPP";
-        $modul    = "E-Ticketing";
-        $current  = "Formulir Verifikasi oleh FASGUB";
-
-        $t = new TicketRevisi;
-        $data = $t->find($id);
-
-        $l = new LogTicket;
-        $filelog = $l->getFileLogs($id);
-        $log = $l->getLogs($id);
-
-        return view('contents.e-ticketing.daerah.form-revisi-fasgub', compact('current', 'modul', 'type', 'kegiatan', 'data', 'log', 'filelog'));
-    }
-
-    /**
-     * X.1 - Helper List Satker berdasarkan nama provinsi terpilih
-     */
-    public function getSatkerProvinsi(Request $request)
-    {
-        $s = new Satker;
-        $satker = $s->getSatkerProv($request->namaprov, $this->user->kdsatker);
-
-        return response()->json([
-            'data' => $satker
-        ]);
-    }
-
-    /**
-     * X.2 - Helper Rekap status Ticket Revisi berdasarkan Satker terpilih
-     */
-    public function getRekapSatker(Request $request)
-    {
-        $t = new TicketRevisi;
-        $rekap = $t->getRekap($request->satker, $request->tahun, $request->bulan);
-
-        return response()->json([
-            'data' => $rekap
-        ]);
-    }
-
-    /**
-     * X.3 - Helper Link berdasarkan status Revisi
-     */
-
-
-    public function viewGgwpDaerahListPerbaikan()
-    {
-        $type       = "Daerah";
-        $kegiatan   = "GWPP";
-        $modul      = "E-Ticketing";
-        $current    = "Perbaikan";
-
-        return view('contents.e-ticketing.daftar-revisi-daerah', compact('current', 'modul', 'type', 'kegiatan'));
-    }
-    public function viewGgwpDaerahSubmitRev()
-    {
-        $type       = "Daerah";
-        $kegiatan   = "GWPP";
-        $modul      = "E-Ticketing";
-        $current    = "Formulir Pengajuan Baru";
-
-        return view('contents.e-ticketing.form-revisi-daerah', compact('current', 'modul', 'type', 'kegiatan'));
-    }
-    // end of controller baru untuk gwpp
     public function viewSarprasDaerah()
     {
         $type       = "daerah";
@@ -1288,7 +175,6 @@ class TicketingController extends Controller
         }
     }
 
-    /*
     public function submitRevisi(Request $request)
     {
         $user       = new User;
@@ -1342,8 +228,7 @@ class TicketingController extends Controller
 
         $validator = Validator::make($request->all(), $validation, $message, $names);
 
-        if ($validator->fails())
-        {
+        if ($validator->fails()) {
             return response()->json([
                 'status'    => 'failed',
                 'title'     => 'Validasi Error',
@@ -1351,8 +236,7 @@ class TicketingController extends Controller
             ]);
         }
 
-        try
-        {
+        try {
             $kak                = "Tidak Ada File";
             $matrik_rab         = "Tidak Ada File";
             $nota_dinas_ppk     = "Tidak Ada File";
@@ -1361,33 +245,28 @@ class TicketingController extends Controller
 
             $direktorat         = $dir->where('id_dir', $request->direktorat)->first()->nama_dir;
 
-            if($request->hasFile('nota_dinas_pptk'))
-            {
+            if ($request->hasFile('nota_dinas_pptk')) {
                 $nota_dinas_pptk = $this->uploadFile($request, 'nota_dinas_pptk', $direktorat);
             }
 
-            if($request->hasFile('nota_dinas_ppk'))
-            {
+            if ($request->hasFile('nota_dinas_ppk')) {
                 $nota_dinas_ppk = $this->uploadFile($request, 'nota_dinas_ppk', $direktorat);
             }
 
-            if($request->hasFile('matrik_rab'))
-            {
+            if ($request->hasFile('matrik_rab')) {
                 $matrik_rab     = $this->uploadFile($request, 'matrik_rab', $direktorat);
             }
 
-            if($request->hasFile('kak'))
-            {
+            if ($request->hasFile('kak')) {
                 $kak = $this->uploadFile($request, 'kak', $direktorat);
             }
 
-            if($request->hasFile('dokumen_pendukung'))
-            {
+            if ($request->hasFile('dokumen_pendukung')) {
                 $dokumen_pendukung = $this->uploadFile($request, 'dokumen_pendukung', $direktorat);
             }
 
             $id_ticketing = $revisi->create([
-                'token'             => md5($request->nomor_surat.strtotime(date("ymdhis"))).random_int(100000, 99999999),
+                'token'             => md5($request->nomor_surat . strtotime(date("ymdhis"))) . random_int(100000, 99999999),
                 'key'               => random_int(100000, 999999),
                 'tahun_anggaran'    => $request->tahun_anggaran,
                 'nomor_surat'       => $request->nomor_surat,
@@ -1418,15 +297,14 @@ class TicketingController extends Controller
             $data_pejabat   = $pejabat->where('id_dir', Auth::user()->id_dir)->first();
             // $email_pejabat  = $data_pejabat->email;
             $email_pejabat  = "";
-            $text = Auth::user()->nama." telah mengajukan revisi baru. Mohon segera ditindak lanjut";
+            $text = Auth::user()->nama . " telah mengajukan revisi baru. Mohon segera ditindak lanjut";
             // $tools->sendingEmail($text, $email_pejabat, $request->nomor_surat);
             $this->record($id_ticketing->id, "Mengajukan Revisi E-Ticketing", Auth::user()->id_akses);
 
 
-            if($request->provinsi == "undefined")
-            {
-                $message_pptk   = "Pengajuan Revisi E-Ticketing Anda Berhasil Dikirim. Nomor Surat: ".$request->nomor_surat;
-                $message_ppk    = Auth::user()->nama." telah mengajukan revisi E-Ticketing baru dengan Nomor Surat: ".$request->nomor_surat.". Mohon segera ditindak lanjut";
+            if ($request->provinsi == "undefined") {
+                $message_pptk   = "Pengajuan Revisi E-Ticketing Anda Berhasil Dikirim. Nomor Surat: " . $request->nomor_surat;
+                $message_ppk    = Auth::user()->nama . " telah mengajukan revisi E-Ticketing baru dengan Nomor Surat: " . $request->nomor_surat . ". Mohon segera ditindak lanjut";
 
                 $no_hp_ppk = $user->where([
                     'id_dir'    => Auth::user()->id_dir,
@@ -1437,17 +315,15 @@ class TicketingController extends Controller
 
                 $tools->sendingWa($no_hp_ppk, $message_ppk, $request->nomor_surat, "Tickting Revisi");
                 $tools->sendingWa(Auth::user()->no_hp, $message_pptk, $request->nomor_surat, "Tickting Revisi");
-            }
-            else
-            {
-                $message_ppk    = "Pengajuan Revisi E-Ticketing Anda Berhasil Dikirim. Nomor Surat: ".$request->nomor_surat;
-                $message_bagren = Auth::user()->nama." telah mengajukan revisi E-Ticketing daerah baru dengan Nomor Surat: ".$request->nomor_surat.". Mohon segera ditindak lanjut";
+            } else {
+                $message_ppk    = "Pengajuan Revisi E-Ticketing Anda Berhasil Dikirim. Nomor Surat: " . $request->nomor_surat;
+                $message_bagren = Auth::user()->nama . " telah mengajukan revisi E-Ticketing daerah baru dengan Nomor Surat: " . $request->nomor_surat . ". Mohon segera ditindak lanjut";
 
                 $tools->sendingWa(Auth::user()->no_hp, $message_ppk, $request->nomor_surat, "Tickting Revisi");
                 $tools->sendingWa(Auth::user()->no_hp, $message_bagren, $request->nomor_surat, "Tickting Revisi");
             }
 
-            $message_bang_arief = "Ijin Bang Arief, ".Auth::user()->nama." telah mengajukan Ticketing Revisi Pusat baru dengan Nomor Surat: ".$request->nomor_surat;
+            $message_bang_arief = "Ijin Bang Arief, " . Auth::user()->nama . " telah mengajukan Ticketing Revisi Pusat baru dengan Nomor Surat: " . $request->nomor_surat;
             $tools->sendingWa("081213833316", $message_bang_arief, $request->nomor_surat, "Tickting Revisi");
 
             return response()->json([
@@ -1455,9 +331,7 @@ class TicketingController extends Controller
                 'title'     => 'Tiket Revisi Berhasil Dibuat',
                 'message'   => 'Pengajuan Revisi Akan Segera Diproses'
             ]);
-        }
-        catch (\Illuminate\Database\QueryException $e)
-        {
+        } catch (\Illuminate\Database\QueryException $e) {
 
             return response()->json([
                 'status' => 'error',
@@ -1466,7 +340,6 @@ class TicketingController extends Controller
             ]);
         }
     }
-    */
 
     public function updateRevisi(Request $request)
     {
@@ -1574,7 +447,7 @@ class TicketingController extends Controller
             ]);
 
             $data_pejabat   = $pejabat->where('id_dir', Auth::user()->id_dir)->first();
-            $email_pejabat  = $data_pejabat->email;
+            // $email_pejabat  = $data_pejabat->email;
             $text = Auth::user()->nama . " telah mengajukan perubahan revisi ticketing baru. Mohon segera ditindak lanjut";
             // $tools->sendingEmail($text, $email_pejabat, $data_old->nomor_surat);
             $this->record($request->id, "Telah melakukan Perbaikan Data Revisi E-Ticketing", Auth::user()->id_akses);
@@ -1903,16 +776,10 @@ class TicketingController extends Controller
 
                 // new logic condition : 2 > 1 > 5 > 7 > 5
                 if ($value->status == "BUTUH PERBAIKAN" && $value->status_approval == NULL) {
-                    // $data[$i]->tahap1           = '<span class="bg-danger text-uppercase p-2" title="">BUTUH PERBAIKAN</span>';
-                    // $data[$i]->tahap1_daerah    = '<span class="bg-danger text-uppercase p-2" title="">BUTUH PERBAIKAN</span>';
-                    // $data[$i]->tahap2           = '<span class="bg-danger text-uppercase p-2" title="">'.date("d/m/Y H:i", strtotime($value->fasgub_at)).'</span>';
-                    // $data[$i]->tahap2_daerah    = '<span class="bg-danger text-uppercase p-2" title="">'.date("d/m/Y H:i", strtotime($value->fasgub_at)).'</span>';
-
                     $data[$i]->tahap1           = '<span class="bg-danger text-uppercase p-2" title="">BUTUH PERBAIKAN</span>';
                     $data[$i]->tahap1_daerah    = '<span class="bg-danger text-uppercase p-2" title="">BUTUH PERBAIKAN</span>';
-                    $data[$i]->tahap2           = '';
-                    $data[$i]->tahap2_daerah    = '';
-
+                    $data[$i]->tahap2           = '<span class="bg-danger text-uppercase p-2" title="">' . date("d/m/Y H:i", strtotime($value->fasgub_at)) . '</span>';
+                    $data[$i]->tahap2_daerah    = '<span class="bg-danger text-uppercase p-2" title="">' . date("d/m/Y H:i", strtotime($value->fasgub_at)) . '</span>';
                     // if($value->status_kpa== "disetujui")
                     // {
                     //     $data[$i]->tahap4           = '<span class="bg-danger text-uppercase p-2" title="Permohonan Perbaikan">'.date("d/m/Y H:i", strtotime($value->updated_at)).'</span>';
@@ -1922,10 +789,8 @@ class TicketingController extends Controller
                 if ($value->status == "Perbaikan Disubmit" && $value->status_approval == NULL) {
                     $data[$i]->tahap1           = '<span class="bg-success text-uppercase p-2" title="">' . date("d/m/Y H:i", strtotime($value->created_at)) . '</span>';
                     $data[$i]->tahap1_daerah    = '<span class="bg-success text-uppercase p-2" title="">' . date("d/m/Y H:i", strtotime($value->created_at)) . '</span>';
-                    // $data[$i]->tahap2           = '<span class="bg-danger text-uppercase p-2" title="">'.date("d/m/Y H:i", strtotime($value->updated_at)).'</span>';
-                    // $data[$i]->tahap2_daerah    = '<span class="bg-danger text-uppercase p-2" title="">'.date("d/m/Y H:i", strtotime($value->updated_at)).'</span>';
-                    $data[$i]->tahap2           = '';
-                    $data[$i]->tahap2_daerah    = '';
+                    $data[$i]->tahap2           = '<span class="bg-danger text-uppercase p-2" title="">' . date("d/m/Y H:i", strtotime($value->updated_at)) . '</span>';
+                    $data[$i]->tahap2_daerah    = '<span class="bg-danger text-uppercase p-2" title="">' . date("d/m/Y H:i", strtotime($value->updated_at)) . '</span>';
                 }
                 if ($value->status_kpa == "disetujui" && $value->status == "Selesai Diproses KPA") {
                     $data[$i]->tahap1           = '<span class="bg-success text-uppercase p-2" title="">' . date("d/m/Y H:i", strtotime($value->created_at)) . '</span>';
@@ -1934,19 +799,12 @@ class TicketingController extends Controller
                     $data[$i]->tahap2_daerah    = '<span class="bg-success text-uppercase p-2" title="">' . date("d/m/Y H:i", strtotime($value->kpa_at)) . '</span>';
                 }
                 if ($value->status == "BUTUH PERBAIKAN" && $value->status_approval == NULL && $value->status_kpa == "disetujui") {
-                    // $data[$i]->tahap1           = '<span class="bg-danger text-uppercase p-2" title="">BUTUH PERBAIKAN</span>';
-                    // $data[$i]->tahap1_daerah    = '<span class="bg-danger text-uppercase p-2" title="">BUTUH PERBAIKAN</span>';
-                    // $data[$i]->tahap2           = '<span class="bg-danger text-uppercase p-2" title="">'.date("d/m/Y H:i", strtotime($value->fasgub_at)).'</span>';
-                    // $data[$i]->tahap2_daerah    = '<span class="bg-danger text-uppercase p-2" title="">'.date("d/m/Y H:i", strtotime($value->fasgub_at)).'</span>';
-                    // $data[$i]->tahap3           = '<span class="bg-danger text-uppercase p-2" title="">'.date("d/m/Y H:i", strtotime($value->updated_at)).'</span>';
-                    // $data[$i]->tahap4_daerah    = '<span class="bg-danger text-uppercase p-2" title="">'.date("d/m/Y H:i", strtotime($value->updated_at)).'</span>';
-
                     $data[$i]->tahap1           = '<span class="bg-danger text-uppercase p-2" title="">BUTUH PERBAIKAN</span>';
                     $data[$i]->tahap1_daerah    = '<span class="bg-danger text-uppercase p-2" title="">BUTUH PERBAIKAN</span>';
-                    $data[$i]->tahap2           = '';
-                    $data[$i]->tahap2_daerah    = '';
-                    $data[$i]->tahap3           = '';
-                    $data[$i]->tahap4_daerah    = '';
+                    $data[$i]->tahap2           = '<span class="bg-danger text-uppercase p-2" title="">' . date("d/m/Y H:i", strtotime($value->fasgub_at)) . '</span>';
+                    $data[$i]->tahap2_daerah    = '<span class="bg-danger text-uppercase p-2" title="">' . date("d/m/Y H:i", strtotime($value->fasgub_at)) . '</span>';
+                    $data[$i]->tahap3           = '<span class="bg-danger text-uppercase p-2" title="">' . date("d/m/Y H:i", strtotime($value->updated_at)) . '</span>';
+                    $data[$i]->tahap4_daerah    = '<span class="bg-danger text-uppercase p-2" title="">' . date("d/m/Y H:i", strtotime($value->updated_at)) . '</span>';
                 }
                 if ($value->status == "Perbaikan Disubmit" && $value->status_approval == NULL && $value->status_kpa == "disetujui") {
                     $data[$i]->tahap1           = '<span class="bg-success text-uppercase p-2" title="">' . date("d/m/Y H:i", strtotime($value->created_at)) . '</span>';
@@ -1967,21 +825,13 @@ class TicketingController extends Controller
                     $data[$i]->tahap4_daerah    = '<span class="bg-success text-uppercase p-2" title="">' . date("d/m/Y H:i", strtotime($value->verified_at)) . '</span>';
                 }
                 if ($value->status == "BUTUH PERBAIKAN" && $value->status_approval == NULL && $value->status_kpa == "disetujui") {
-                    // $data[$i]->tahap1           = '<span class="bg-danger text-uppercase p-2" title="">BUTUH PERBAIKAN</span>';
-                    // $data[$i]->tahap1_daerah    = '<span class="bg-danger text-uppercase p-2" title="">BUTUH PERBAIKAN</span>';
-                    // $data[$i]->tahap2           = '<span class="bg-danger text-uppercase p-2" title="">'.date("d/m/Y H:i", strtotime($value->kpa_at)).'</span>';
-                    // $data[$i]->tahap2_daerah    = '<span class="bg-danger text-uppercase p-2" title="">'.date("d/m/Y H:i", strtotime($value->kpa_at)).'</span>';
-                    // $data[$i]->tahap3           = '<span class="bg-danger text-uppercase p-2" title="">'.date("d/m/Y H:i", strtotime($value->verified_at)).'</span>';
-                    // $data[$i]->tahap3_daerah    = '<span class="bg-danger text-uppercase p-2" title="">'.date("d/m/Y H:i", strtotime($value->fasgub_at)).'</span>';
-                    // $data[$i]->tahap4_daerah    = '<span class="bg-danger text-uppercase p-2" title="">'.date("d/m/Y H:i", strtotime($value->verified_at)).'</span>';
-
                     $data[$i]->tahap1           = '<span class="bg-danger text-uppercase p-2" title="">BUTUH PERBAIKAN</span>';
                     $data[$i]->tahap1_daerah    = '<span class="bg-danger text-uppercase p-2" title="">BUTUH PERBAIKAN</span>';
-                    $data[$i]->tahap2           = '';
-                    $data[$i]->tahap2_daerah    = '';
-                    $data[$i]->tahap3           = '';
-                    $data[$i]->tahap3_daerah    = '';
-                    $data[$i]->tahap4_daerah    = '';
+                    $data[$i]->tahap2           = '<span class="bg-danger text-uppercase p-2" title="">' . date("d/m/Y H:i", strtotime($value->kpa_at)) . '</span>';
+                    $data[$i]->tahap2_daerah    = '<span class="bg-danger text-uppercase p-2" title="">' . date("d/m/Y H:i", strtotime($value->kpa_at)) . '</span>';
+                    $data[$i]->tahap3           = '<span class="bg-danger text-uppercase p-2" title="">' . date("d/m/Y H:i", strtotime($value->verified_at)) . '</span>';
+                    $data[$i]->tahap3_daerah    = '<span class="bg-danger text-uppercase p-2" title="">' . date("d/m/Y H:i", strtotime($value->fasgub_at)) . '</span>';
+                    $data[$i]->tahap4_daerah    = '<span class="bg-danger text-uppercase p-2" title="">' . date("d/m/Y H:i", strtotime($value->verified_at)) . '</span>';
                 }
                 if ($value->status == "Perbaikan Disubmit" && $value->status_approval == NULL && $value->status_kpa == "disetujui") {
                     $data[$i]->tahap1           = '<span class="bg-success text-uppercase p-2" title="">' . date("d/m/Y H:i", strtotime($value->created_at)) . '</span>';
@@ -2551,12 +1401,11 @@ class TicketingController extends Controller
             $catatan_simpan .= "</ol>";
 
 
-            if ($request->status_verifikasi == "DISETUJUI BAGREN") {
+            if ($request->status == "disetujui") {
 
                 if ($data_old->provinsi == "undefined") {
                     $revisi->where('id', $request->id)->update([
                         'catatan_verifikasi'    => $catatan,
-                        'current_status'        => "DISETUJUI BAGREN",
                         'status'                => "Selesai Diproses Bagren",
                         'status_verifikasi'     => $request->status,
                         'verified_at'           => date("Y-m-d H:i:s"),
@@ -2573,8 +1422,7 @@ class TicketingController extends Controller
                     if (!empty($request->nomor_surat_pengesahan)) {
                         $revisi->where('id', $request->id)->update([
                             'catatan_verifikasi'    => $catatan,
-                            'status'                => $request->status_verifikasi,
-                            'current_status'        => "DISETUJUI BAGREN",
+                            'status'                => "Disetujui",
                             'status_verifikasi'     => 'disetujui',
                             'verified_at'           => date("Y-m-d H:i:s"),
                             'tanggal_pengesahan'    => date("Y-m-d", strtotime($request->tanggal_pengesahan)),
@@ -2589,7 +1437,6 @@ class TicketingController extends Controller
                         $revisi->where('id', $request->id)->update([
                             'catatan_verifikasi'    => $catatan,
                             'status'                => "Disetujui Bagren",
-                            'current_status'        => "DISETUJUI BAGREN",
                             'status_verifikasi'     => $request->status,
                             'verified_at'           => date("Y-m-d H:i:s"),
                             'verified_by'           => Auth::user()->id_akses
@@ -2616,10 +1463,7 @@ class TicketingController extends Controller
             } else {
                 $revisi->where('id', $request->id)->update([
                     'catatan_verifikasi'    => $catatan,
-                    'status_kpa'            => null,
-                    'status_fasgub'         => null,
                     'status'                => "BUTUH PERBAIKAN",
-                    'current_status'        => "BUTUH PERBAIKAN",
                     'status_approval'       => NULL,
                     'status_verifikasi'     => NULL,
                     'status_fasgub'         => NULL,
@@ -2681,32 +1525,17 @@ class TicketingController extends Controller
                 'level'     => 5
             ])->first()->no_hp;
 
-            if ($request->status_fasgub == "DISETUJUI FASGUB") {
+            if ($request->status == "disetujui") {
                 $revisi->where('id', $request->id)->update([
                     'catatan_fasgub'    => $catatan,
-                    'current_status'     => $request->status_fasgub,
-                    'status_fasgub'     => $request->status_fasgub,
+                    'status_fasgub'     => $request->status,
                     'status_verifikasi' => null,
-                    'status'            => "DISETUJUI FASGUB",
+                    'status'            => "Selesai Diproses Fasgub",
                     'fasgub_at'         => date("Y-m-d H:i:s"),
                     'fasgub_by'         => Auth::user()->id_akses
                 ]);
 
-                $message_ppk        = "Pengajuan Revisi E-Ticketing Anda dengan Nomor Surat: " . $nomor_surat . " Sudah Diproses oleh Fasgub dan akan diteruskan ke Bagian Perencanaan untuk ditindak lanjut";
-
-                $message_bagren     = "Revisi E-Ticketing baru dengan Nomor Surat: " . $nomor_surat . " selesai diproses oleh Fasgub dan diteruskan ke Bagian Perencanaan untuk diterbitkan surat pengesahan. Mohon segera ditindak lanjut";
-
-                $tools->sendingWa($no_hp_ppk, $message_ppk, $nomor_surat, "Tickting Revisi");
-                $tools->sendingWa($no_hp_bagren, $message_bagren, $nomor_surat, "Tickting Revisi");
-            } else if ($request->status_fasgub == "DITOLAK FASGUB") {
-                $revisi->where('id', $request->id)->update([
-                    'catatan_fasgub'    => $catatan,
-                    'status_fasgub'     => $request->status_fasgub,
-                    'status_verifikasi' => null,
-                    'status'            => "DITOLAK FASGUB",
-                    'fasgub_at'         => date("Y-m-d H:i:s"),
-                    'fasgub_by'         => Auth::user()->id_akses
-                ]);
+                $status_record = "Melakukan Approval";
 
                 $message_ppk        = "Pengajuan Revisi E-Ticketing Anda dengan Nomor Surat: " . $nomor_surat . " Sudah Diproses oleh Fasgub dan akan diteruskan ke Bagian Perencanaan untuk ditindak lanjut";
 
@@ -2717,13 +1546,13 @@ class TicketingController extends Controller
             } else {
                 $revisi->where('id', $request->id)->update([
                     'catatan_fasgub'  => $catatan,
-                    'status_kpa'   => NULL,
                     'status_fasgub'   => NULL,
-                    'current_status'  => $request->status_fasgub,
                     'status'          => "BUTUH PERBAIKAN",
                     'fasgub_at'       => date("Y-m-d H:i:s"),
                     'fasgub_by'       => Auth::user()->id_akses
                 ]);
+
+                $status_record = "Melakukan Penolakan";
 
                 $message_ppk   = "Pengajuan Revisi E-Ticketing Anda dengan Nomor Surat: " . $nomor_surat . " *DITOLAK* oleh Fasgub. Mohon segera diperbaiki sesuai catatan dari Fasgub";
 
@@ -2738,7 +1567,7 @@ class TicketingController extends Controller
 
             $catatan_simpan .= "</ol>";
 
-            $this->record($request->id, "Melakukan Approval Revisi E-Ticketing. Catatan: " . $catatan_simpan, Auth::user()->id_akses);
+            $this->record($request->id, "$status_record Revisi E-Ticketing. Catatan: " . $catatan_simpan, Auth::user()->id_akses);
 
             return response()->json([
                 'status'    => 'success',
@@ -2937,31 +1766,14 @@ class TicketingController extends Controller
         }
     }
 
-    public function uploadFileFormatted($request, $type, $direktorat, $isNew = true)
-    {
-        $files = $request->File($type);
-
-        if (!empty($files)) {
-            $ticket = new TicketRevisi;
-
-            $filenameFormatted = $ticket->getIncrementFilename($request, $type) . '.' . $files->clientExtension();
-            $files->storeAs('./assets/files/' . $direktorat . '/', $filenameFormatted);
-
-            return $filenameFormatted;
-        }
-    }
-
-    public function record($id_ticketing, $activity, $user, $nota_dinas_ppk = null, $matrik_rab = null, $dokumen_pendukung = null)
+    public function record($id_ticketing, $activity, $user)
     {
         $log = new LogTicket;
 
         $log->create([
-            'user'              => $user,
-            'activity'          => $activity,
-            'nota_dinas_ppk'    => $nota_dinas_ppk,
-            'matrik_rab'        => $matrik_rab,
-            'dokumen_pendukung' => $dokumen_pendukung,
-            'id_ticketing'      => $id_ticketing
+            'user'          => $user,
+            'activity'      => $activity,
+            'id_ticketing'  => $id_ticketing
         ]);
     }
 
