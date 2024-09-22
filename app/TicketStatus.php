@@ -21,7 +21,7 @@ class TicketStatus
         self::PERBAIKAN        => self::PERBAIKAN,
         self::DISETUJUI_KPA    => self::DISETUJUI_KPA,
         self::DISETUJUI_FASGUB => self::DISETUJUI_FASGUB,
-        self::DICEK_BAGREN     => self::DICEK_BAGREN,
+        self::DISETUJUI_BAGREN     => self::DISETUJUI_BAGREN,
     ];
 
     public const LABEL = [
@@ -29,7 +29,7 @@ class TicketStatus
         self::PERBAIKAN        => 'Perbaikan',
         self::DISETUJUI_KPA    => 'Disetujui KPA',
         self::DISETUJUI_FASGUB => 'Disetujui Fasgub',
-        self::DICEK_BAGREN     => 'Disetujui Bagren',
+        self::DISETUJUI_BAGREN => 'Disetujui Bagren',
     ];
 
     public const ACTIVITY = [

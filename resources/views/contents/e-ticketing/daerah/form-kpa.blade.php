@@ -82,43 +82,7 @@
                         </div>
 
                         <div class="col-md-6">
-                            @if (empty($data->status_verifikasi) ||
-                                    ($data->status_verifikasi == \App\TicketStatus::DICEK_BAGREN &&
-                                        $data->status_fasgub != \App\TicketStatus::DISETUJUI_FASGUB))
-                                <div class="mb-3">
-                                    <label for="status_fasgub" class="form-label">Ubah status</label>
-                                    <select class="form-select form-select-sm" name="status_fasgub" id="status_fasgub">
-                                        <option value="{{ \App\TicketStatus::PERBAIKAN }}"
-                                            {{ $data->status_fasgub == \App\TicketStatus::PERBAIKAN ? 'selected' : '' }}>
-                                            Perbaikan</option>
-                                        <option value="{{ \App\TicketStatus::DISETUJUI_FASGUB }}"
-                                            {{ $data->status_fasgub == \App\TicketStatus::DISETUJUI_FASGUB ? 'selected' : '' }}>
-                                            Disetujui</option>
-                                        <option value="{{ \App\TicketStatus::DITOLAK_FASGUB }}"
-                                            {{ $data->status_fasgub == \App\TicketStatus::DITOLAK_FASGUB ? 'selected' : '' }}>
-                                            Ditolak</option>
-                                    </select>
-                                </div>
-
-                                <div class="mb-3 perbaikan">
-                                    <label for="catatan_fasgub" class="form-label">Catatan</label>
-                                    <textarea class="form-control" name="catatan_fasgub" id="catatan_fasgub" rows="3">{{ is_array($data->catatan_fasgub) ? implode('<br>', $data->catatan_fasgub) : $data->catatan_fasgub }}</textarea>
-                                </div>
-
-                                <div class="d-flex mb-3 justify-content-between">
-                                    <button type="button" class="btn btn-secondary">
-                                        Cancel
-                                    </button>
-                                    <div class="overlay" id="loader-form" style="display: none">
-                                        <i class="text-navy fas fa-2x fa-spinner fa-spin"></i> &nbsp;
-                                    </div>
-                                    <button type="button" class="btn btn-success" onclick="submitRevisiFasgub()">
-                                        Submit
-                                    </button>
-                                </div>
-                            @endif
-
-                            <mb-3 class="pt-4">
+                            <div class="pt-4">
                                 <div class="card">
                                     <h4 class="card-header">Histori Dokumen</h4>
                                     <div class="card-body">
@@ -142,7 +106,7 @@
                                         @endforeach
                                     </div>
                                 </div>
-                            </mb-3>
+                            </div>
                             <div class="mb-3 pt-4">
                                 <div class="card">
                                     <h4 class="card-header">Histori Revisi</h4>
@@ -156,7 +120,6 @@
                                         @endforeach
                                     </div>
                                 </div>
-
                             </div>
                         </div>
                     </div>
@@ -166,54 +129,4 @@
     </div>
 
     <script src="{{ asset('') }}landing-pages/js/jquery-3.3.1.min.js"></script>
-    <script>
-        $(function() {
-            $("#status_fasgub").on('change', function() {
-                if ($("#status_fasgub option:selected").val() == '{{ \App\TicketStatus::PERBAIKAN }}') {
-                    $('.setuju').addClass('d-none');
-                    $('.perbaikan').removeClass('d-none');
-                } else {
-                    $('.setuju').removeClass('d-none');
-                    $('.perbaikan').addClass('d-none');
-                }
-            }).trigger('change');
-        })
-
-        function submitRevisiFasgub() {
-            $('#loader-form').show()
-            var status_fasgub = $('#status_fasgub option:selected').val();
-            var id = $('#id').val();
-            var catatan_fasgub = $('#catatan_fasgub').val() || '';
-
-            var form_data = new FormData();
-
-            form_data.append('id', id);
-            form_data.append('status_fasgub', status_fasgub);
-            form_data.append('catatan_fasgub', catatan_fasgub);
-
-            form_data.append('_token', '{{ csrf_token() }}')
-
-            $.ajax({
-                url: "{{ route('ticketing.submit-fasgub') }}",
-                type: "POST",
-                data: form_data,
-                cache: false,
-                processData: false,
-                contentType: false,
-                success: function(e) {
-                    $('#loader-form').hide();
-                    var msg = typeof e.message == 'object' ? e.message.join("<br>\n") : e.message
-                    Swal.fire({
-                        title: e.title,
-                        html: msg,
-                        icon: e.status
-                    }).then((result) => {
-                        if (result.isConfirmed && e.status == 'success') {
-                            window.location.href = "{{ route('ticketing.revisi-gwpp') }}"
-                        }
-                    });
-                }
-            });
-        }
-    </script>
 @endsection

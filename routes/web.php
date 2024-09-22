@@ -50,6 +50,11 @@ $router->group(['prefix' => 'ticketing',  'as' => 'ticketing.'], function () use
     $router->get('/daftar-revisi-disetujui-fasgub', 'TicketingController@viewGgwpDaerahListOkFasgub')->name('view-daftar-revisi-fasgub');
     $router->get('/daftar-revisi-disetujui-bagren', 'TicketingController@viewGgwpDaerahListOkBagren')->name('view-daftar-revisi-bagren');
 
+    $router->get('/view-kpa/{id?}', 'TicketingController@viewKpa')->name('view-kpa');
+    $router->get('/view-ppk/{id?}', 'TicketingController@viewPpk')->name('view-ppk');
+    $router->get('/view-fasgub/{id?}', 'TicketingController@viewFasgub')->name('view-fasgub');
+    $router->get('/view-bagren/{id?}', 'TicketingController@viewBagren')->name('view-bagren');
+
     $router->get('/revisi-kpa/{id?}', 'TicketingController@viewRevisiKpa')->name('view-revisi-kpa');
     $router->get('/revisi-ppk/{id?}', 'TicketingController@viewRevisiPpk')->name('view-revisi-ppk');
     $router->get('/revisi-fasgub/{id?}', 'TicketingController@viewRevisiFasgub')->name('view-revisi-fasgub');

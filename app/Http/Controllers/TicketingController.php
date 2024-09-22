@@ -333,6 +333,101 @@ class TicketingController extends Controller
     }
 
     /**
+     * 4.A - Halaman View PPK
+     */
+    public function viewPpk($id = null)
+    {
+        if ($this->user->level != \App\UserAccess::LEVEL_PPK) {
+            return redirect('ticketing/revisi-gwpp');
+        }
+
+        $type     = "Daerah";
+        $kegiatan = "GWPP";
+        $modul    = "E-Ticketing";
+        $current  = "Formulir Tindak Lanjut Revisi oleh KPA";
+
+        $t = new TicketRevisi;
+        $data = $t->find($id);
+
+        $l = new LogTicket;
+        $filelog = $l->getFileLogs($id);
+        $log = $l->getLogs($id);
+
+        return view('contents.e-ticketing.daerah.form-ppk', compact('current', 'modul', 'type', 'kegiatan', 'data', 'log', 'filelog'));
+    }
+
+    /**
+     * 4.A - Halaman View KPA
+     */
+    public function viewKpa($id = null)
+    {
+        if ($this->user->level != \App\UserAccess::LEVEL_KPA) {
+            return redirect('ticketing/revisi-gwpp');
+        }
+
+        $type     = "Daerah";
+        $kegiatan = "GWPP";
+        $modul    = "E-Ticketing";
+        $current  = "Formulir Tindak Lanjut Perbaikan";
+
+        $t = new TicketRevisi;
+        $data = $t->find($id);
+
+        $l = new LogTicket;
+        $filelog = $l->getFileLogs($id);
+        $log = $l->getLogs($id);
+
+        return view('contents.e-ticketing.daerah.form-kpa', compact('current', 'modul', 'type', 'kegiatan', 'data', 'log', 'filelog'));
+    }
+
+    /**
+     * 4.A - Halaman View Fasgub
+     */
+    public function viewFasgub($id = null)
+    {
+        if ($this->user->level != \App\UserAccess::LEVEL_FASGUB) {
+            return redirect('ticketing/revisi-gwpp');
+        }
+
+        $type     = "Daerah";
+        $kegiatan = "GWPP";
+        $modul    = "E-Ticketing";
+        $current  = "Formulir Tindak Lanjut Revisi oleh Bagren";
+
+        $t = new TicketRevisi;
+        $data = $t->find($id);
+
+        $l = new LogTicket;
+        $filelog = $l->getFileLogs($id);
+        $log = $l->getLogs($id);
+
+        return view('contents.e-ticketing.daerah.form-fasgub', compact('current', 'modul', 'type', 'kegiatan', 'data', 'log', 'filelog'));
+    }
+
+    /**
+     * 4.A - Halaman View Bagren
+     */
+    public function viewBagren($id = null)
+    {
+        if ($this->user->level != \App\UserAccess::LEVEL_BAGREN) {
+            return redirect('ticketing/revisi-gwpp');
+        }
+
+        $type     = "Daerah";
+        $kegiatan = "GWPP";
+        $modul    = "E-Ticketing";
+        $current  = "Formulir Tindak Lanjut Revisi oleh Bagren";
+
+        $t = new TicketRevisi;
+        $data = $t->find($id);
+
+        $l = new LogTicket;
+        $filelog = $l->getFileLogs($id);
+        $log = $l->getLogs($id);
+
+        return view('contents.e-ticketing.daerah.form-bagren', compact('current', 'modul', 'type', 'kegiatan', 'data', 'log', 'filelog'));
+    }
+    /**
      * 4.B - Simpan Revisi KPA (disetujui / dikembalikan untuk perbaikan)
      */
 
@@ -2456,11 +2551,12 @@ class TicketingController extends Controller
             $catatan_simpan .= "</ol>";
 
 
-            if ($request->status == "disetujui") {
+            if ($request->status_verifikasi == "DISETUJUI BAGREN") {
 
                 if ($data_old->provinsi == "undefined") {
                     $revisi->where('id', $request->id)->update([
                         'catatan_verifikasi'    => $catatan,
+                        'current_status'        => "DISETUJUI BAGREN",
                         'status'                => "Selesai Diproses Bagren",
                         'status_verifikasi'     => $request->status,
                         'verified_at'           => date("Y-m-d H:i:s"),
@@ -2477,7 +2573,8 @@ class TicketingController extends Controller
                     if (!empty($request->nomor_surat_pengesahan)) {
                         $revisi->where('id', $request->id)->update([
                             'catatan_verifikasi'    => $catatan,
-                            'status'                => "Disetujui",
+                            'status'                => $request->status_verifikasi,
+                            'current_status'        => "DISETUJUI BAGREN",
                             'status_verifikasi'     => 'disetujui',
                             'verified_at'           => date("Y-m-d H:i:s"),
                             'tanggal_pengesahan'    => date("Y-m-d", strtotime($request->tanggal_pengesahan)),
@@ -2492,6 +2589,7 @@ class TicketingController extends Controller
                         $revisi->where('id', $request->id)->update([
                             'catatan_verifikasi'    => $catatan,
                             'status'                => "Disetujui Bagren",
+                            'current_status'        => "DISETUJUI BAGREN",
                             'status_verifikasi'     => $request->status,
                             'verified_at'           => date("Y-m-d H:i:s"),
                             'verified_by'           => Auth::user()->id_akses
@@ -2518,7 +2616,10 @@ class TicketingController extends Controller
             } else {
                 $revisi->where('id', $request->id)->update([
                     'catatan_verifikasi'    => $catatan,
+                    'status_kpa'            => null,
+                    'status_fasgub'         => null,
                     'status'                => "BUTUH PERBAIKAN",
+                    'current_status'        => "BUTUH PERBAIKAN",
                     'status_approval'       => NULL,
                     'status_verifikasi'     => NULL,
                     'status_fasgub'         => NULL,
@@ -2580,12 +2681,29 @@ class TicketingController extends Controller
                 'level'     => 5
             ])->first()->no_hp;
 
-            if ($request->status == "disetujui") {
+            if ($request->status_fasgub == "DISETUJUI FASGUB") {
                 $revisi->where('id', $request->id)->update([
                     'catatan_fasgub'    => $catatan,
-                    'status_fasgub'     => $request->status,
+                    'current_status'     => $request->status_fasgub,
+                    'status_fasgub'     => $request->status_fasgub,
                     'status_verifikasi' => null,
-                    'status'            => "Selesai Diproses Fasgub",
+                    'status'            => "DISETUJUI FASGUB",
+                    'fasgub_at'         => date("Y-m-d H:i:s"),
+                    'fasgub_by'         => Auth::user()->id_akses
+                ]);
+
+                $message_ppk        = "Pengajuan Revisi E-Ticketing Anda dengan Nomor Surat: " . $nomor_surat . " Sudah Diproses oleh Fasgub dan akan diteruskan ke Bagian Perencanaan untuk ditindak lanjut";
+
+                $message_bagren     = "Revisi E-Ticketing baru dengan Nomor Surat: " . $nomor_surat . " selesai diproses oleh Fasgub dan diteruskan ke Bagian Perencanaan untuk diterbitkan surat pengesahan. Mohon segera ditindak lanjut";
+
+                $tools->sendingWa($no_hp_ppk, $message_ppk, $nomor_surat, "Tickting Revisi");
+                $tools->sendingWa($no_hp_bagren, $message_bagren, $nomor_surat, "Tickting Revisi");
+            } else if ($request->status_fasgub == "DITOLAK FASGUB") {
+                $revisi->where('id', $request->id)->update([
+                    'catatan_fasgub'    => $catatan,
+                    'status_fasgub'     => $request->status_fasgub,
+                    'status_verifikasi' => null,
+                    'status'            => "DITOLAK FASGUB",
                     'fasgub_at'         => date("Y-m-d H:i:s"),
                     'fasgub_by'         => Auth::user()->id_akses
                 ]);
@@ -2599,7 +2717,9 @@ class TicketingController extends Controller
             } else {
                 $revisi->where('id', $request->id)->update([
                     'catatan_fasgub'  => $catatan,
+                    'status_kpa'   => NULL,
                     'status_fasgub'   => NULL,
+                    'current_status'  => $request->status_fasgub,
                     'status'          => "BUTUH PERBAIKAN",
                     'fasgub_at'       => date("Y-m-d H:i:s"),
                     'fasgub_by'       => Auth::user()->id_akses

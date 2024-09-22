@@ -19,25 +19,26 @@
                             <div class="mb-3 row">
                                 <label for="nomor_surat" class="col-4 col-form-label">Nomer Surat</label>
                                 <div class="col-8">
-                                    <span class="form-control">{{ $data->nomor_surat }}</span>
+                                    <span class="form-control" id="nomor_surat">{{ $data->nomor_surat }}</span>
                                 </div>
                             </div>
                             <div class="mb-3 row">
                                 <label for="tanggal_surat" class="col-4 col-form-label">Tanggal Pengajuan</label>
                                 <div class="col-8">
-                                    <span class="form-control">{{ $data->tanggal_surat }}</span>
+                                    <span class="form-control" id="tanggal_surat">{{ $data->tanggal_surat }}</span>
                                 </div>
                             </div>
                             <div class="mb-3 row">
                                 <label for="jenis_revisi" class="col-4 col-form-label">Jenis Revisi</label>
                                 <div class="col-8">
-                                    <span class="form-control">{{ strtoupper($data->jenis_revisi) }}</span>
+                                    <span class="form-control"
+                                        id="jenis_revisi">{{ strtoupper($data->jenis_revisi) }}</span>
                                 </div>
                             </div>
                             <div class="mb-3 row">
                                 <label for="perihal" class="form-label col-4">Perihal</label>
                                 <div class="col-8">
-                                    <div class="form-control">{{ nl2br($data->perihal) }}</div>
+                                    <div class="form-control" id="perihal">{{ nl2br($data->perihal) }}</div>
                                 </div>
                             </div>
                             <div class="mb-3 row">
@@ -93,8 +94,8 @@
                                         <option value="{{ \App\TicketStatus::PERBAIKAN }}"
                                             {{ $data->status_verifikasi == \App\TicketStatus::PERBAIKAN ? 'selected' : '' }}>
                                             Perbaikan</option>
-                                        <option value="{{ \App\TicketStatus::DICEK_BAGREN }}"
-                                            {{ $data->status_verifikasi == \App\TicketStatus::DICEK_BAGREN ? 'selected' : '' }}>
+                                        <option value="{{ \App\TicketStatus::DISETUJUI_BAGREN }}"
+                                            {{ $data->status_verifikasi == \App\TicketStatus::DISETUJUI_BAGREN ? 'selected' : '' }}>
                                             Disetujui</option>
                                         <option value="{{ \App\TicketStatus::DITELITI_BAGREN }}"
                                             {{ $data->status_verifikasi == \App\TicketStatus::DITELITI_BAGREN ? 'selected' : '' }}>
@@ -130,7 +131,8 @@
                                         @foreach ($filelog as $history)
                                             <div class="item-timeline pb-4">
                                                 <h5 class="card-title d-flex justify-content-between">{{ $history->nama }}
-                                                    <span class="small">{{ $history->log_time }}</span></h5>
+                                                    <span class="small">{{ $history->log_time }}</span>
+                                                </h5>
                                                 <ul>
                                                     <li><span>Nota Dinas PPK Sudah Sign</span><br><a
                                                             href="{{ route('download.dokumen', ['jenis_file' => 'nota_dinas_ppk', 'nama_file' => $history->nota_dinas_ppk]) }}">{{ $history->nota_dinas_ppk }}</a>
@@ -199,7 +201,7 @@
             form_data.append('_token', '{{ csrf_token() }}')
 
             $.ajax({
-                url: "{{ route('ticketing.submit-revisi-bagren') }}",
+                url: "{{ route('ticketing.submit-bagren') }}",
                 type: "POST",
                 data: form_data,
                 cache: false,
