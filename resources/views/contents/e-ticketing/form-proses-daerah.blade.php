@@ -1402,7 +1402,7 @@
             contentType: false,
             success: function(e) {
                 $('#content-surat-pengesahan').load(
-                    '{{ env('APP_URL') }}/ticketing/preview-pengesahan?token=' + token,
+                    '{{ asset('') }}ticketing/preview-pengesahan?token=' + token,
                     function() {
                         $('#modal-preview-surat-pengesahan').modal({
                             show: true
@@ -1415,6 +1415,6 @@
 
     function downloadPreview() {
         var token = $('#token_revisi_proses').val()
-        window.open('{{ env('APP_URL') }}/download/preview-pengesahan?token=' + token);
+        window.open('{{ asset('') }}download/preview-pengesahan?token=' + token);
     }
 </script>

@@ -6,25 +6,25 @@
         <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
 
         <link href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700,900" rel="stylesheet" />
-        <link rel="stylesheet" href="{{env('APP_URL')}}/landing-pages/fonts/icomoon/style.css" />
-        <link rel="stylesheet" href="{{env('APP_URL')}}/landing-pages/css/bootstrap.min.css" />
-        <link rel="stylesheet" href="{{env('APP_URL')}}/landing-pages/css/animate.css" />
-        <link rel="stylesheet" href="{{env('APP_URL')}}/landing-pages/css/owl.carousel.min.css" />
-        <link rel="stylesheet" href="{{env('APP_URL')}}/landing-pages/css/owl.theme.default.min.css" />
-        <link rel="stylesheet" href="{{env('APP_URL')}}/landing-pages/css/bootstrap-datepicker.css" />
+        <link rel="stylesheet" href="{{ asset('') }}landing-pages/fonts/icomoon/style.css" />
+        <link rel="stylesheet" href="{{ asset('') }}landing-pages/css/bootstrap.min.css" />
+        <link rel="stylesheet" href="{{ asset('') }}landing-pages/css/animate.css" />
+        <link rel="stylesheet" href="{{ asset('') }}landing-pages/css/owl.carousel.min.css" />
+        <link rel="stylesheet" href="{{ asset('') }}landing-pages/css/owl.theme.default.min.css" />
+        <link rel="stylesheet" href="{{ asset('') }}landing-pages/css/bootstrap-datepicker.css" />
 
-        <link rel="stylesheet" href="{{env('APP_URL')}}/landing-pages/fonts/flaticon/font/flaticon.css" />
+        <link rel="stylesheet" href="{{ asset('') }}landing-pages/fonts/flaticon/font/flaticon.css" />
 
-        <link rel="stylesheet" href="{{env('APP_URL')}}/landing-pages/css/aos.css" />
-        <link rel="stylesheet" href="{{env('APP_URL')}}/landing-pages/css/jquery.fancybox.min.css" />
+        <link rel="stylesheet" href="{{ asset('') }}landing-pages/css/aos.css" />
+        <link rel="stylesheet" href="{{ asset('') }}landing-pages/css/jquery.fancybox.min.css" />
 
-        <link rel="stylesheet" href="{{env('APP_URL')}}/landing-pages/css/style.css" />
+        <link rel="stylesheet" href="{{ asset('') }}landing-pages/css/style.css" />
 
         <!-- Select2 -->
-        <link rel="stylesheet" href="{{env('APP_URL')}}/templates/plugins/select2/css/select2.min.css">
-        <link rel="stylesheet" href="{{env('APP_URL')}}/templates/plugins/select2-bootstrap4-theme/select2-bootstrap4.min.css">
+        <link rel="stylesheet" href="{{ asset('') }}templates/plugins/select2/css/select2.min.css">
+        <link rel="stylesheet" href="{{ asset('') }}templates/plugins/select2-bootstrap4-theme/select2-bootstrap4.min.css">
         <!-- Sweetalert Css -->
-        <link href="{{ env('APP_URL') }}/templates/plugins/sweetalert/sweetalert.css" rel="stylesheet" />
+        <link href="{{ asset('') }}templates/plugins/sweetalert/sweetalert.css" rel="stylesheet" />
     </head>
     <body data-spy="scroll" data-target=".site-navbar-target" data-offset="300">
         <div class="loader"></div>
@@ -33,7 +33,7 @@
                 <div class="img-wrap">
                     <div class="owl-carousel slide-one-item hero-slider">
                         <div class="slide">
-                            <img src="{{env('APP_URL')}}/images/header-logo.png" alt="Image" width="25px" />
+                            <img src="{{ asset('') }}images/header-logo.png" alt="Image" width="25px" />
                         </div>
                     </div>
                 </div>
@@ -119,7 +119,7 @@
                     </div>
                     <div class="row mb-5">
                         <div class="col-lg-6 mb-4 mb-lg-0">
-                            <img src="{{env('APP_URL')}}/images/1.png" alt="Image" class="img-fluid" />
+                            <img src="{{ asset('') }}images/1.png" alt="Image" class="img-fluid" />
                         </div>
                         <div class="col-lg-5 h-100 jm-sticky-top ml-auto">
                             <h3>Pejabat Pelaksana Teknis Kegiatan (PPTK)</h3>
@@ -337,24 +337,24 @@
         </div>
         <!-- /.modal -->
 
-        <script src="{{env('APP_URL')}}/landing-pages/js/jquery-3.3.1.min.js"></script>
-        <script src="{{env('APP_URL')}}/landing-pages/js/popper.min.js"></script>
-        <script src="{{env('APP_URL')}}/landing-pages/js/bootstrap.min.js"></script>
-        <script src="{{env('APP_URL')}}/landing-pages/js/owl.carousel.min.js"></script>
-        <script src="{{env('APP_URL')}}/landing-pages/js/aos.js"></script>
-        <script src="{{env('APP_URL')}}/landing-pages/js/jquery.sticky.js"></script>
-        <script src="{{env('APP_URL')}}/landing-pages/js/stickyfill.min.js"></script>
-        <script src="{{env('APP_URL')}}/landing-pages/js/jquery.easing.1.3.js"></script>
-        <script src="{{env('APP_URL')}}/landing-pages/js/isotope.pkgd.min.js"></script>
+        <script src="{{ asset('') }}landing-pages/js/jquery-3.3.1.min.js"></script>
+        <script src="{{ asset('') }}landing-pages/js/popper.min.js"></script>
+        <script src="{{ asset('') }}landing-pages/js/bootstrap.min.js"></script>
+        <script src="{{ asset('') }}landing-pages/js/owl.carousel.min.js"></script>
+        <script src="{{ asset('') }}landing-pages/js/aos.js"></script>
+        <script src="{{ asset('') }}landing-pages/js/jquery.sticky.js"></script>
+        <script src="{{ asset('') }}landing-pages/js/stickyfill.min.js"></script>
+        <script src="{{ asset('') }}landing-pages/js/jquery.easing.1.3.js"></script>
+        <script src="{{ asset('') }}landing-pages/js/isotope.pkgd.min.js"></script>
 
-        <script src="{{env('APP_URL')}}/landing-pages/js/jquery.fancybox.min.js"></script>
-        <script src="{{env('APP_URL')}}/landing-pages/js/main.js"></script>
+        <script src="{{ asset('') }}landing-pages/js/jquery.fancybox.min.js"></script>
+        <script src="{{ asset('') }}landing-pages/js/main.js"></script>
         <!-- Select2 -->
-        <script src="{{env('APP_URL')}}/templates/plugins/select2/js/select2.full.min.js"></script>
+        <script src="{{ asset('') }}templates/plugins/select2/js/select2.full.min.js"></script>
         <!-- SweetAlert Plugin Js -->
-        <script src="{{ env('APP_URL') }}/templates/plugins/sweetalert/sweetalert.min.js"></script>
+        <script src="{{ asset('') }}templates/plugins/sweetalert/sweetalert.min.js"></script>
         <!-- bs-custom-file-input -->
-        <script src="{{ env('APP_URL') }}/templates/plugins/bs-custom-file-input/bs-custom-file-input.min.js"></script>
+        <script src="{{ asset('') }}templates/plugins/bs-custom-file-input/bs-custom-file-input.min.js"></script>
 
         <script>
 
