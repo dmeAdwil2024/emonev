@@ -49,7 +49,7 @@
         </li> -->
 
         <li>
-            <a href="#menuTiketing" class="btn btn-dongker @if($modul == "E-Ticketing") show @endif" data-bs-toggle="collapse">E Tiketing &#11206;</a>
+            <a href="#menuTiketing" class="btn btn-dongker @if($modul == "E-Ticketing") show @endif" data-bs-toggle="collapse">E Ticketing &#11206;</a>
             <ul class="list-unstyled @if($modul == "E-Ticketing") show @else collapse @endif" ps-3" id="menuTiketing">
                 <li><a href="#" class="btn btn-sm btn-primary btn-pills my-1">Pengajuan Revisi Pusat</a></li>
                 <li><a href="#" class="btn btn-sm btn-primary btn-pills mb-1">Usulan kegiatan</a></li>

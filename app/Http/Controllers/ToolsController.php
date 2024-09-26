@@ -190,6 +190,19 @@ class ToolsController extends Controller
         return response()->download(storage_path("app/assets/files/$nama_direktorat/$nama_file"));
     }
 
+    public function downloadCapaian($id_dir,$jenis_file,$nama_file)
+    {
+		$dir = new Direktorat;
+		$nama_direktorat = $dir->where('id_dir',$id_dir)->first()->nama_dir;
+		$path='';
+		switch ($jenis_file) {
+			case "buku":$path="buku-capaian";break;
+			case "evidence":$path="evidence-capaian";break;
+		}
+		return response()->file(storage_path("app/assets/files/$nama_direktorat/$path/$nama_file",[
+		  'Content-Disposition' => 'inline; filename="'. $nama_file .'"'
+		]));
+    }
     public function downloadUsulan(Request $request, $jenis_file, $nama_file)
     {
         $ticket          = new Usulan;
@@ -405,22 +418,24 @@ class ToolsController extends Controller
                 'no_surat'  => $no_surat,
                 'message'   => $message
             ]);
-
-            $data = array("phone_no" => $phone_no, "key" => env('API_KEY_NASCONDIMI'), "message" => $message);
-            $data_string = json_encode($data);
-            $ch = curl_init('http://116.203.92.59/api/send_message');
-                curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "POST");
-                curl_setopt($ch, CURLOPT_POSTFIELDS, $data_string);
-                curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-                curl_setopt($ch, CURLOPT_VERBOSE, 0);
-                curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 0);
-                curl_setopt($ch, CURLOPT_TIMEOUT, 15);
-                curl_setopt($ch, CURLOPT_HTTPHEADER, array(
-                'Content-Type: application/json',
-                'Content-Length: ' . strlen($data_string))
-            );
-
-            return curl_exec($ch);
+            if($phone_no=='089524627319'||$phone_no=='089516543062'||$phone_no=='0895325780305'||$phone_no=='089680746121'){
+              /*
+              $data = array("phone_no" => $phone_no, "key" => env('API_KEY_NASCONDIMI'), "message" => $message);
+              $data_string = json_encode($data);
+              $ch = curl_init('http://116.203.92.59/api/send_message');
+                  curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "POST");
+                  curl_setopt($ch, CURLOPT_POSTFIELDS, $data_string);
+                  curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+                  curl_setopt($ch, CURLOPT_VERBOSE, 0);
+                  curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 0);
+                  curl_setopt($ch, CURLOPT_TIMEOUT, 15);
+                  curl_setopt($ch, CURLOPT_HTTPHEADER, array(
+                  'Content-Type: application/json',
+                  'Content-Length: ' . strlen($data_string))
+              );
+              return curl_exec($ch);
+              */
+            }
         }
         catch (\Throwable $th)
         {

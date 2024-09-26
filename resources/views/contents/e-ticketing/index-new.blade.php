@@ -1,17 +1,38 @@
-@extends('layouts.main-new')
+@extends('layouts.caput')
 
-@section('content')
-    <div class="px-3">
-        <h3>{{ $type }}</h3>
+@section('contents')
+<div class="main">
+	<div class="topbar">
+		<div class="toggle col-md-1"  id="menuNav">
+			<a href="#menuNav">
+				<i class="fas fa-bars"></i>
+			</a>
+		</div>
+		<div class="col-md-8 d-flex logo-admin">
+			<img src="{{asset('newdashboard/images/logo-emonev.png')}}" alt="logo emonev" class="img-fluid margin-auto logo-smaller">
+			<div class="text-center">
+				<h1 class="title">E-MONEV</h1>
+				<h2 class="subtitle">DITJEN BINA ADMINISTRASI KEWILAYAHAN</h2>
+			</div>
+		</div>
+		<div class="avatar col-md-3 p-2 d-flex">
+			<img src="{{asset('newdashboard/images/user-avatar.png')}}" alt="" class="img-fluid avatar-img me-2">
+			<div class="avatar-name small fw-bold">
+				Selamat Datang Admin,<br>
+				Bagian Perencanaan
+			</div>
+		</div>
+	</div>
+    {{-- <div class="row"> --}}
+        <h3>{{$type}}</h3>
         <div class="row bg-tosca pt-3 mb-4">
             <div class="col-md-3 d-flex align-items-center gap-2 mb-3">
                 <label for="pilihTahun" class="form-label text-nowrap mb-0">Tahun Anggaran</label>
                 <select class="form-select form-select-sm" name="tahun" id="pilihTahun">
                     <option value="">Semua</option>
                     @php $tahun = date("Y")-1; @endphp
-                    @for ($i = 0; $i <= 5; $i++)
-                        <option value="{{ $tahun }}" {{ $tahun == date('Y') ? 'selected' : '' }}>{{ $tahun }}
-                        </option>
+                    @for($i=0; $i<=5; $i++)
+                        <option value="{{$tahun}}" {{($tahun==date("Y")?"selected":"")}}>{{$tahun}}</option>
                         @php $tahun++; @endphp
                     @endfor
                 </select>
@@ -19,9 +40,8 @@
             <div class="col-md-2 d-flex align-items-center gap-2 mb-3">
                 <label for="pilihBulan" class="form-label text-nowrap mb-0">Bulan</label>
                 <select class="form-select form-select-sm" name="bulan" id="pilihBulan">
-                    @for ($i = 0; $i <= 12; $i++)
-                        <option value="{{ $i }}" {{ $i == date('n') ? 'selected' : '' }}>{{ $months[$i] }}
-                        </option>
+                    @for($i=0; $i<=12; $i++)
+                        <option value="{{$i}}" {{($i==date("n")?"selected":"")}}>{{$months[$i]}}</option>
                     @endfor
                 </select>
             </div>
@@ -29,9 +49,9 @@
                 <div class="col-md-4 d-flex align-items-center gap-2 mb-3">
                     <label for="pilihProv" class="form-label text-nowrap mb-0">Pilih Provinsi</label>
                     <select class="form-select form-select-sm" name="provinsi" id="pilihProv">
-                        @foreach ($provinsi as $prov)
-                            <option value="{{ $prov->id_prov }}">{{ $prov->namaprov }}</option>
-                        @endforeach
+                    @foreach($provinsi as $prov)
+                        <option value="{{$prov->id_prov}}">{{$prov->namaprov}}</option>
+                    @endforeach
                     </select>
                 </div>
                 <div class="col-md-6 d-flex align-items-center gap-2 mb-3">
@@ -40,102 +60,102 @@
                     </select>
                 </div>
                 @if ($isPPK)
-                    <div class="col-md-2 d-flex align-items-center gap-2 mb-3">
-                        <a href="#" id="btn-new" class="btn btn-dongker"><i class="fas fa-plus"></i> Usulan Baru</a>
-                    </div>
+                <div class="col-md-2 d-flex align-items-center gap-2 mb-3">
+                    <a href="#" id="btn-new" class="btn btn-dongker"><i class="fas fa-plus"></i> Usulan Baru</a>
+                </div>
                 @endif
             </div>
         </div>
         <div class="row bg-tosca py-3 d-flex align-content-stretch">
-            @foreach ($opsi as $status)
-                @if ($status == 4)
-                    @dd($status)
-                @endif
-                <div style="width: calc(100%/5);">
-                    <div class="bg-tosca p-3 h-100 text-center">
-                        <h5 class="text-center">{{ $label[$status] }}<br><br></h5>
-                        <p class="h3 text-center" data-status="{{ $status }}">
-                            {{ isset($rekap[$status]) ? $rekap[$status] : 0 }}</p>
-                        <a href="#" data-status="{{ $status }}"
-                            class="btn btn-success rounded-pill btn-list">Lihat Detail</a>
-                    </div>
+            @foreach($opsi as $status)
+            <div style="width: calc(100%/5);">
+                <div class="bg-tosca p-3 h-100 text-center">
+                    <h5 class="text-center">{{ $label[$status] }}<br><br></h5>
+                    <p class="h3 text-center" data-status="{{$status}}">{{ isset($rekap[$status]) ? $rekap[$status] : 0}}</p>
+                    <a href="#" data-status="{{$status}}" class="btn btn-success rounded-pill btn-list">Lihat Detail</a>
                 </div>
+            </div>
             @endforeach
         </div>
-    </div>
-    <div>
+    {{-- </div> --}}
+</div>
+@endsection
 
-    </div>
+@section('js')
+<script
+      src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js"
+      integrity="sha384-I7E8VVD/ismYTF4hNIPjVp/Zjvgyol6VFvRkX/vR+Vc4jQkC+hVqc2pM8ODewa9r"
+      crossorigin="anonymous"
+></script>
 
-    <script src="{{ asset('') }}landing-pages/js/jquery-3.3.1.min.js"></script>
-    <script>
-        $('#pilihProv').on('change', function() {
-            loadSatker();
-        }).trigger('change');
+<script
+    src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.min.js"
+    integrity="sha384-BBtl+eGJRgqQAUMxJ7pMwbEyER4l1g+O15P+16Ep7Q9Q+zqX6gSbd85u4mG4QzX+"
+    crossorigin="anonymous"
+></script>
+<script src="{{env('APP_URL')}}/landing-pages/js/jquery-3.3.1.min.js"></script>
+<script>
+  $('#pilihProv').on('change', function(){
+    loadSatker();
+  }).trigger('change');
 
-        $('#pilihSatker').on('change', function() {
-            loadRekapSatker();
-        });
+  $('#pilihSatker').on('change', function(){
+    loadRekapSatker();
+  });
 
-        $('#pilihTahun').on('change', function() {
-            loadRekapSatker();
-        });
+  $('#pilihTahun').on('change', function(){
+    loadRekapSatker();
+  });
 
-        $('#pilihBulan').on('change', function() {
-            loadRekapSatker();
-        }).trigger('change');
+  $('#pilihBulan').on('change', function(){
+    loadRekapSatker();
+  }).trigger('change');
+  
+  function loadSatker()
+  {
+    var namaprov = $('#pilihProv option:selected').text() || '';
 
-        function loadSatker() {
-            var namaprov = $('#pilihProv option:selected').text() || '';
+    $.post('{{ route('ticketing.satker-provinsi') }}', { _token: '{{csrf_token()}}', namaprov}, function(res){
+      var optionSatker = ''
+      for( satker of res.data) {
+        var satkerText = satker.kode + '-' + satker.nama_satker
+        optionSatker += '<option value="' + satkerText + '">' + satkerText + '</option>';
+      }
+      $("#pilihSatker").html('').html(optionSatker).change();
+    });
+  }
+  
+  function loadRekapSatker()
+  {
+    var tahun = $('#pilihTahun option:selected').val();
+    var bulan = $('#pilihBulan option:selected').val();
+    var satker = $('#pilihSatker option:selected').val();
 
-            $.post('{{ route('ticketing.satker-provinsi') }}', {
-                _token: '{{ csrf_token() }}',
-                namaprov
-            }, function(res) {
-                var optionSatker = ''
-                for (satker of res.data) {
-                    var satkerText = satker.kode + '-' + satker.nama_satker
-                    optionSatker += '<option value="' + satkerText + '">' + satkerText + '</option>';
-                }
-                $("#pilihSatker").html('').html(optionSatker).change();
-            });
-        }
+    $.post('{{ route('ticketing.rekap-satker') }}', { _token: '{{csrf_token()}}', satker, tahun, bulan}, function(res){
+      for(const status in res.data) {
+        $("p[data-status='" + status + "']").html('').html(res.data[status]);
+      }
+    });
+  }
 
-        function loadRekapSatker() {
-            var tahun = $('#pilihTahun option:selected').val();
-            var bulan = $('#pilihBulan option:selected').val();
-            var satker = $('#pilihSatker option:selected').val();
+  
+  $('a#btn-new').on('click', function(){
+    var provinsi = $('#pilihProv option:selected').val() + '-' + $('#pilihProv option:selected').text();
+    var satker = $('#pilihSatker option:selected').val();
+    var tahun = $('#pilihTahun option:selected').val();
 
-            $.post('{{ route('ticketing.rekap-satker') }}', {
-                _token: '{{ csrf_token() }}',
-                satker,
-                tahun,
-                bulan
-            }, function(res) {
-                for (const status in res.data) {
-                    $("p[data-status='" + status + "']").html('').html(res.data[status]);
-                }
-            });
-        }
+    window.location.href = '/ticketing/baru/' + tahun + '/' + provinsi + '/' +satker;
+  });
 
+  $('a.btn-list').on('click', function(){
+    var provinsi = $('#pilihProv option:selected').val() + '-' + $('#pilihProv option:selected').text();
+    var satker = $('#pilihSatker option:selected').val();
+    var tahun = $('#pilihTahun option:selected').val();
+    var bulan = $('#pilihBulan option:selected').val();
+    var status = $(this).data('status');
 
-        $('a#btn-new').on('click', function() {
-            var provinsi = $('#pilihProv option:selected').val() + '-' + $('#pilihProv option:selected').text();
-            var satker = $('#pilihSatker option:selected').val();
-            var tahun = $('#pilihTahun option:selected').val();
+    window.location.href = '/ticketing/list/' + tahun + '/' + bulan + '/' + provinsi + '/' +satker + '/' + status;
+  });
+</script>
 
-            window.location.href = '/ticketing/baru/' + tahun + '/' + provinsi + '/' + satker;
-        });
-
-        $('a.btn-list').on('click', function() {
-            var provinsi = $('#pilihProv option:selected').val() + '-' + $('#pilihProv option:selected').text();
-            var satker = $('#pilihSatker option:selected').val();
-            var tahun = $('#pilihTahun option:selected').val();
-            var bulan = $('#pilihBulan option:selected').val();
-            var status = $(this).data('status');
-
-            window.location.href = '/ticketing/list/' + tahun + '/' + bulan + '/' + provinsi + '/' + satker + '/' +
-                status;
-        });
-    </script>
 @endsection

@@ -1,0 +1,164 @@
+<div class="modal fade" id="modal-input-target">
+    <div class="modal-dialog modal-xl modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title text-white">Input Target Capaian</h4>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="form-group">
+                            <label for="type_target">Tipe</label>
+                            <input type="text" class="form-control text-uppercase" id="type_target" name="type_target" disabled/>
+                        </div>
+                        <div class="form-group">
+                            <label for="kode_target">Kode</label>
+                            <input type="text" class="form-control" id="kode_target" name="kode_target" disabled/>
+                        </div>
+                        <div class="form-group row">
+                            <div class="col-8">
+                                <label for="bulan_target">Bulan</label>
+                                <select class="form-control" id="bulan_target" name="bulan_target">
+                                    <option value="01">Januari</option>
+                                    <option value="02">Februari</option>
+                                    <option value="03">Maret</option>
+                                    <option value="04">April</option>
+                                    <option value="05">Mei</option>
+                                    <option value="06">Juni</option>
+                                    <option value="07">Juli</option>
+                                    <option value="08">Agustus</option>
+                                    <option value="09">September</option>
+                                    <option value="10">Oktober</option>
+                                    <option value="11">November</option>
+                                    <option value="12">Desember</option>
+                                </select>
+                            </div>
+                            <div class="col-4">
+                                <label for="tahun_target">Tahun</label>
+                                <select class="form-control" id="tahun_target" name="tahun_target">
+                                    @php $tahun = date("Y", strtotime("-1 Years")) @endphp
+                                    @for($i=0; $i<=5; $i++)
+                                        <option value="{{$tahun}}" @php if($tahun == date("Y")){ echo "selected";} @endphp>{{$tahun}}</option>
+                                        @php $tahun++; @endphp
+                                    @endfor
+                                </select>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="target_target">Target</label>
+                            <div class="input-group mb-3">
+                                <input id="target_target" name="target_target" type="text" class="form-control">
+                                <div class="input-group-append">
+                                    <span class="input-group-text">Rekomendasi</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="realisasi_target">Realisasi Target</label>
+                            <div class="input-group mb-3">
+                                <input id="realisasi_target" name="realisasi_target" type="text" class="form-control">
+                                <div class="input-group-append">
+                                    <span class="input-group-text">Rekomendasi</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="pemanfaatan_target">Pemanfaatan</label>
+                            <select class="form-control" id="pemanfaatan_target" name="pemanfaatan_target">
+                                <option value="Perencanaan (0% - 10%)">Perencanaan (0% - 10%)</option>
+                                <option value="Persiapan (11% - 25%)">Persiapan (11% - 25%)</option>
+                                <option value="Pelaksanaan (26% - 99%)">Pelaksanaan (26% - 99%)</option>
+                                <option value="Selesai (100%)">Selesai (100%)</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="status_pemanfaatan_target">Status Pemanfaatan</label>
+                            <select class="form-control" id="status_pemanfaatan_target" name="status_pemanfaatan_target">
+                                <option value="1">Sudah Dimanfaatkan</option>
+                                <option value="0">Belum Dimanfaatkan</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="keterangan_target">Keterangan</label>
+                            <textarea name="keterangan_target" id="keterangan_target" class="form-control" rows="5"></textarea>
+                        </div>
+                        <div class="form-group">
+                            <label for="kendala_target">Kendala</label>
+                            <textarea name="kendala_target" id="kendala_target" class="form-control" rows="5"></textarea>
+                        </div>
+                        <div class="form-group">
+                            <label for="tinjut_target">Tindak Lanjut</label>
+                            <textarea name="tinjut_target" id="tinjut_target" class="form-control" rows="5"></textarea>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer justify-content-between">
+                <button type="button" class="btn btn-danger" data-dismiss="modal"><i class="fas fa-times-circle"></i> &nbsp; CANCEL</button>
+                <button type="button" onclick="submitTarget()" class="btn btn-success"><i class="fas fa-save"></i> &nbsp; SIMPAN</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    function submitTarget()
+    {
+        var type                = $('#type_target').val()
+        var kode                = $('#kode_target').val()
+        var bulan               = $('#bulan_target').val()
+        var tahun               = $('#tahun_target').val()
+        var target              = $('#target_target').val()
+        var realisasi           = $('#realisasi_target').val()
+        var pemanfaatan         = $('#pemanfaatan_target').val()
+        var keterangan          = $('#keterangan_target').val()
+        var kendala             = $('#kendala_target').val()
+        var tinjut              = $('#tinjut_target').val()
+        var status_pemanfaatan  = $('#status_pemanfaatan_target').val()
+
+        var kode_dir      = $('#direktorat').combobox('getValue')
+        var kode_subdir   = $('#subdit').combobox('getValue')
+
+        $('#data-capaian').treegrid('loading');
+
+        $.post('{{ route('capaian.submit-target') }}', {type, kode, kode_dir, kode_subdir, bulan, tahun, target, realisasi, pemanfaatan, status_pemanfaatan, keterangan, kendala, tinjut, _token: '{{csrf_token()}}'}, function(e){
+
+            if(e.status == "success")
+            {
+                Toast.fire({
+                    icon: 'success',
+                    title: e.title
+                })
+
+                loadData()
+                clearFormTarget()
+                $("#modal-input-target").modal("hide")
+            }
+            else
+            {
+                Toast.fire({
+                    icon: 'error',
+                    title: e
+                })
+            }
+
+        });
+    }
+
+    function clearFormTarget()
+    {
+        $('#type_target').val("")
+        $('#kode_target').val("")
+        $('#bulan_target').val("")
+        $('#target_target').val("")
+        $('#realisasi_target').val("")
+        $('#pemanfaatan_target').val("")
+        $('#status_pemanfaatan_target').val("")
+        $('#keterangan_target').val("")
+        $('#kendala_target').val("")
+        $('#tinjut_target').val("")
+    }
+</script>

@@ -2,8 +2,7 @@
     <div class="container-fluid">
         <div class="row mb-3">
             <div class="col-md-12">
-                <button class="btn btn-danger" onclick="openData(false)"><i class="fas fa-backspace"></i>
-                    &nbsp;Back</button>
+            <button class="btn btn-danger" onclick="openData(false)"><i class="fas fa-backspace"></i> &nbsp;Back</button>
             </div>
         </div>
         <div class="row">
@@ -20,16 +19,14 @@
                             <table class="table table-bordered" style="width: 100%">
                                 <tr>
                                     <td class="align-middle" style="width: 45%">ID Pengajuan Revisi</td>
-                                    <td class="align-middle" style="width: 50%">
-                                        <input type="text" id="id_revisi_proses" class="form-control" disabled>
-                                        <input type="text" id="token_revisi_proses" class="form-control"
-                                            style="display:none" disabled>
+                                    <td class="align-middle" style="width: 50%"> 
+                                        <input type="text" id="id_revisi_proses" class="form-control" disabled> 
+                                        <input type="text" id="token_revisi_proses" class="form-control" style="display:none" disabled> 
                                     </td>
                                 </tr>
                                 <tr>
                                     <td class="align-middle" style="width: 45%">Tahun Anggaran</td>
-                                    <td class="align-middle" style="width: 50%"> <span
-                                            id="tahun_anggaran_proses"></span> </td>
+                                    <td class="align-middle" style="width: 50%"> <span id="tahun_anggaran_proses"></span> </td>
                                 </tr>
                                 <tr>
                                     <td class="align-middle">Nomor Surat</td>
@@ -53,8 +50,7 @@
                                 </tr>
                                 <tr>
                                     <td class="align-middle">Jenis Revisi</td>
-                                    <td class="align-middle"> <span class="text-uppercase"
-                                            id="jenis_revisi_proses"></span> </td>
+                                    <td class="align-middle"> <span class="text-uppercase" id="jenis_revisi_proses"></span> </td>
                                 </tr>
                                 <tr>
                                     <td class="align-middle">Nama Pejabat</td>
@@ -78,20 +74,17 @@
                                             <div class="col-md-8 pl-3" style="border-left: 1px dashed;">
                                                 <span id="wrap-upload-nota-dinas-ppk">
                                                     <div class="form-group">
-                                                        <label for="nota_dinas_ppk_revisi">Revisi Nota Dinas PPK
-                                                            <small>(PDF, Maksimal 2MB)</small></label>
+                                                        <label for="nota_dinas_ppk_revisi">Revisi Nota Dinas PPK <small>(PDF, Maksimal 2MB)</small></label>
                                                         <div class="input-group">
                                                             <div class="custom-file">
-                                                                <input type="file" class="custom-file-input"
-                                                                    id="nota_dinas_ppk_revisi">
-                                                                <label class="custom-file-label"
-                                                                    for="nota_dinas_ppk_revisi">Pilih File</label>
+                                                                <input type="file" class="custom-file-input" id="nota_dinas_ppk_revisi">
+                                                                <label class="custom-file-label" for="nota_dinas_ppk_revisi">Pilih File</label>
                                                             </div>
                                                         </div>
                                                     </div>
                                                 </span>
                                             </div>
-                                        </div>
+                                        </div>  
                                     </td>
                                 </tr>
                                 <tr>
@@ -104,20 +97,17 @@
                                             <div class="col-md-8 pl-3" style="border-left: 1px dashed;">
                                                 <span id="wrap-upload-matrik-rab">
                                                     <div class="form-group">
-                                                        <label for="matrik_rab_revisi">Revisi Matrik RAB <small>(PDF,
-                                                                Maksimal 2MB)</small></label>
+                                                        <label for="matrik_rab_revisi">Revisi Matrik RAB <small>(PDF, Maksimal 2MB)</small></label>
                                                         <div class="input-group">
                                                             <div class="custom-file">
-                                                                <input type="file" class="custom-file-input"
-                                                                    id="matrik_rab_revisi">
-                                                                <label class="custom-file-label"
-                                                                    for="matrik_rab_revisi">Pilih File</label>
+                                                                <input type="file" class="custom-file-input" id="matrik_rab_revisi">
+                                                                <label class="custom-file-label" for="matrik_rab_revisi">Pilih File</label>
                                                             </div>
                                                         </div>
                                                     </div>
                                                 </span>
                                             </div>
-                                        </div>
+                                        </div>  
                                     </td>
                                 </tr>
                                 <!-- <tr>
@@ -140,7 +130,7 @@
                                                     </div>
                                                 </span>
                                             </div>
-                                        </div>
+                                        </div>  
                                     </td>
                                 </tr> -->
                                 <tr>
@@ -153,45 +143,42 @@
                                             <div class="col-md-8 pl-3" style="border-left: 1px dashed;">
                                                 <span id="wrap-upload-dokumen-pendukung">
                                                     <div class="form-group">
-                                                        <label for="dokumen_pendukung_revisi">Revisi KAK <small>(PDF,
-                                                                Maksimal 2MB)</small></label>
+                                                        <label for="dokumen_pendukung_revisi">Revisi KAK <small>(PDF, Maksimal 2MB)</small></label>
                                                         <div class="input-group">
                                                             <div class="custom-file">
-                                                                <input type="file" class="custom-file-input"
-                                                                    id="dokumen_pendukung_revisi">
-                                                                <label class="custom-file-label"
-                                                                    for="dokumen_pendukung_revisi">Pilih File</label>
+                                                                <input type="file" class="custom-file-input" id="dokumen_pendukung_revisi">
+                                                                <label class="custom-file-label" for="dokumen_pendukung_revisi">Pilih File</label>
                                                             </div>
                                                         </div>
                                                     </div>
                                                 </span>
                                             </div>
-                                        </div>
+                                        </div>  
                                     </td>
                                 </tr>
 
-                                @if (Auth::user()->level == 5 || Auth::user()->level == 1)
-                                    <tr>
-                                        <td class="align-middle">Nomor Surat Dinas KPA</td>
-                                        <td class="align-middle text-center">
-                                            <div class="row">
-                                                <div class="col-md-4 pt-3" style="height: 100%">
-                                                    <span id="no_nota_kpa_proses"></span>
-                                                </div>
+                                @if(Auth::user()->level == 5 || Auth::user()->level == 1)
+                                <tr>
+                                    <td class="align-middle">Nomor Surat Dinas KPA</td>
+                                    <td class="align-middle text-center">
+                                        <div class="row">
+                                            <div class="col-md-4 pt-3" style="height: 100%">
+                                                <span id="no_nota_kpa_proses"></span>
                                             </div>
-                                        </td>
-                                    </tr>
+                                        </div>  
+                                    </td>
+                                </tr>
 
-                                    <tr>
-                                        <td class="align-middle">Nota Dinas KPA</td>
-                                        <td class="align-middle text-center">
-                                            <div class="row">
-                                                <div class="col-md-4 pt-3" style="height: 100%">
-                                                    <span id="nota_dinas_kpa_proses"></span>
-                                                </div>
+                                <tr>
+                                    <td class="align-middle">Nota Dinas KPA</td>
+                                    <td class="align-middle text-center">
+                                        <div class="row">
+                                            <div class="col-md-4 pt-3" style="height: 100%">
+                                                <span id="nota_dinas_kpa_proses"></span>
                                             </div>
-                                        </td>
-                                    </tr>
+                                        </div>  
+                                    </td>
+                                </tr>
                                 @endif
 
                                 <tr>
@@ -210,8 +197,7 @@
                         </div>
                     </div>
                     <div class="card-footer" id="btn-update">
-                        <button class="btn btn-block btn-warning" onclick="updateData()" style="font-weight: bolder">
-                            <i class="fas fa-edit"></i> &nbsp; UPDATE DATA</button>
+                        <button class="btn btn-block btn-warning" onclick="updateData()" style="font-weight: bolder"> <i class="fas fa-edit"></i> &nbsp; UPDATE DATA</button>
                     </div>
                 </div>
             </div>
@@ -227,8 +213,7 @@
                     <div class="card-body">
                         <div class="form-group">
                             <label for="status_proses_ppk">Ubah Status</label>
-                            <select class="form-control" style="width: 100%;" id="status_proses_ppk"
-                                name="status_proses_ppk" onchange="checkStatusPpk()">
+                            <select class="form-control" style="width: 100%;" id="status_proses_ppk" name="status_proses_ppk" onchange="checkStatusPpk()">
                                 <option value="perbaikan">Perbaikan</option>
                                 <option value="disetujui">Disetujui</option>
                             </select>
@@ -250,18 +235,15 @@
                                         <textarea class="form-control" id="catatan_proses_ppk" name="catatan_proses_ppk"></textarea>
                                     </div>
                                     <div class="col-md-2 text-center">
-                                        <button class="btn btn-success" onclick="addCatatan()"> <i
-                                                class="font-weight-bolder fas fa-plus-circle"></i> </button>
+                                        <button class="btn btn-success" onclick="addCatatan()"> <i class="font-weight-bolder fas fa-plus-circle"></i> </button>
                                     </div>
                                 </div>
                             </div>
                         </div>
                     </div>
                     <div class="card-footer">
-                        <button type="button" class="btn btn-danger" onclick="openData()"> <i
-                                class="fas fa-times-circle"></i> &nbsp;CANCEL</button>
-                        <button type="button" onclick="submitProsesRevisi()" class="btn btn-success float-right"> <i
-                                class="fas fa-save"></i> &nbsp;SUBMIT</button>
+                        <button type="button" class="btn btn-danger" onclick="openData()"> <i class="fas fa-times-circle"></i> &nbsp;CANCEL</button>
+                        <button type="button" onclick="submitProsesRevisi()" class="btn btn-success float-right"> <i class="fas fa-save"></i> &nbsp;SUBMIT</button>
                     </div>
                 </div>
 
@@ -288,8 +270,7 @@
                         <div class="form-group">
                             <input type="text" style="display:none" id="status_fasgub">
                             <label for="status_proses_bagren">Ubah Status</label>
-                            <select class="form-control" style="width: 100%;" onchange="checkStatusBagren()"
-                                id="status_proses_bagren" name="status_proses_bagren">
+                            <select class="form-control" style="width: 100%;" onchange="checkStatusBagren()" id="status_proses_bagren" name="status_proses_bagren">
                                 <option value="perbaikan">Perbaikan</option>
                                 <option value="disetujui">Disetujui</option>
                             </select>
@@ -302,8 +283,7 @@
                                         <textarea class="form-control" id="catatan_proses_bagren" name="catatan_proses_bagren"></textarea>
                                     </div>
                                     <div class="col-md-2 text-center">
-                                        <button class="btn btn-success" onclick="addCatatanBagren()"> <i
-                                                class="font-weight-bolder fas fa-plus-circle"></i> </button>
+                                        <button class="btn btn-success" onclick="addCatatanBagren()"> <i class="font-weight-bolder fas fa-plus-circle"></i> </button>
                                     </div>
                                 </div>
                             </div>
@@ -325,8 +305,7 @@
                                             <textarea class="form-control" id="tembusan_proses_bagren" name="tembusan_proses_bagren"></textarea>
                                         </div>
                                         <div class="col-md-2 text-center">
-                                            <button class="btn btn-success" onclick="addTembusanBagren()"> <i
-                                                    class="font-weight-bolder fas fa-plus-circle"></i> </button>
+                                            <button class="btn btn-success" onclick="addTembusanBagren()"> <i class="font-weight-bolder fas fa-plus-circle"></i> </button>
                                         </div>
                                     </div>
                                 </div>
@@ -339,9 +318,7 @@
                                             <textarea class="form-control" id="deskripsi_pengesahan"></textarea>
                                         </div>
                                         <div class="col-md-1 text-center">
-                                            <button class="btn btn-success btn-rounded"
-                                                onclick="addDeskripsiBagren()"> <i class="fas fa-plus-circle"></i>
-                                            </button>
+                                            <button class="btn btn-success btn-rounded" onclick="addDeskripsiBagren()"> <i class="fas fa-plus-circle"></i> </button>
                                         </div>
                                     </div>
                                 </div>
@@ -349,14 +326,11 @@
                         </div>
                     </div>
                     <div class="card-footer text-center">
-                        <button type="button" class="btn btn-danger float-left" onclick="openData()"> <i
-                                class="fas fa-times-circle"></i> &nbsp;CANCEL</button>
-                        <button type="button" class="btn btn-warning" id="btn-preview-bagren"
-                            onclick="previewSuratPengesahan()"> <i class="fas fa-eye"></i> &nbsp;
+                        <button type="button" class="btn btn-danger float-left" onclick="openData()"> <i class="fas fa-times-circle"></i> &nbsp;CANCEL</button>
+                        <button type="button" class="btn btn-warning" id="btn-preview-bagren" onclick="previewSuratPengesahan()"> <i class="fas fa-eye"></i> &nbsp;
                             <span id="title-btn-preview">PREVIEW</span>
                         </button>
-                        <button type="button" onclick="submitBagren()" class="btn btn-success float-right"> <i
-                                class="fas fa-save"></i> &nbsp;SUBMIT</button>
+                        <button type="button" onclick="submitBagren()" class="btn btn-success float-right"> <i class="fas fa-save"></i> &nbsp;SUBMIT</button>
                     </div>
                 </div>
 
@@ -370,8 +344,7 @@
                     <div class="card-body">
                         <div class="form-group">
                             <label for="status_proses_fasgub">Ubah Status</label>
-                            <select class="form-control" style="width: 100%;" id="status_proses_fasgub"
-                                name="status_proses_fasgub" onchange="checkStatusFasgub()">
+                            <select class="form-control" style="width: 100%;" id="status_proses_fasgub" name="status_proses_fasgub" onchange="checkStatusFasgub()">
                                 <option value="perbaikan">Perbaikan</option>
                                 <option value="disetujui">Disetujui</option>
                             </select>
@@ -384,18 +357,15 @@
                                         <textarea class="form-control" id="catatan_proses_fasgub" name="catatan_proses_fasgub"></textarea>
                                     </div>
                                     <div class="col-md-2 text-center">
-                                        <button class="btn btn-success" onclick="addCatatanFasgub()"> <i
-                                                class="font-weight-bolder fas fa-plus-circle"></i> </button>
+                                        <button class="btn btn-success" onclick="addCatatanFasgub()"> <i class="font-weight-bolder fas fa-plus-circle"></i> </button>
                                     </div>
                                 </div>
                             </div>
                         </div>
                     </div>
                     <div class="card-footer">
-                        <button type="button" class="btn btn-danger" onclick="openData()"> <i
-                                class="fas fa-times-circle"></i> &nbsp;CANCEL</button>
-                        <button type="button" onclick="submitFasgub()" class="btn btn-success float-right"> <i
-                                class="fas fa-save"></i> &nbsp;SUBMIT</button>
+                        <button type="button" class="btn btn-danger" onclick="openData()"> <i class="fas fa-times-circle"></i> &nbsp;CANCEL</button>
+                        <button type="button" onclick="submitFasgub()" class="btn btn-success float-right"> <i class="fas fa-save"></i> &nbsp;SUBMIT</button>
                     </div>
                 </div>
 
@@ -409,8 +379,7 @@
                     <div class="card-body">
                         <div class="form-group">
                             <label for="status_proses_ban">Ubah Status</label>
-                            <select class="form-control" style="width: 100%;" id="status_proses_ban"
-                                name="status_proses_ban" onchange="checkStatusBan()">
+                            <select class="form-control" style="width: 100%;" id="status_proses_ban" name="status_proses_ban" onchange="checkStatusBan()">
                                 <option value="perbaikan">Perbaikan</option>
                                 <option value="disetujui">Disetujui</option>
                             </select>
@@ -423,8 +392,7 @@
                                         <textarea class="form-control" id="catatan_proses_ban" name="catatan_proses_ban"></textarea>
                                     </div>
                                     <div class="col-md-2 text-center">
-                                        <button class="btn btn-success" onclick="addCatatanBan()"> <i
-                                                class="font-weight-bolder fas fa-plus-circle"></i> </button>
+                                        <button class="btn btn-success" onclick="addCatatanBan()"> <i class="font-weight-bolder fas fa-plus-circle"></i> </button>
                                     </div>
                                 </div>
                             </div>
@@ -450,8 +418,7 @@
                     <div class="card-body">
                         <div class="form-group">
                             <label for="status_proses_kpa">Ubah Status</label>
-                            <select class="form-control" style="width: 100%;" id="status_proses_kpa"
-                                name="status_proses_kpa" onchange="checkStatusKpa()">
+                            <select class="form-control" style="width: 100%;" id="status_proses_kpa" name="status_proses_kpa" onchange="checkStatusKpa()">
                                 <option value="perbaikan">Perbaikan</option>
                                 <option value="disetujui">Disetujui</option>
                             </select>
@@ -464,8 +431,7 @@
                                         <textarea class="form-control" id="catatan_proses_kpa" name="catatan_proses_kpa"></textarea>
                                     </div>
                                     <div class="col-md-2 text-center">
-                                        <button class="btn btn-success" onclick="addCatatanKpa()"> <i
-                                                class="font-weight-bolder fas fa-plus-circle"></i> </button>
+                                        <button class="btn btn-success" onclick="addCatatanKpa()"> <i class="font-weight-bolder fas fa-plus-circle"></i> </button>
                                     </div>
                                 </div>
                             </div>
@@ -475,8 +441,7 @@
                                 <label for="no_nota_kpa">Nomor Nota Dinas</label>
                                 <div class="row">
                                     <div class="col-md-12">
-                                        <input type="text" class="form-control" id="no_nota_kpa"
-                                            name="no_nota_kpa">
+                                        <input type="text" class="form-control" id="no_nota_kpa" name="no_nota_kpa">
                                     </div>
                                 </div>
                             </div>
@@ -513,8 +478,7 @@
                             <table id="dokumen-ppk" class="table table-bordered" style="width: 100%">
                                 <thead>
                                     <tr>
-                                        <th class="bg-success align-middle" colspan="3">Nota Dinas PPK Sudah Sign
-                                        </th>
+                                        <th class="bg-success align-middle" colspan="3">Nota Dinas PPK Sudah Sign</th>
                                     </tr>
                                     <tr>
                                         <th style="width: 5%" class="text-center align-middle">No.</th>
@@ -528,8 +492,7 @@
                             <table id="dokumen-rab" class="table table-bordered" style="width: 100%">
                                 <thead>
                                     <tr>
-                                        <th class="bg-success align-middle" colspan="3">Matrik RAB Semula Menjadi
-                                        </th>
+                                        <th class="bg-success align-middle" colspan="3">Matrik RAB Semula Menjadi</th>
                                     </tr>
                                     <tr>
                                         <th style="width: 5%" class="text-center align-middle">No.</th>
@@ -607,52 +570,54 @@
 <script>
     let currentCount = 0;
 
-    function updateData() {
+    function updateData()
+    {
         $('#loader-proses').show()
 
-        var id = $('#id_revisi_proses').val()
-        var nota_dinas_ppk = $('#nota_dinas_ppk_revisi').prop('files')[0];
-        var dokumen_pendukung = $('#dokumen_pendukung_revisi').prop('files')[0];
-        var matrik_rab = $('#matrik_rab_revisi').prop('files')[0];
+        var id                  = $('#id_revisi_proses').val()
+        var nota_dinas_ppk      = $('#nota_dinas_ppk_revisi').prop('files')[0];
+        var dokumen_pendukung   = $('#dokumen_pendukung_revisi').prop('files')[0];
 
         var form_data = new FormData();
 
         form_data.append('id', id);
         form_data.append('nota_dinas_ppk', nota_dinas_ppk);
         form_data.append('dokumen_pendukung', dokumen_pendukung);
-        form_data.append('matrik_rab', matrik_rab);
 
-        form_data.append('_token', '{{ csrf_token() }}')
+        form_data.append('_token', '{{csrf_token()}}')
 
         $.ajax({
-            url: "{{ route('ticketing.update-revisi') }}",
-            type: "POST",
-            data: form_data,
-            cache: false,
-            processData: false,
-            contentType: false,
-            success: function(e) {
-                $('#loader-proses').hide();
-                if (e.status == "success") {
-                    Toast.fire({
-                        icon: 'success',
-                        title: e.title
-                    })
+        url: "{{route('ticketing.update-revisi')}}",
+        type: "POST",
+        data: form_data,
+        cache: false,
+        processData: false,
+        contentType: false,
+        success: function (e)
+        {
+            $('#loader-proses').hide();
+            if(e.status == "success")
+            {
+                Toast.fire({
+                    icon: 'success',
+                    title: e.title
+                })
 
-                    reload()
-                    $('.fa-backspace').click()
-                } else {
-                    Toast.fire({
-                        icon: 'error',
-                        title: e.message
-                    })
-                }
+                openDetail(id)
             }
-        });
+            else
+            {
+                Toast.fire({
+                    icon: 'error',
+                    title: e.message
+                })
+            }
+        }});
 
     }
 
-    function openDetail(id) {
+    function openDetail(id)
+    {
         loadHistory(id)
         clearFormProses()
         $('#loader-proses').show()
@@ -665,89 +630,115 @@
         $('#form-bagren').hide()
     }
 
-    function openFormProses(id, form) {
+    function openFormProses(id, form)
+    {
         loadHistory(id)
         clearFormProses()
         $('#loader-proses').show()
         $('#wrap-data').hide(700)
         $('#wrap-form').hide(700)
         $('#wrap-form-proses').show(700)
-
+        
         $('#form-ppk').hide()
         $('#form-kpa').hide()
         $('#form-ban').hide()
         $('#form-fasgub').hide()
         $('#form-bagren').hide()
-
-        if (form == "fasgub") {
+        
+        if(form == "fasgub")
+        {
             checkStatusFasgub()
             $('#form-fasgub').show()
-        } else if (form == "bagren") {
+        }
+        else if(form == "bagren")
+        {
             checkStatusBagren()
             $('#form-bagren').show()
-        } else if (form == "kpa") {
+        }
+        else if(form == "kpa")
+        {
             checkStatusKpa()
             $('#form-kpa').show()
-        } else if (form == "ban") {
+        }
+        else if(form == "ban")
+        {
             checkStatusBan()
             $('#form-ban').show()
         }
-
+        
         loadDetailProses(id)
     }
 
-    function loadHistory(id_ticketing) {
-        $('.wrap-history').empty().load('{{ route('ticketing.view-log') }}?id_ticketing=' + id_ticketing)
+    function loadHistory(id_ticketing)
+    {
+        $('.wrap-history').empty().load('{{route('ticketing.view-log')}}?id_ticketing='+id_ticketing)   
     }
 
-    function checkStatusPpk() {
+    function checkStatusPpk()
+    {
         $('#note_dinas_ppk_wrap').hide()
         var status = $('#status_proses_ppk').val()
 
-        if (status == 'disetujui') {
+        if(status == 'disetujui')
+        {
             $('#catatan_ppk_wrap').hide()
             $('#note_dinas_ppk_wrap').show()
-        } else if (status == "perbaikan") {
+        }
+        else if(status == "perbaikan")
+        {
             $('#catatan_ppk_wrap').show()
             $('#note_dinas_ppk_wrap').hide()
         }
     }
 
-    function checkStatusFasgub() {
+    function checkStatusFasgub()
+    {
         $('#note_dinas_fasgub_wrap').hide()
         var status = $('#status_proses_fasgub').val()
 
-        if (status == 'disetujui') {
+        if(status == 'disetujui')
+        {
             $('#catatan_fasgub_wrap').hide()
-        } else if (status == "perbaikan") {
+        }
+        else if(status == "perbaikan")
+        {
             $('#catatan_fasgub_wrap').show()
         }
     }
 
-    function checkStatusBan() {
+    function checkStatusBan()
+    {
         $('#note_dinas_ban_wrap').hide()
         var status = $('#status_proses_ban').val()
 
-        if (status == 'disetujui') {
+        if(status == 'disetujui')
+        {
             $('#catatan_ban_wrap').hide()
-        } else if (status == "perbaikan") {
+        }
+        else if(status == "perbaikan")
+        {
             $('#catatan_ban_wrap').show()
         }
     }
 
-    function checkStatusKpa() {
+    function checkStatusKpa()
+    {
         $('#note_dinas_kpa_wrap').hide()
         var status = $('#status_proses_kpa').val()
 
-        if (status == 'disetujui') {
+        if(status == 'disetujui')
+        {
             $('#catatan_kpa_wrap').hide()
             $('#note_dinas_kpa_wrap').show()
-        } else if (status == "perbaikan") {
+        }
+        else if(status == "perbaikan")
+        {
             $('#catatan_kpa_wrap').show()
         }
     }
 
-    function checkStatusBagren() {
+    function checkStatusBagren()
+    {
         $('#note_dinas_bagren_wrap').hide()
         $('#wrap-pengesahan-bagren').hide()
         $('#btn-preview-bagren').hide()
@@ -755,40 +746,45 @@
         var status = $('#status_proses_bagren').val()
         var status_fasgub = $('#status_fasgub').val()
 
-        if (status == 'disetujui') {
+        if(status == 'disetujui')
+        {
             $('#btn-preview-bagren').show()
             $('#catatan_bagren_wrap').hide()
 
-            if (status_fasgub == "disetujui") {
+            if(status_fasgub == "disetujui")
+            {
                 $('#btn-preview-bagren').show()
                 $('#wrap-pengesahan-bagren').show()
-            } else {
+            }
+            else
+            {
                 $('#btn-preview-bagren').hide()
                 $('#wrap-pengesahan-bagren').hide()
             }
-        } else if (status == "perbaikan") {
+        }
+        else if(status == "perbaikan")
+        {
             $('#btn-preview-bagren').hide()
             $('#catatan_bagren_wrap').show()
             $('#wrap-pengesahan-bagren').hide()
         }
     }
 
-    function clearFormProses() {
+    function clearFormProses()
+    {
         $('#id_revisi_proses').val("")
         $('#status_proses_ppk').val("")
 
-        $("textarea[name=catatan_proses_ppk]").each(function() {
+        $("textarea[name=catatan_proses_ppk]").each(function () {
             $(this).val("")
         });
     }
 
-    function loadDetailProses(id) {
+    function loadDetailProses(id)
+    {
         $('#form-bagren').hide()
-
-        $.post('{{ route('ticketing.detail-revisi') }}', {
-            id,
-            _token: '{{ csrf_token() }}'
-        }, function(e) {
+        
+        $.post('{{ route('ticketing.detail-revisi') }}', {id, _token: '{{csrf_token()}}'}, function(e){
 
             $('#id_revisi_proses').val(id)
             $('#token_revisi_proses').val(e.token)
@@ -819,74 +815,88 @@
             $('#content-dokumen-pendukung').empty()
 
             // KAK
-            if (Array.isArray(e.kak_old) && e.kak_old.length) {
+            if (Array.isArray(e.kak_old) && e.kak_old.length)
+            {
                 var no = 1;
-                e.kak_old.forEach(kak_old => {
-                    var data = '<tr><td class="text-center">' + no + '.</td><td>' + kak_old +
-                        '</td></tr>'
+                e.kak_old.forEach(kak_old => 
+                {
+                    var data = '<tr><td class="text-center">'+no+'.</td><td>'+kak_old+'</td></tr>'
                     $('#dokumen-kak > tbody:last-child').append(data);
                     no++
                 });
-            } else {
-                var content_kak =
-                    '<tr><td class="text-center" colspan="2"><em>Tidak Ada Dokumen Lama</em></td></tr>';
+            }
+            else
+            {
+                var content_kak = '<tr><td class="text-center" colspan="2"><em>Tidak Ada Dokumen Lama</em></td></tr>';
                 $('#dokumen-kak > tbody:last-child').append(content_kak);
             }
 
             // PPK
-            if (Array.isArray(e.nota_dinas_ppk_old) && e.nota_dinas_ppk_old.length) {
+            if (Array.isArray(e.nota_dinas_ppk_old) && e.nota_dinas_ppk_old.length)
+            {
                 var no = 1;
-                e.nota_dinas_ppk_old.forEach(nota_dinas_ppk_old => {
-                    var data = '<tr><td class="text-center">' + no + '.</td><td>' + nota_dinas_ppk_old +
-                        '</td></tr>'
+                e.nota_dinas_ppk_old.forEach(nota_dinas_ppk_old => 
+                {
+                    var data = '<tr><td class="text-center">'+no+'.</td><td>'+nota_dinas_ppk_old+'</td></tr>'
                     $('#dokumen-ppk > tbody:last-child').append(data);
                     no++
                 });
-            } else {
-                var content_nota_dinas_ppk =
-                    '<tr><td class="text-center" colspan="2"><em>Tidak Ada Dokumen Lama</em></td></tr>';
+            }
+            else
+            {
+                var content_nota_dinas_ppk = '<tr><td class="text-center" colspan="2"><em>Tidak Ada Dokumen Lama</em></td></tr>';
                 $('#dokumen-ppk > tbody:last-child').append(content_nota_dinas_ppk);
             }
 
             // Matrik RAB
-            if (Array.isArray(e.matrik_rab_old) && e.matrik_rab_old.length) {
+            if (Array.isArray(e.matrik_rab_old) && e.matrik_rab_old.length)
+            {
                 var no = 1;
-                e.matrik_rab_old.forEach(matrik_rab_old => {
-                    var data = '<tr><td class="text-center">' + no + '.</td><td>' + matrik_rab_old +
-                        '</td></tr>'
+                e.matrik_rab_old.forEach(matrik_rab_old => 
+                {
+                    var data = '<tr><td class="text-center">'+no+'.</td><td>'+matrik_rab_old+'</td></tr>'
                     $('#dokumen-rab > tbody:last-child').append(data);
                     no++
                 });
-            } else {
+            }
+            else
+            {
                 var data = '<tr><td class="text-center" colspan="2"><em>Tidak Ada Dokumen Lama</em></td></tr>';
                 $('#dokumen-rab > tbody:last-child').append(data);
             }
 
             // Dokumen Pendukung
-            if (Array.isArray(e.dokumen_pendukung_old) && e.dokumen_pendukung_old.length) {
+            if (Array.isArray(e.dokumen_pendukung_old) && e.dokumen_pendukung_old.length)
+            {
                 var no = 1;
-                e.dokumen_pendukung_old.forEach(dokumen_pendukung_old => {
-                    var data = '<tr><td class="text-center">' + no + '.</td><td>' +
-                        dokumen_pendukung_old + '</td></tr>'
+                e.dokumen_pendukung_old.forEach(dokumen_pendukung_old => 
+                {
+                    var data = '<tr><td class="text-center">'+no+'.</td><td>'+dokumen_pendukung_old+'</td></tr>'
                     $('#dokumen-pendukung > tbody:last-child').append(data);
                     no++
                 });
-            } else {
+            }
+            else
+            {
                 var data = '<tr><td class="text-center" colspan="2"><em>Tidak Ada Dokumen Lama</em></td></tr>';
                 $('#dokumen-pendukung > tbody:last-child').append(data);
             }
 
-            if (e.status == "BUTUH PERBAIKAN") {
+            if(e.status == "BUTUH PERBAIKAN")
+            {
                 $('#btn-update').show()
                 $('#wrap-upload-kak').show()
                 $('#wrap-upload-matrik-rab').show()
                 $('#wrap-upload-nota-dinas-ppk').show()
                 $('#wrap-upload-dokumen-pendukung').show()
 
-                if (e.tolak == 3) {
+                if(e.tolak == 3)
+                {
                     $('#btn-update').hide()
                 }
-            } else {
+            }
+            else
+            {
                 $('#btn-update').hide()
                 $('#wrap-upload-kak').hide()
                 $('#wrap-upload-matrik-rab').hide()
@@ -894,45 +904,54 @@
                 $('#wrap-upload-dokumen-pendukung').hide()
             }
 
-            if ({{ Auth::user()->level }} == "5") {
+            if({{Auth::user()->level}} == "5")
+            {
                 $('#form-bagren').show()
-                if (e.status_fasgub === null && e.status_ban === null) {
+                if(e.status_fasgub === null && e.status_ban === null)
+                {
                     // $('#form-bagren').hide()
                     $('#btn-update').hide()
                 }
 
-                if (e.status_kpa === null) {
+                if(e.status_kpa === null)
+                {
                     $('#form-bagren').hide()
                 }
             }
 
-            if ({{ Auth::user()->level }} == "7" || {{ Auth::user()->level }} == "8" ||
-                {{ Auth::user()->level }} == "9") {
-                if (e.status_kpa === null) {
+            if({{Auth::user()->level}} == "7" || {{Auth::user()->level}} == "8" || {{Auth::user()->level}} == "9")
+            {
+                if(e.status_kpa === null)
+                {
                     $('#form-fasgub').hide()
                 }
             }
 
-            if (e.status_kpa == "disetujui") {
+            if(e.status_kpa == "disetujui")
+            {
                 $('#form-kpa').hide()
             }
 
-            if (e.status_fasgub == "disetujui") {
+            if(e.status_fasgub == "disetujui")
+            {
                 $('#form-fasgub').hide()
             }
 
-            if (e.status_ban == "disetujui") {
+            if(e.status_ban == "disetujui")
+            {
                 $('#form-ban').hide()
             }
 
-            if (e.status_verifikasi == "disetujui") {
+            if(e.status_verifikasi == "disetujui")
+            {
                 $('#form-bagren').hide()
             }
 
             $('#form-download').hide()
             $('#content-download-sp').empty()
 
-            if (e.status.toLowerCase() == "disetujui") {
+            if(e.status.toLowerCase() == "disetujui")
+            {
                 $('#form-download').show()
                 $('#content-download-sp').append(e.download_sp)
             }
@@ -942,120 +961,135 @@
         });
     }
 
-    function addCatatanFasgub() {
-        var element =
-            '<div class="row mt-3"><div class="col-md-8"><textarea class="form-control" id="catatan_proses_fasgub" name="catatan_proses_fasgub"></textarea></div><div class="col-md-2 text-center"><button class="btn btn-success" onclick="addCatatanFasgub()"> <i class="font-weight-bolder fas fa-plus-circle"></i> </button></div><div class="col-md-2 text-center"><button class="btn btn-danger" onclick="removeCatatanFasgub()"> <i class="font-weight-bolder fas fa-times-circle"></i> </button></div></div>';
+    function addCatatanFasgub()
+    {
+        var element = '<div class="row mt-3"><div class="col-md-8"><textarea class="form-control" id="catatan_proses_fasgub" name="catatan_proses_fasgub"></textarea></div><div class="col-md-2 text-center"><button class="btn btn-success" onclick="addCatatanFasgub()"> <i class="font-weight-bolder fas fa-plus-circle"></i> </button></div><div class="col-md-2 text-center"><button class="btn btn-danger" onclick="removeCatatanFasgub()"> <i class="font-weight-bolder fas fa-times-circle"></i> </button></div></div>';
 
-        if (currentCount < 2) {
+        if(currentCount < 2)
+        {
             currentCount += 1;
             $('#wrap-catatan-fasgub').append(element)
         }
     }
 
-    function addCatatanBan() {
-        var element =
-            '<div class="row mt-3"><div class="col-md-8"><textarea class="form-control" id="catatan_proses_ban" name="catatan_proses_ban"></textarea></div><div class="col-md-2 text-center"><button class="btn btn-success" onclick="addCatatanBan()"> <i class="font-weight-bolder fas fa-plus-circle"></i> </button></div><div class="col-md-2 text-center"><button class="btn btn-danger" onclick="removeCatatanBan()"> <i class="font-weight-bolder fas fa-times-circle"></i> </button></div></div>';
+    function addCatatanBan()
+    {
+        var element = '<div class="row mt-3"><div class="col-md-8"><textarea class="form-control" id="catatan_proses_ban" name="catatan_proses_ban"></textarea></div><div class="col-md-2 text-center"><button class="btn btn-success" onclick="addCatatanBan()"> <i class="font-weight-bolder fas fa-plus-circle"></i> </button></div><div class="col-md-2 text-center"><button class="btn btn-danger" onclick="removeCatatanBan()"> <i class="font-weight-bolder fas fa-times-circle"></i> </button></div></div>';
 
-        if (currentCount < 2) {
+        if(currentCount < 2)
+        {
             currentCount += 1;
             $('#wrap-catatan-ban').append(element)
         }
     }
 
-    function addCatatanKpa() {
-        var element =
-            '<div class="row mt-3"><div class="col-md-8"><textarea class="form-control" id="catatan_proses_kpa" name="catatan_proses_kpa"></textarea></div><div class="col-md-2 text-center"><button class="btn btn-success" onclick="addCatatanKpa()"> <i class="font-weight-bolder fas fa-plus-circle"></i> </button></div><div class="col-md-2 text-center"><button class="btn btn-danger" onclick="removeCatatanKpa()"> <i class="font-weight-bolder fas fa-times-circle"></i> </button></div></div>';
+    function addCatatanKpa()
+    {
+        var element = '<div class="row mt-3"><div class="col-md-8"><textarea class="form-control" id="catatan_proses_kpa" name="catatan_proses_kpa"></textarea></div><div class="col-md-2 text-center"><button class="btn btn-success" onclick="addCatatanKpa()"> <i class="font-weight-bolder fas fa-plus-circle"></i> </button></div><div class="col-md-2 text-center"><button class="btn btn-danger" onclick="removeCatatanKpa()"> <i class="font-weight-bolder fas fa-times-circle"></i> </button></div></div>';
 
-        if (currentCount < 2) {
+        if(currentCount < 2)
+        {
             currentCount += 1;
             $('#wrap-catatan-kpa').append(element)
         }
     }
 
-    function addCatatan() {
-        var element =
-            '<div class="row mt-3"><div class="col-md-8"><textarea class="form-control" id="catatan_proses_ppk" name="catatan_proses_ppk"></textarea></div><div class="col-md-2 text-center"><button class="btn btn-success" onclick="addCatatan()"> <i class="font-weight-bolder fas fa-plus-circle"></i> </button></div><div class="col-md-2 text-center"><button class="btn btn-danger" onclick="removeCatatan()"> <i class="font-weight-bolder fas fa-times-circle"></i> </button></div></div>';
+    function addCatatan()
+    {
+        var element = '<div class="row mt-3"><div class="col-md-8"><textarea class="form-control" id="catatan_proses_ppk" name="catatan_proses_ppk"></textarea></div><div class="col-md-2 text-center"><button class="btn btn-success" onclick="addCatatan()"> <i class="font-weight-bolder fas fa-plus-circle"></i> </button></div><div class="col-md-2 text-center"><button class="btn btn-danger" onclick="removeCatatan()"> <i class="font-weight-bolder fas fa-times-circle"></i> </button></div></div>';
 
-        if (currentCount < 2) {
+        if(currentCount < 2)
+        {
             currentCount += 1;
             $('#wrap-catatan').append(element)
         }
     }
 
-    function addCatatanBagren() {
-        var element =
-            '<div class="row mt-3"><div class="col-md-8"><textarea class="form-control" id="catatan_proses_bagren" name="catatan_proses_bagren"></textarea></div><div class="col-md-2 text-center"><button class="btn btn-success" onclick="addCatatanBagren()"> <i class="font-weight-bolder fas fa-plus-circle"></i> </button></div><div class="col-md-2 text-center"><button class="btn btn-danger" onclick="removeCatatanBagren()"> <i class="font-weight-bolder fas fa-times-circle"></i> </button></div></div>';
+    function addCatatanBagren()
+    {
+        var element = '<div class="row mt-3"><div class="col-md-8"><textarea class="form-control" id="catatan_proses_bagren" name="catatan_proses_bagren"></textarea></div><div class="col-md-2 text-center"><button class="btn btn-success" onclick="addCatatanBagren()"> <i class="font-weight-bolder fas fa-plus-circle"></i> </button></div><div class="col-md-2 text-center"><button class="btn btn-danger" onclick="removeCatatanBagren()"> <i class="font-weight-bolder fas fa-times-circle"></i> </button></div></div>';
 
-        if (currentCount < 2) {
+        if(currentCount < 2)
+        {
             currentCount += 1;
             $('#wrap-catatan-bagren').append(element)
         }
     }
 
-    function addTembusanBagren() {
-        var element =
-            '<div class="row mt-3"><div class="col-md-8"><textarea class="form-control" id="tembusan_proses_bagren" name="tembusan_proses_bagren"></textarea></div><div class="col-md-2 text-center"><button class="btn btn-success" onclick="addTembusanBagren()"> <i class="font-weight-bolder fas fa-plus-circle"></i> </button></div><div class="col-md-2 text-center"><button class="btn btn-danger" onclick="removeTembusanBagren()"> <i class="font-weight-bolder fas fa-times-circle"></i> </button></div></div>';
+    function addTembusanBagren()
+    {
+        var element = '<div class="row mt-3"><div class="col-md-8"><textarea class="form-control" id="tembusan_proses_bagren" name="tembusan_proses_bagren"></textarea></div><div class="col-md-2 text-center"><button class="btn btn-success" onclick="addTembusanBagren()"> <i class="font-weight-bolder fas fa-plus-circle"></i> </button></div><div class="col-md-2 text-center"><button class="btn btn-danger" onclick="removeTembusanBagren()"> <i class="font-weight-bolder fas fa-times-circle"></i> </button></div></div>';
 
-        if (currentCount < 9) {
+        if(currentCount < 9)
+        {
             currentCount += 1;
             $('#wrap-tembusan_proses_bagren').append(element)
         }
     }
 
-    function addDeskripsiBagren() {
-        var element =
-            '<div class="row mt-3"><div class="col-md-8"><textarea class="form-control" id="deskripsi_pengesahan" name="deskripsi_pengesahan"></textarea></div><div class="col-md-2 text-center"><button class="btn btn-success" onclick="addDeskripsiBagren()"> <i class="font-weight-bolder fas fa-plus-circle"></i> </button></div><div class="col-md-2 text-center"><button class="btn btn-danger" onclick="removeDeskripsiBagren()"> <i class="font-weight-bolder fas fa-times-circle"></i> </button></div></div>';
+    function addDeskripsiBagren()
+    {
+        var element = '<div class="row mt-3"><div class="col-md-8"><textarea class="form-control" id="deskripsi_pengesahan" name="deskripsi_pengesahan"></textarea></div><div class="col-md-2 text-center"><button class="btn btn-success" onclick="addDeskripsiBagren()"> <i class="font-weight-bolder fas fa-plus-circle"></i> </button></div><div class="col-md-2 text-center"><button class="btn btn-danger" onclick="removeDeskripsiBagren()"> <i class="font-weight-bolder fas fa-times-circle"></i> </button></div></div>';
 
-        if (currentCount < 9) {
+        if(currentCount < 9)
+        {
             currentCount += 1;
             $('#wrap-deskripsi-bagren').append(element)
         }
     }
 
-    function removeDeskripsiBagren() {
+    function removeDeskripsiBagren()
+    {
         currentCount -= 1;
         $("#wrap-deskripsi-bagren").children().last().remove();
     }
 
-    function removeTembusanBagren() {
+    function removeTembusanBagren()
+    {
         currentCount -= 1;
         $("#wrap-tembusan_proses_bagren").children().last().remove();
     }
 
-    function removeCatatan() {
+    function removeCatatan()
+    {
         currentCount -= 1;
         $("#wrap-catatan").children().last().remove();
     }
 
-    function removeFasgub() {
+    function removeFasgub()
+    {
         currentCount -= 1;
         $("#wrap-catatan-fasgub").children().last().remove();
     }
 
-    function removeBan() {
+    function removeBan()
+    {
         currentCount -= 1;
         $("#wrap-catatan-ban").children().last().remove();
     }
 
-    function removeCatatanKpa() {
+    function removeCatatanKpa()
+    {
         currentCount -= 1;
         $("#wrap-catatan-kpa").children().last().remove();
     }
 
-    function removeCatatanBagren() {
+    function removeCatatanBagren()
+    {
         currentCount -= 1;
         $("#wrap-catatan-bagren").children().last().remove();
     }
 
-    function submitVerifikasiRevisi() {
+    function submitVerifikasiRevisi()
+    {
         $('#loader-bagren').show()
         catatan = ""
 
-        $("textarea[name=catatan_proses_bagren]").each(function() {
+        $("textarea[name=catatan_proses_bagren]").each(function () {
             catatan += $(this).val() + "|";
         });
 
-        var id = $('#id_revisi_proses').val()
+        var id     = $('#id_revisi_proses').val()
         var status = $('#status_proses_bagren').val()
 
         var form_data = new FormData();
@@ -1063,46 +1097,50 @@
         form_data.append('id', id);
         form_data.append('status', status);
         form_data.append('catatan', catatan);
-        form_data.append('_token', '{{ csrf_token() }}')
+        form_data.append('_token', '{{csrf_token()}}')
 
         $.ajax({
-            url: "{{ route('ticketing.verifikasi-revisi') }}",
-            type: "POST",
-            data: form_data,
-            cache: false,
-            processData: false,
-            contentType: false,
-            success: function(e) {
-                $('#loader-bagren').hide()
-                if (e.status == "success") {
-                    Toast.fire({
-                        icon: 'success',
-                        title: e.title
-                    })
+        url: "{{route('ticketing.verifikasi-revisi')}}",
+        type: "POST",
+        data: form_data,
+        cache: false,
+        processData: false,
+        contentType: false,
+        success: function (e)
+        {
+            $('#loader-bagren').hide()
+            if(e.status == "success")
+            {
+                Toast.fire({
+                    icon: 'success',
+                    title: e.title
+                })
 
-                    openData()
-                } else {
-                    Toast.fire({
-                        icon: 'error',
-                        title: e.message
-                    })
-                }
+                openData()
             }
-        });
+            else
+            {
+                Toast.fire({
+                    icon: 'error',
+                    title: e.message
+                })
+            }
+        }});
     }
 
-    function submitProsesRevisi() {
+    function submitProsesRevisi()
+    {
         $('#loader-ppk').show()
 
         catatan = ""
 
-        $("textarea[name=catatan_proses_ppk]").each(function() {
+        $("textarea[name=catatan_proses_ppk]").each(function () {
             catatan += $(this).val() + "|";
         });
 
-        var id = $('#id_revisi_proses').val()
+        var id     = $('#id_revisi_proses').val()
         var status = $('#status_proses_ppk').val()
-        var nota_dinas_ppk = $('#nota_dinas_ppk').prop('files')[0];
+        var nota_dinas_ppk   = $('#nota_dinas_ppk').prop('files')[0];
 
         var form_data = new FormData();
 
@@ -1111,54 +1149,58 @@
         form_data.append('catatan', catatan);
         form_data.append('nota_dinas_ppk', nota_dinas_ppk);
 
-        form_data.append('_token', '{{ csrf_token() }}')
+        form_data.append('_token', '{{csrf_token()}}')
 
         $.ajax({
-            url: "{{ route('ticketing.approval-revisi') }}",
-            type: "POST",
-            data: form_data,
-            cache: false,
-            processData: false,
-            contentType: false,
-            success: function(e) {
-                $('#loader-ppk').hide()
-                if (e.status == "success") {
-                    Toast.fire({
-                        icon: 'success',
-                        title: e.title
-                    })
+        url: "{{route('ticketing.approval-revisi')}}",
+        type: "POST",
+        data: form_data,
+        cache: false,
+        processData: false,
+        contentType: false,
+        success: function (e)
+        {
+            $('#loader-ppk').hide()
+            if(e.status == "success")
+            {
+                Toast.fire({
+                    icon: 'success',
+                    title: e.title
+                })
 
-                    openData()
-                } else {
-                    Toast.fire({
-                        icon: 'error',
-                        title: e.message
-                    })
-                }
+                openData()
             }
-        });
+            else
+            {
+                Toast.fire({
+                    icon: 'error',
+                    title: e.message
+                })
+            }
+        }});
     }
 
-    function submitBagren() {
+    function submitBagren()
+    {
         $('#loader-bagren').show()
 
         catatan = ""
         deskripsi_pengesahan = ""
         tembusan = ""
 
-        $("textarea[name=deskripsi_pengesahan]").each(function() {
+        $("textarea[name=deskripsi_pengesahan]").each(function () {
             deskripsi_pengesahan += $(this).val() + "|";
         });
 
-        $("textarea[name=catatan_proses_bagren]").each(function() {
+        $("textarea[name=catatan_proses_bagren]").each(function () {
             catatan += $(this).val() + "|";
         });
 
-        $("textarea[name=tembusan_proses_bagren]").each(function() {
+        $("textarea[name=tembusan_proses_bagren]").each(function () {
             tembusan += $(this).val() + "|";
         });
 
-        var id = $('#id_revisi_proses').val()
+        var id     = $('#id_revisi_proses').val()
         var status = $('#status_proses_bagren').val()
         var tanggal_pengesahan = $('#tanggal_pengesahan').val()
         var nomor_surat_pengesahan = $('#nomor_surat_pengesahan').val()
@@ -1173,47 +1215,51 @@
         form_data.append('tembusan', tembusan);
         form_data.append('nomor_surat_pengesahan', nomor_surat_pengesahan);
 
-        form_data.append('_token', '{{ csrf_token() }}')
+        form_data.append('_token', '{{csrf_token()}}')
 
         $.ajax({
-            url: "{{ route('ticketing.submit-bagren') }}",
-            type: "POST",
-            data: form_data,
-            cache: false,
-            processData: false,
-            contentType: false,
-            success: function(e) {
-                $('#loader-bagren').hide()
-                if (e.status == "success") {
-                    Toast.fire({
-                        icon: 'success',
-                        title: e.title
-                    })
+        url: "{{route('ticketing.submit-bagren')}}",
+        type: "POST",
+        data: form_data,
+        cache: false,
+        processData: false,
+        contentType: false,
+        success: function (e)
+        {
+            $('#loader-bagren').hide()
+            if(e.status == "success")
+            {
+                Toast.fire({
+                    icon: 'success',
+                    title: e.title
+                })
 
-                    openData()
-                } else {
-                    Toast.fire({
-                        icon: 'error',
-                        title: e.message
-                    })
-                }
+                openData()
             }
-        });
+            else
+            {
+                Toast.fire({
+                    icon: 'error',
+                    title: e.message
+                })
+            }
+        }});
     }
 
-    function submitKpa() {
+    function submitKpa()
+    {
         $('#loader-kpa').show()
 
         catatan = ""
 
-        $("textarea[name=catatan_proses_kpa]").each(function() {
+        $("textarea[name=catatan_proses_kpa]").each(function () {
             catatan += $(this).val() + "|";
         });
 
-        var id = $('#id_revisi_proses').val()
+        var id     = $('#id_revisi_proses').val()
         var status = $('#status_proses_kpa').val()
-        var no_nota_kpa = $('#no_nota_kpa').val()
-        var nota_dinas_kpa = $('#nota_dinas_kpa').prop('files')[0];
+        var no_nota_kpa      = $('#no_nota_kpa').val()
+        var nota_dinas_kpa   = $('#nota_dinas_kpa').prop('files')[0];
 
         // if(no_nota_kpa === "")
         // {
@@ -1227,53 +1273,57 @@
         // }
         // else
         // {
-        var form_data = new FormData();
+            var form_data = new FormData();
 
-        form_data.append('id', id);
-        form_data.append('status', status);
-        form_data.append('catatan', catatan);
-        form_data.append('no_nota_kpa', no_nota_kpa);
-        form_data.append('nota_dinas_kpa', nota_dinas_kpa);
+            form_data.append('id', id);
+            form_data.append('status', status);
+            form_data.append('catatan', catatan);
+            form_data.append('no_nota_kpa', no_nota_kpa);
+            form_data.append('nota_dinas_kpa', nota_dinas_kpa);
 
-        form_data.append('_token', '{{ csrf_token() }}')
+            form_data.append('_token', '{{csrf_token()}}')
 
-        $.ajax({
-            url: "{{ route('ticketing.submit-kpa') }}",
+            $.ajax({
+            url: "{{route('ticketing.submit-kpa')}}",
             type: "POST",
             data: form_data,
             cache: false,
             processData: false,
             contentType: false,
-            success: function(e) {
+            success: function (e)
+            {
                 $('#loader-kpa').hide()
-                if (e.status == "success") {
+                if(e.status == "success")
+                {
                     Toast.fire({
                         icon: 'success',
                         title: e.title
                     })
 
                     openData()
-                } else {
+                }
+                else
+                {
                     Toast.fire({
                         icon: 'error',
                         title: e.message
                     })
                 }
-            }
-        });
+            }});
         // }
     }
 
-    function submitFasgub() {
+    function submitFasgub()
+    {
         $('#loader-fasgub').show()
 
         catatan = ""
 
-        $("textarea[name=catatan_proses_fasgub]").each(function() {
+        $("textarea[name=catatan_proses_fasgub]").each(function () {
             catatan += $(this).val() + "|";
         });
 
-        var id = $('#id_revisi_proses').val()
+        var id     = $('#id_revisi_proses').val()
         var status = $('#status_proses_fasgub').val()
 
         var form_data = new FormData();
@@ -1282,44 +1332,48 @@
         form_data.append('status', status);
         form_data.append('catatan', catatan);
 
-        form_data.append('_token', '{{ csrf_token() }}')
+        form_data.append('_token', '{{csrf_token()}}')
 
         $.ajax({
-            url: "{{ route('ticketing.submit-fasgub') }}",
-            type: "POST",
-            data: form_data,
-            cache: false,
-            processData: false,
-            contentType: false,
-            success: function(e) {
-                $('#loader-fasgub').hide()
-                if (e.status == "success") {
-                    Toast.fire({
-                        icon: 'success',
-                        title: e.title
-                    })
+        url: "{{route('ticketing.submit-fasgub')}}",
+        type: "POST",
+        data: form_data,
+        cache: false,
+        processData: false,
+        contentType: false,
+        success: function (e)
+        {
+            $('#loader-fasgub').hide()
+            if(e.status == "success")
+            {
+                Toast.fire({
+                    icon: 'success',
+                    title: e.title
+                })
 
-                    openData()
-                } else {
-                    Toast.fire({
-                        icon: 'error',
-                        title: e.message
-                    })
-                }
+                openData()
             }
-        });
+            else
+            {
+                Toast.fire({
+                    icon: 'error',
+                    title: e.message
+                })
+            }
+        }});
     }
 
-    function submitBan() {
+    function submitBan()
+    {
         $('#loader-ban').show()
 
         catatan = ""
 
-        $("textarea[name=catatan_proses_ban]").each(function() {
+        $("textarea[name=catatan_proses_ban]").each(function () {
             catatan += $(this).val() + "|";
         });
 
-        var id = $('#id_revisi_proses').val()
+        var id     = $('#id_revisi_proses').val()
         var status = $('#status_proses_ban').val()
 
         var form_data = new FormData();
@@ -1328,35 +1382,39 @@
         form_data.append('status', status);
         form_data.append('catatan', catatan);
 
-        form_data.append('_token', '{{ csrf_token() }}')
+        form_data.append('_token', '{{csrf_token()}}')
 
         $.ajax({
-            url: "{{ route('ticketing.submit-ban') }}",
-            type: "POST",
-            data: form_data,
-            cache: false,
-            processData: false,
-            contentType: false,
-            success: function(e) {
-                $('#loader-ban').hide()
-                if (e.status == "success") {
-                    Toast.fire({
-                        icon: 'success',
-                        title: e.title
-                    })
+        url: "{{route('ticketing.submit-ban')}}",
+        type: "POST",
+        data: form_data,
+        cache: false,
+        processData: false,
+        contentType: false,
+        success: function (e)
+        {
+            $('#loader-ban').hide()
+            if(e.status == "success")
+            {
+                Toast.fire({
+                    icon: 'success',
+                    title: e.title
+                })
 
-                    openData()
-                } else {
-                    Toast.fire({
-                        icon: 'error',
-                        title: e.message
-                    })
-                }
+                openData()
             }
-        });
+            else
+            {
+                Toast.fire({
+                    icon: 'error',
+                    title: e.message
+                })
+            }
+        }});
     }
 
-    function previewSuratPengesahan() {
+    function previewSuratPengesahan()
+    {
         var token = $('#token_revisi_proses').val()
         $('#title-btn-preview').empty().append("MEMPROSES..")
 
@@ -1364,19 +1422,19 @@
         deskripsi_pengesahan = ""
         tembusan = ""
 
-        $("textarea[name=deskripsi_pengesahan]").each(function() {
+        $("textarea[name=deskripsi_pengesahan]").each(function () {
             deskripsi_pengesahan += $(this).val() + "|";
         });
 
-        $("textarea[name=catatan_proses_bagren]").each(function() {
+        $("textarea[name=catatan_proses_bagren]").each(function () {
             catatan += $(this).val() + "|";
         });
 
-        $("textarea[name=tembusan_proses_bagren]").each(function() {
+        $("textarea[name=tembusan_proses_bagren]").each(function () {
             tembusan += $(this).val() + "|";
         });
 
-        var id = $('#id_revisi_proses').val()
+        var id     = $('#id_revisi_proses').val()
         var status = $('#status_proses_bagren').val()
         var tanggal_pengesahan = $('#tanggal_pengesahan').val()
         var nomor_surat_pengesahan = $('#nomor_surat_pengesahan').val()
@@ -1391,30 +1449,27 @@
         form_data.append('tembusan', tembusan);
         form_data.append('nomor_surat_pengesahan', nomor_surat_pengesahan);
 
-        form_data.append('_token', '{{ csrf_token() }}')
+        form_data.append('_token', '{{csrf_token()}}')
 
         $.ajax({
-            url: "{{ route('ticketing.preview-bagren-daerah') }}",
-            type: "POST",
-            data: form_data,
-            cache: false,
-            processData: false,
-            contentType: false,
-            success: function(e) {
-                $('#content-surat-pengesahan').load(
-                    '{{ asset('') }}ticketing/preview-pengesahan?token=' + token,
-                    function() {
-                        $('#modal-preview-surat-pengesahan').modal({
-                            show: true
-                        });
-                        $('#title-btn-preview').empty().append("PREVIEW")
-                    });
-            }
-        });
+        url: "{{route('ticketing.preview-bagren-daerah')}}",
+        type: "POST",
+        data: form_data,
+        cache: false,
+        processData: false,
+        contentType: false,
+        success: function (e)
+        {
+            $('#content-surat-pengesahan').load('{{env('APP_URL')}}/ticketing/preview-pengesahan?token='+token,function(){
+                $('#modal-preview-surat-pengesahan').modal({show:true});
+                $('#title-btn-preview').empty().append("PREVIEW")
+            });
+        }});
     }
 
-    function downloadPreview() {
+    function downloadPreview()
+    {
         var token = $('#token_revisi_proses').val()
-        window.open('{{ asset('') }}download/preview-pengesahan?token=' + token);
+        window.open('{{env('APP_URL')}}/download/preview-pengesahan?token='+token);    
     }
 </script>

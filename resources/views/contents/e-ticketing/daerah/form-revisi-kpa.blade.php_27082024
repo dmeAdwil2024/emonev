@@ -112,12 +112,12 @@
                 placeholder=""
               />
             </div>
-
+   
             <div class="mb-3 perbaikan">
               <label for="catatan_kpa" class="form-label">Catatan</label>
               <textarea class="form-control" name="catatan_kpa" id="catatan_kpa" rows="3">{{ is_array($data->catatan_kpa) ? implode('<br>', $data->catatan_kpa) : $data->catatan_kpa }}</textarea>
             </div>
-
+  
             <div class="d-flex mb-3 justify-content-between">
               <button
                 type="button"
@@ -166,16 +166,16 @@
                   @endforeach
                 </div>
               </div>
-
+              
             </div>
           </div>
-        </div>
+        </div>        
       </form>
     </div>
   </div>
 </div>
 
-<script src="{{ asset('') }}landing-pages/js/jquery-3.3.1.min.js"></script>
+<script src="{{env('APP_URL')}}/landing-pages/js/jquery-3.3.1.min.js"></script>
 <script>
   $(function() {
     $("#status_kpa").on('change', function(){

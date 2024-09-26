@@ -219,7 +219,7 @@
         $realisasi      = new SaktiRealisasi;
         $data_dekon     = $satker->whereNotIn('kode', ['027486', '356000', '417936', '690639'])->get();
 
-        if(is_numeric(Auth::user()->prov))
+        if(is_object(Auth::user()) && is_numeric(Auth::user()->prov))
         {
             $data_dekon = $satker->where('kode', Auth::user()->kdsatker)->get();
         }
@@ -261,3 +261,61 @@
 
         return $sum_realisasi;
     }
+
+    function getLinkByStatus($status, $level)
+    {
+        $link = '#';
+    
+        switch($status) {
+            case \App\TicketStatus::BARU:
+                if ($level == \App\UserAccess::LEVEL_KPA) {
+                    $link = route('ticketing.view-revisi-kpa');
+                }
+                break;
+    
+            case \App\TicketStatus::PERBAIKAN:
+                if ($level == \App\UserAccess::LEVEL_PPK) {
+                    $link = route('ticketing.view-revisi-ppk');
+                }
+                break;
+
+            case \App\TicketStatus::PERBAIKAN_FIX:
+            case \App\TicketStatus::DISETUJUI_KPA:
+                switch ($level) {
+                    case \App\UserAccess::LEVEL_KPA:
+                        $link = route('ticketing.view-revisi-kpa');
+                        break;
+
+                    case \App\UserAccess::LEVEL_BAGREN:
+                        $link = route('ticketing.view-revisi-bagren');
+                        break;
+                }
+                break;
+
+            case \App\TicketStatus::DITELITI_BAGREN:
+            case \App\TicketStatus::DITOLAK_BAGREN:
+                if ($level == \App\UserAccess::LEVEL_BAGREN) {
+                    $link = route('ticketing.view-revisi-bagren');
+                }
+                break;
+
+            case \App\TicketStatus::DICEK_BAGREN:
+                if ($level == \App\UserAccess::LEVEL_BAGREN) {
+                    $link = route('ticketing.view-revisi-bagren');
+                }
+                if ($level == \App\UserAccess::LEVEL_FASGUB) {
+                    $link = route('ticketing.view-revisi-fasgub');
+                }
+                break;
+
+            case \App\TicketStatus::DISETUJUI_FASGUB:
+                if ($level == \App\UserAccess::LEVEL_BAGREN) {
+                    $link = route('ticketing.view-revisi-bagren-final');
+                }
+                if ($level == \App\UserAccess::LEVEL_FASGUB) {
+                    $link = route('ticketing.view-revisi-fasgub');
+                }
+                break;
+        }
+        return $link;
+    }   

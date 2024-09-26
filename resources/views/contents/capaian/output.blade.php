@@ -1,397 +1,859 @@
-@extends('layouts.main-easyui')
-@extends('contents.capaian.template-parts.modal-input-target')
-@extends('contents.capaian.template-parts.modal-upload-evidence')
+<!DOCTYPE html>
+<html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="csrf-token" content="{{ csrf_token() }}">
+        <title>Dashboard E-Monev</title>
+        <link rel="icon" type="image/png" href="{{env('APP_URL')}}/images/icon.png"/>
+        <!-- Bootstrap -->
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+        <!-- Font Awesome Icons -->
+        <link rel="stylesheet" href="{{env('APP_URL')}}/templates/plugins/fontawesome-free/css/all.min.css" />
 
-@section('content')
-    <section class="content-header">
-        <div class="container-fluid">
-            <div class="row mb-2">
-                <div class="col-sm-6">
-                    <h1>{{$current}}</h1>
-                </div>
-                <div class="col-sm-6">
-                    <ol class="breadcrumb float-sm-right">
-                        <li class="breadcrumb-item"><a href="#">{{$modul}}</a></li>
-                        <li class="breadcrumb-item active">{{$current}}</li>
-                    </ol>
-                </div>
-            </div>
-        </div>
-    </section>
+        <link rel="stylesheet" href="{{env('APP_URL')}}/templates/plugins/datatables-bs4/css/dataTables.bootstrap4.min.css" />
+        <link rel="stylesheet" href="{{env('APP_URL')}}/templates/plugins/datatables-responsive/css/responsive.bootstrap4.min.css" />
+        <link rel="stylesheet" href="{{env('APP_URL')}}/templates/plugins/datatables-buttons/css/buttons.bootstrap4.min.css" />
+		<link rel="stylesheet" href="{{env('APP_URL')}}/templates/plugins/sweetalert/sweetalert.css" />
 
-    <!-- Main content -->
-    <section class="content" id="wrap-data">
-        <div class="container-fluid">
-            <div class="row">
-                <div class="col-md-12 col-xs-12">
-                    <div class="card card-outline card-primary">
-                        <div class="overlay" id="loader-datatable" style="display: none">
-                            <i class="text-navy fas fa-2x fa-spinner fa-spin"></i> &nbsp;
-                        </div>
+        <!-- Theme style -->
+        <link rel="stylesheet" href="{{ asset('newdashboard/css/newstyles.css') }}?v={{ time() }}" />
+		
+		<script type="module" src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.esm.js"></script>
+		<script nomodule src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.js"></script>
+        <script src="{{env('APP_URL')}}/landing-pages/js/jquery-3.3.1.min.js"></script>
+        <script src="{{env('APP_URL')}}/landing-pages/js/popper.min.js"></script>
+        <!-- Bootstrap -->
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
+        <!-- Chartjs -->
+        <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.2/dist/chart.umd.min.js"></script>
+        <!-- DataTables  & Plugins -->
+        <script src="{{env('APP_URL')}}/templates/plugins/datatables/jquery.dataTables.min.js"></script>
+        <script src="{{env('APP_URL')}}/templates/plugins/datatables-bs4/js/dataTables.bootstrap4.min.js"></script>
+        <script src="{{env('APP_URL')}}/templates/plugins/datatables-responsive/js/dataTables.responsive.min.js"></script>
+        <script src="{{env('APP_URL')}}/templates/plugins/datatables-responsive/js/responsive.bootstrap4.min.js"></script>
+        <script src="{{env('APP_URL')}}/templates/plugins/datatables-buttons/js/dataTables.buttons.min.js"></script>
+        <script src="{{env('APP_URL')}}/templates/plugins/datatables-buttons/js/buttons.bootstrap4.min.js"></script>
+        <script src="{{env('APP_URL')}}/templates/plugins/jszip/jszip.min.js"></script>
+        <script src="{{env('APP_URL')}}/templates/plugins/pdfmake/pdfmake.min.js"></script>
+        <script src="{{env('APP_URL')}}/templates/plugins/pdfmake/vfs_fonts.js"></script>
+        <script src="{{env('APP_URL')}}/templates/plugins/datatables-buttons/js/buttons.html5.min.js"></script>
+        <script src="{{env('APP_URL')}}/templates/plugins/datatables-buttons/js/buttons.print.min.js"></script>
+        <script src="{{env('APP_URL')}}/templates/plugins/datatables-buttons/js/buttons.colVis.min.js"></script><!-- Chartjs -->
+        <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.2/dist/chart.umd.min.js"></script>
+        <script src="{{env('APP_URL')}}/templates/plugins/sweetalert/sweetalert.min.js"></script>
+		<style>
+			.bar1{
+				color:#fff;
+			}
+			.bar2{
+				color:#000;
+			}
+			.inner {
+				postion:absolute;
+				width: 100px;
+	            height: 100px;
+	            background:rgba(0,0,0,0.8) ;
+				display:none;
+				border-radius:10px;
+			}
+		</style>
+    </head>
+    <body>
+		<div class="container-fluid">
+			<div class="navigasi">
+				<!-- <div class="mainmenu mt-2 collapse" id="menuNav"> -->
+				<ul class="list-unstyled">
+					<li><a href="/" class="btn btn-dongker">Home</a></li>
+					<li>
+						<a href="#menuTiketing" class="btn btn-dongker" data-bs-toggle="collapse">E Tiketing &#11206;</a>
+						<ul class="list-unstyled collapse ps-3" id="menuTiketing">
+                            @if(empty(Auth::user()->prov) || Auth::user()->level == "0" || Auth::user()->prov == "pusat" || Auth::user()->username == "198505062004121001")
+							<li><a href="{{route('ticketing.view-revisi-pusat')}}" class="btn btn-sm btn-primary btn-pills my-1">Pengajuan Revisi Pusat</a></li>
+							<li><a href="{{route('usulan.kegiatan')}}" class="btn btn-sm btn-primary btn-pills mb-1">Usulan kegiatan</a></li>
+                            @endif
 
-                        <div class="card-header">
-                            <div class="row">
-                                <div class="col-md-5 col-sm-12 mt-3">
-                                    <select data-options="onChange: function(){
-                                            loadSubdit();
-                                        }" style="height: 40px; width: 100%" name="direktorat" class="easyui-combobox" id="direktorat">
-                                            <option value="" disabled selected>Pilih Unit Kerja Eselon 2</option>
-                                        @foreach($data_direktorat as $direktorat)
-                                            <option value="{{$direktorat->id_dir}}" @if($direktorat->id_dir == Auth::user()->id_dir) selected @endif>{{$direktorat->nama_dir}}</option>
-                                        @endforeach
-                                    </select>
-                                </div>
-                                <div class="col-md-5 col-sm-12 mt-3">
-                                    <select data-options="onChange: function(){loadData();}" name="subdit" class="easyui-combobox" style="height: 40px; width: 100%" id="subdit">
-                                            <option value="" disabled selected>Pilih Unit Kerja Eselon 3</option>
-                                    </select>
-                                </div>
-                                <div class="col-md-2 col-sm-12 mt-3">
-                                    <select data-options="onChange: function(){loadData();}" name="triwulan" class="easyui-combobox" style="height: 40px; width: 100%" id="triwulan">
-                                            <option value="1" selected>Triwulan 1</option>
-                                            <option value="2">Triwulan 2</option>
-                                            <option value="3">Triwulan 3</option>
-                                            <option value="4">Triwulan 4</option>
-                                    </select>
-                                </div>
-                            </div>
-                        </div>
+                            @if(!empty(Auth::user()->prov) || Auth::user()->level == "0"  || Auth::user()->username == "198505062004121001")
+							<li>
+								<a href="#menuRevda" class="btn btn-sm btn-primary btn-pills mb-1" data-bs-toggle="collapse">Pengajuan Revisi Daerah &#11206;</a>
+								<ul class="list-unstyled collapse ps-3" id="menuRevda">
+									<li><a href="{{route('ticketing.revisi-gwpp')}}" class="btn btn-sm btn-warning btn-pills mb-1">Revisi kegiatan GWPP</a></li>
+									<li><a href="{{route('ticketing.view-sarpras-daerah')}}" class="btn btn-sm btn-warning btn-pills mb-1">Revisi kegiatan Sarpras</a></li>
+								</ul>
+							</li>
+							<li><a href="#" class="btn btn-sm btn-primary btn-pills mb-1">Quality Surveyor</a></li>
+		                    @endif
+						</ul>
+					</li>
 
-                        <div class="card-body">
-                            <div class="row" id="wrap-datatable" style="display:none">
-                                <div class="col-md-12 col-xs-12 col-sm-12">
-                                    <div class="table-responsive" style="overflow-x: auto;white-space: nowrap;">
-                                        <table class="table-responsive easyui-treegrid" id="data-capaian" style="width:100%;height:500px"
-                                        data-options="
-                                            data: '',
-                                            rownumbers: false,
-                                            idField: 'kode_treegrid',
-                                            treeField: 'kode_treegrid',
-                                            loadFilter: myLoadFilter,
-                                            toolbar:'#toolbar'
-                                        ">
-                                            <thead frozen="true">
-                                                <th data-options="halign:'center', align:'left', field:'kode_treegrid'"  width="200px">KODE</th>
-                                            </thead>
-                                            <thead>
-                                                <th data-options="halign:'center', align:'left', field:'uraian_treegrid'"  width="400px">KEGIATAN/KLASIFIKASI RINCIAN OUTPUT/OUTPUT/KOMPONEN</th>
-                                                <th data-options="halign:'center', align:'right', field:'kewenangan'"  width="150px">KEWENANGAN</th>
-                                                <th data-options="halign:'center', align:'right', field:'pagu'"  width="150px">PAGU</th>
-                                                <th data-options="halign:'center', align:'right', field:'realisasi'"  width="150px">REALISASI</th>
-                                                <th data-options="halign:'center', align:'center', field:'bulan1'"  width="100px">BULAN 1</th>
-                                                <th data-options="halign:'center', align:'center', field:'bulan2'"  width="100px">BULAN 2</th>
-                                                <th data-options="halign:'center', align:'center', field:'bulan3'"  width="100px">BULAN 3</th>
-                                            </thead>
-                                        </table>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
+                    @if(empty(Auth::user()->prov)  || Auth::user()->username == "198505062004121001")
+                    @if(Auth::user()->level == 0 || Auth::user()->level == 1 || Auth::user()->level == 5 || Auth::user()->level == 6  || Auth::user()->username == "198505062004121001")
+					<li><a href="{{route('pok.terbit-pok')}}" class="btn btn-dongker">Penerbitan POK</a></li>
+                    @endif
+                    @endif
 
-    <div id="mm" class="easyui-menu" style="width:175px;">
-        <div onclick="loadData()" data-options="iconCls:'icon-reload'">Reload Data</div>
-        <div onclick="formTarget()" data-options="iconCls:'icon-add'">Input Capaian</div>
-        <div class="menu-sep"></div>
-        <div onclick="remove()" data-options="iconCls:'icon-cancel'">Remove</div>
-    </div>
-
-    <div id="toolbar" style="padding:10px; text-align:right">
-        <!-- <a href="javascript:void(0)" onclick="remove()" class="easyui-linkbutton" iconCls="icon-cancel"></a>
-        <a href="javascript:void(0)" onclick="loadData()" class="easyui-linkbutton" iconCls="icon-reload"></a>
-        <a href="javascript:void(0)" onclick="formTarget()" class="easyui-linkbutton" iconCls="icon-add"> Target Capaian</a> -->
-        Total Rincian Output (RO): <span class="font-weight-bolder" id="total_ro">0</span> <br>
-        Total Komponen Input (KI): <span class="font-weight-bolder" id="total_ki">0</span>
-    </div>
-
-@endsection
-
-@section('js')
-    <script>
-        $(function () {
-            // loadData()
-            window.setTimeout( function() {
-                loadSubdit()
-            }, 300);
-        });
-
-        function openModalInputCo()
-        {
-            $('#modal-capaian-output').modal('show')
-        }
-
-        function countRo()
-        {
-            var id_dir      = $('#direktorat').combobox('getValue')
-            var id_subdir   = $('#subdit').combobox('getValue')
-            var triwulan    = $('#triwulan').combobox('getValue')
-            
-            $.post('{{ route('capaian.count-ro') }}', {id_dir, id_subdir, triwulan, _token: '{{csrf_token()}}'}, function(e){
-
-                $('#total_ro').empty().append(e.ro)
-                $('#total_ki').empty().append(e.input)
-
-            });
-        }
-
-        function formTarget()
-        {
-            var data    = $('#data-capaian').treegrid('getSelected');
-            
-            if(!data)
-            {
-                swal({
-                    title: "Data Belum Dipilih",
-                    text:  "Klik Pada Data yang Akan Diproses",
-                    type:  "error"
-                })
-            }
-            else
-            {
-                if(data.type == "kegiatan" || data.type == "output" || data.type == "suboutput")
-                {
-                    swal({
-                        title: "Kategori yang Dipilih Salah",
-                        text:  "Piih Hanya Pada Kategori Data Komponen/Subkomponen",
-                        type:  "error"
-                    })
-                }
-                else
-                {
-                    openModalTarget(data.type, data.kode_treegrid)
-                }
-            }
-        }
-
-        function openModalTarget(type, kode, bulan = null)
-        {
-            $("#modal-input-target").modal("show")
-            $("#type_target").val(type)
-            $("#kode_target").val(kode)
-            loadDetailInput(kode, bulan)
-
-            if(bulan != null)
-            {
-                if(parseInt(bulan) < 10)
-                {
-                    $('#bulan_target').val("0"+bulan)
-                }
-                else
-                {
-                    $('#bulan_target').val(bulan)
-                }
-            }
-        }
-        
-        function loadDetailInput(kode, month)
-        {
-            var bulan   = 1
-
-            if(month != null)
-            {
-                var bulan = month
-            }
-
-            $.post('{{ route('capaian.detail-input') }}', {kode, bulan, _token: '{{csrf_token()}}'}, function(e){
-
-                if(e != "none")
-                {
-                    if(parseInt(e.bulan) < 10)
-                    {
-                        $('#bulan_target').val("0"+e.bulan)
-                    }
-                    else
-                    {
-                        $('#bulan_target').val(e.bulan)
-                    }
-
-                    $('#tahun_target').val(e.tahun)
-                    $('#target_target').val(e.to_volume)
-                    $('#realisasi_target').val(e.co_volume)
-                    $('#keterangan_target').val(e.keterangan)
-                    $('#kendala_target').val(e.kendala)
-                    $('#tinjut_target').val(e.tinjut)
-
-                    $('#wrap-table-form-target').show()
-
-                    var i;
-                    var table = document.getElementById("table-form-target");
+                    @if(Auth::user()->level == 0 || Auth::user()->level == 5 || Auth::user()->level == 2 || Auth::user()->level == 3 || Auth::user()->level == 27 || Auth::user()->username == "198505062004121001")
+					<li>
+						<a href="#menuCapaiOut" class="btn btn-dongker" data-bs-toggle="collapse">Capaian Output &#11206;</a>
+						<ul class="list-unstyled collapse ps-3" id="menuCapaiOut">
+                            @if(empty(Auth::user()->prov))
+							<li>
+								<a href="#menuCapaiPus" class="btn btn-sm btn-primary btn-pills my-1" data-bs-toggle="collapse">Capaian Pusat &#11206;</a>
+								<ul class="list-unstyled collapse ps-3" id="menuCapaiPus">
+									<li><a href="{{route('capaian.capaian-output')}}/ki" class="btn btn-sm btn-warning btn-pills mb-1">Komponen Input</a></li>
+                                    <li><a href="{{route('capaian.capaian-output')}}/ro" class="btn btn-sm btn-warning btn-pills mb-1">Rincian Output</a></li>
+								</ul>
+							</li>
+                            @endif
+                            <li>
+								<a href="#menuCapaiDa" class="btn btn-sm btn-primary btn-pills mb-1" data-bs-toggle="collapse">Capaian Daerah &#11206;</a>
+								<ul class="list-unstyled collapse ps-3" id="menuCapaiDa">
+									<li><a href="{{route('capaian.capaian-output-daerah')}}" class="btn btn-sm btn-warning btn-pills mb-1">Komponen Input</a></li>
+									<li><a href="{{route('capaian.capaian-output-daerah')}}" class="btn btn-sm btn-warning btn-pills mb-1">Rincian Output</a></li>
+								</ul>
+							</li>
+						</ul>
+					</li>
+                    @endif
                     
-                    for (i = 0; i < e.data.length; ++i) {
-                        
-                        var row = table.insertRow(i+1);
+                    <li>
+						<a href="#menuCapaiKin" class="btn btn-dongker" data-bs-toggle="collapse">Capaian Kinerja &#11206;</a>
+						<ul class="list-unstyled collapse ps-3" id="menuCapaiKin">
+							<li>
+								<a href="#menuCapaiKiPus" class="btn btn-sm btn-primary btn-pills my-1" data-bs-toggle="collapse">Capaian Pusat &#11206;</a>
+								<ul class="list-unstyled collapse ps-3" id="menuCapaiKiPus">
+									<li><a href="#" class="btn btn-sm btn-warning btn-pills mb-1">IKP</a></li>
+									<li><a href="#" class="btn btn-sm btn-warning btn-pills mb-1">IKK</a></li>
+								</ul>
+							</li>
+							<li>
+								<a href="#menuCapaiKiDa" class="btn btn-sm btn-primary btn-pills mb-1" data-bs-toggle="collapse">Capaian Daerah &#11206;</a>
+								<ul class="list-unstyled collapse ps-3" id="menuCapaiKiDa">
+									<li><a href="#" class="btn btn-sm btn-warning btn-pills mb-1">IKK</a></li>
+								</ul>
+							</li>
+						</ul>
+					</li>
+
+                    @if(Auth::user()->level == 0  || Auth::user()->username == "198505062004121001")
+					<li><a href="#menuMaster" class="btn btn-dongker" data-bs-toggle="collapse">Master &#11206</a>
+						<ul class="list-unstyled collapse ps-3" id="menuMaster">
+						   <li><a href="{{route('capaian.capaian-output')}}/tc" class="btn btn-sm btn-warning btn-pills mb-1">Target Capaian</a></li>
+                           <li><a href="{{route('capaian.capaian-setting')}}" class="btn btn-sm btn-warning btn-pills mb-1">Setting Capaian</a></li>
+                           <li>
+						   		<a href="#menuImport" class="btn btn-sm btn-primary btn-pills mb-1" data-bs-toggle="collapse">Import Sakti&#11206;</a>
+								<ul class="list-unstyled collapse ps-3" id="menuImport">
+									<li><a href="{{route('capaian.import-sakti')}}/ag" class="btn btn-sm btn-warning btn-pills mb-1">Anggaran</a></li>
+									<li><a href="{{route('capaian.import-sakti')}}/as" class="btn btn-sm btn-warning btn-pills mb-1">Anggaran Eselon 1</a></li>
+									<li><a href="{{route('capaian.import-sakti')}}/rg" class="btn btn-sm btn-warning btn-pills mb-1">Realisasi</a></li>
+									<li><a href="{{route('capaian.import-sakti')}}/rs" class="btn btn-sm btn-warning btn-pills mb-1">Realisasi Eselon 1</a></li>
+								</ul>
+						   </li>
+						</ul>
+					</li>
+					<li><a href="{{route('master.history-pagu')}}" class="btn btn-dongker" class="btn btn-dongker">Riwayat Pagu</a></li>
+                    @endif
+
+                    @if(Auth::user()->level == 0  || Auth::user()->username == "198505062004121001")
+					<li><a href="" class="btn btn-dongker">Angket</a></li>
+					@endif
+
+                    @if(Auth::user()->level == "0"  || Auth::user()->username == "198505062004121001")
+					<li>
+                        <a href="{{ route('tes.index') }}" class="btn btn-dongker mb-1">Realisasi Anggaran</a>
+    					<a href="{{route('importes1.index')}}" class="btn btn-dongker" class="btn btn-dongker">Import Eselon 1</a>
+    					<a href="{{route('importes1.index')}}" class="btn btn-dongker" class="btn btn-dongker">Import Eselon 1</a>
+
+                        {{-- <ul class="list-unstyled collapse ps-3" id="menuRealisasi">
+							<li>
+								<a href="" class="btn btn-sm btn-primary btn-pills my-1">Realisasi Pusat</a>
+							</li>
+							<li>
+								<a href="" class="btn btn-sm btn-primary btn-pills mb-1">Realisasi Dekon </a>
+							</li>
+                            <li>
+								<a href="" class="btn btn-sm btn-primary btn-pills mb-1">Realisasi TP</a>
+							</li>
+						</ul> --}}
+                    </li>
+					@endif
+
+                    @if(Auth::user()->level == "0"  || Auth::user()->username == "198505062004121001")
+                    <li>
+                        <a href="#menuAplikasi" class="btn btn-dongker" data-bs-toggle="collapse">ERD &#11206;</a>
+                        <ul class="list-unstyled collapse ps-3" id="menuAplikasi">
+                            <li>
+                                <a href="" class="btn btn-sm btn-primary btn-pills mb-1">Integrasi SAKTI</a>
+                            </li>
+                            <li>
+                                <a href="https://sipgwpp.kemendagri.go.id/" class="btn btn-sm btn-primary btn-pills mb-1">SIP GWPP</a>
+                            </li>
+                            <li>
+                                <a href="https://simlinmas.kemendagri.go.id/management/login" class="btn btn-sm btn-primary btn-pills mb-1">Simlinmas</a>
+                            </li>
+                            <li>
+                                <a href="https://siapkk.kemendagri.go.id/" class="btn btn-sm btn-primary btn-pills mb-1">SIAPKK</a>
+                            </li>
+                            <li>
+                                <a href="https://sidamkar.kemendagri.go.id/" class="btn btn-sm btn-primary btn-pills mb-1">SiDamkar</a>
+                            </li>
+                            <li>
+                                <a href="https://sarina.kemendagri.go.id/" class="btn btn-sm btn-primary btn-pills mb-1">Sarina</a>
+                            </li>
+                            <li>
+                                <a href="https://payroll-adwil.kemendagri.go.id/login" class="btn btn-sm btn-primary btn-pills mb-1">Payroll</a>
+                            </li>
+                            <li>
+                                <a href="https://ikm-adwil.kemendagri.go.id/login" class="btn btn-sm btn-primary btn-pills mb-1">IKM</a>
+                            </li>
+                            <li>
+                                <a href="https://jf-polpp.kemendagri.go.id/" class="btn btn-sm btn-primary btn-pills mb-1">JFPolPP</a>
+                            </li>
+                            <li>
+                                <a href="https://kodewilayah.kemendagri.go.id/" class="btn btn-sm btn-primary btn-pills mb-1">Kode Wilayah</a>
+                            </li>
+                            <li>
+                                <a href="https://profilpulau.kemendagri.go.id/" class="btn btn-sm btn-primary btn-pills mb-1">Pulau</a>
+                            </li>
+                            <li>
+                                <a href="https://spm.bangda.kemendagri.go.id/2021/home" class="btn btn-sm btn-primary btn-pills mb-1">Trantibumlinmas</a>
+                            </li>
+                            <li>
+                                <a href="https://emonev-dpmptsp.kemendagri.go.id/" class="btn btn-sm btn-primary btn-pills mb-1">DPMPTSP</a>
+                            </li>
+                            <li>
+                                <a href="https://puu-adwil.kemendagri.go.id/" class="btn btn-sm btn-primary btn-pills mb-1">PUU</a>
+                            </li>
+                            <li>
+                                <a href="https://siratu.kemendagri.go.id/" class="btn btn-sm btn-primary btn-pills mb-1">Siratu</a>
+                            </li>
+                            <li>
+                                <a href="https://pagarspmbencana.kemendagri.go.id/" class="btn btn-sm btn-primary btn-pills mb-1">Pagar SPM Bencana</a>
+                            </li>
+                            <li>
+                                <a href="https://satpolpp.kemendagri.go.id/" class="btn btn-sm btn-primary btn-pills mb-1">SimpolPP</a>
+                            </li>
+                            <li>
+                                <a href="https://ditjenbinaadwil.kemendagri.go.id/" class="btn btn-sm btn-primary btn-pills mb-1">Ditjen Bina Adwil</a>
+                            </li>
+                            <li>
+                                <a href="https://cloud-adwil.kemendagri.go.id/" class="btn btn-sm btn-primary btn-pills mb-1">Cloud keuangan</a>
+                            </li>
+                            <li>
+                                <a href="https://index-suburusanbencana.kemendagri.go.id/" class="btn btn-sm btn-primary btn-pills mb-1">Index Bencana</a>
+                            </li>    
+                            <li>
+                                <a href="https://simpeg-adwil.kemendagri.go.id/" class="btn btn-sm btn-primary btn-pills mb-1">Simpeg Adwil</a>
+                            </li>         
+                            <li>
+                                <a href="https://registrasi-sidamkar.kemendagri.go.id/" class="btn btn-sm btn-primary btn-pills mb-1">Registrasi Sidamkar</a>
+                            </li>
+                            <li>
+                                <a href="https://pertanahan.kemendagri.go.id/" class="btn btn-sm btn-primary btn-pills mb-1">Pertanahan</a>
+                            </li>              
+                        </ul>
+                    </li>
+                    @endif
                     
-                        var cell1 = row.insertCell(0);
-                        var cell2 = row.insertCell(1);
-                        // var cell3 = row.insertCell(2);
-                        // var cell4 = row.insertCell(3);
+					<li><a href="{{route('profile')}}" class="btn btn-dongker">Profile</a></li>
+					<li>
+						<a class="btn btn-dongker" href="{{ route('logout') }}"
+							onclick="event.preventDefault();
+											document.getElementById('logout-form').submit();">
+							Logout
+						</a>
+						<form id="logout-form" action="{{ route('logout') }}" method="POST" class="d-none">
+							@csrf
+						</form>
+					</li>
+				</ul>
+				<!-- </div> -->
+			</div>
+			<div class="main">
+				<div class="topbar">
+					
+						<div class="toggle col-md-1"  id="menuNav">
+							<a href="#menuNav">
+								<i class="fas fa-bars"></i>
+							</a>
+						</div>
+					
+						<div class="col-md-8 d-flex logo-admin">
+							<img src="{{asset('newdashboard/images/logo-emonev.png')}}" alt="logo emonev" class="img-fluid margin-auto logo-smaller">
+							<div class="text-center">
+								<h1 class="title">E-MONEV</h1>
+								<h2 class="subtitle">DITJEN BINA ADMINISTRASI KEWILAYAHAN</h2>
+							</div>
+						</div>
+						<div class="avatar col-md-3 p-2 d-flex">
+							<img src="{{asset('newdashboard/images/user-avatar.png')}}" alt="" class="img-fluid avatar-img me-2">
+							<div class="avatar-name small fw-bold">
+								Selamat Datang {{Auth::user()->nama}},<br>
+                                @php
+									$str="select nama from tbm_level where id=".Auth::user()->level;
+									$data_level=DB::select($str);
+									foreach($data_level as $item){
+										echo $item->nama;
+									}
+								@endphp
+							</div>
+						</div>
+					
+				</div>
+				<div class="row mb-3">
+		            <div class="col-md-12">
+					<a href="javascript:history.back()" class="btn btn-danger"><i class="fas fa-backspace"></i> &nbsp;Back</a>
+		            </div>
+		        </div>
+				<div class="row">
+					<div class="col-md-5 p-2 font-tebala" style="background-color:#ebebeb;">
+						@if($mdl=="ro")
+							Rincian Output
+						@elseif($mdl=="tc")
+							Target Capaian
+						@else
+							Komponen Input
+						@endif
+					</div>
+					<div class="col-md-6 p-2 font-tebala" style="background-color:#ebebeb;text-align:right">
+						@if($mdl=='ro')
+							Capaian Output > Capaian Pusat > Rincian Output
+						@elseif($mdl=='tc')
+							Master > Target Capaian
+						@else
+							Capaian Output > Capaian Pusat > Komponen Input
+						@endif
+					</div>
+				</div>
+				<div style="height:10px"></div>
+				<div class="row">
+					<div class="col-md-11 p-2" style="background-image: linear-gradient(to right, rgba(204,204,255,0.7) , rgba(175, 235, 231, 0.7));">
+						<div class="row">
+							<div class="col-md-11 font-tebala font-tebal">
+								Informasi Cascading Output
+							</div>
+						</div>
+						<div class="row">
+							<div class="col-md-2 font-tebal">
+								Tahun
+							</div>
+							<div class="col-md-10 font-tebal">
+								<font class="font-tebala">{{$tahun}}</font>
+							</div>
+						</div>
+						<div class="row">
+							<div class="col-md-2 font-tebal">
+								K/L
+							</div>
+							<div class="col-md-10 font-tebal">
+								<font class="font-tebala">[00]</font>-Kementerian Dalam Negeri
+							</div>
+						</div>
+						<div class="row">
+							<div class="col-md-2 font-tebal">
+								UK Eselon I
+							</div>
+							<div class="col-md-10 font-tebal">
+								<font class="font-tebala">[04]</font>-Ditjen Bina Administrasi Kewilayahan
+							</div>
+						</div>
+						@if(!empty($data_sp))
+						<div class="row">
+							<div class="col-md-2 font-tebal">
+								Program
+							</div>
+							<div class="col-md-10 font-tebal">
+								<font class="font-tebala">[CM]</font>-Program pembinaan kapasitas pemerintahan dan desa
+							</div>
+						</div>
+						<div class="row">
+							<div class="col-md-2 font-tebal">
+								Sasaran Program
+							</div>
+							<div class="col-md-10 font-tebal">
+								@foreach($data_sp as $item)
+									<table cellpadding=5>
+										<tr>
+											<td valign=top><nobr><font class="font-tebala">[{{$item->kode}}]</font>-</td>
+											<td valign=top>{{$item->nama}}</td>
+										</tr>
+									</table>
+								@endforeach
+							</div>
+						</div>
+						@endif
+						@if(!empty($data_ikp))
+						<div class="row">
+							<div class="col-md-2 font-tebal">
+								Indikator Kinerja Program
+							</div>
+							<div class="col-md-10 font-tebal">
+								@foreach($data_ikp as $item)
+									<table cellpadding=5>
+										<tr>
+											<td valign=top><nobr><font class="font-tebala">[{{$item->kode}}]</font>-</td>
+											<td valign=top>{{$item->nama}}</td>
+										</tr>
+									</table>
+								@endforeach
+							</div>
+						</div>
+						@endif
+						@if(!empty($data_keg))
+						<div class="row">
+							<div class="col-md-2 font-tebal">
+								Kegiatan
+							</div>
+							<div class="col-md-10 font-tebal">
+								@foreach($data_keg as $item)
+									<table cellpadding=5>
+										<tr>
+											<td valign=top><nobr><font class="font-tebala">[{{$item->kode}}]</font>-</td>
+											<td valign=top><a href="javascript:goto('kro','{{$kd_dir}}','{{$kd_subdir}}','{{$kodeb_kegiatan}}','{{$kodea_kegiatan}}')" style="text-decoration:none">{{$item->nama}}</a></td>
+										</tr>
+									</table>
+								@endforeach
+							</div>
+						</div>
+						@endif
+						@if(!empty($data_ikk))
+						<div class="row">
+							<div class="col-md-2 font-tebal">
+								Indikator Kinerja Kegiatan
+							</div>
+							<div class="col-md-10 font-tebal">
+								@foreach($data_ikk as $item)
+									<table cellpadding=5>
+										<tr>
+											<td valign=top><nobr><font class="font-tebala">[{{$item->kode}}]</font>-</td>
+											<td valign=top>{{$item->nama}}</td>
+										</tr>
+									</table>
+								@endforeach
+							</div>
+						</div>
+						@endif
+						@if(!empty($data_kro))
+						<div class="row">
+							<div class="col-md-2 font-tebal">
+								Klasifikasi RO
+							</div>
+							<div class="col-md-10 font-tebal">
+								@foreach($data_kro as $item)
+									<table cellpadding=5>
+										<tr>
+											<td valign=top><nobr><font class="font-tebala">[{{$item->kode}}]</font>-</td>
+											<td valign=top><a href="javascript:goto('ro','{{$kd_dir}}','{{$kd_subdir}}','{{$kodeb_kro}}','{{$kodea_kro}}')" style="text-decoration:none">{{$item->nama}}</a></td>
+										</tr>
+									</table>
+								@endforeach
+							</div>
+						</div>
+						@endif
+						@if(!empty($data_ro))
+						<div class="row">
+							<div class="col-md-2 font-tebal">
+								Rincian Output
+							</div>
+							<div class="col-md-10 font-tebal">
+								@foreach($data_ro as $item)
+									<table cellpadding=5>
+										<tr>
+											<td valign=top><nobr><font class="font-tebala">[{{$item->kode}}]</font>-</td>
+											<td valign=top><a href="javascript:goto('komponen','{{$kd_dir}}','{{$kd_subdir}}','{{$kodeb_ro}}','{{$kodea_ro}}')" style="text-decoration:none">{{$item->nama}}</a></td>
+										</tr>
+									</table>
+								@endforeach
+							</div>
+						</div>
+						@endif
+						@if(!empty($data_komponen))
+						<div class="row">
+							<div class="col-md-2 font-tebal">
+								Komponen
+							</div>
+							<div class="col-md-10 font-tebal">
+								@foreach($data_komponen as $item)
+									<table cellpadding=5>
+										<tr>
+											<td valign=top><nobr><font class="font-tebala">[{{$item->kode}}]</font>-</td>
+											<td valign=top>{{$item->nama}}</td>
+										</tr>
+									</table>
+								@endforeach
+							</div>
+						</div>
+						@endif
+					</div>
+				</div>
+				<div style="height:10px"></div>
+				<form id="caput_form" name="caput_form" action="{{ route('capaian.capaian-output') }}" method="POST">
+	                 @csrf
+					 <input type=hidden name=kd_dir id=kd_dir value="{{$kd_dir}}">
+					 <input type=hidden name=kd_subdir id=kd_subdir value="{{$kd_subdir}}">
+					 <input type=hidden name=kd id=kd>
+					 <input type=hidden name=kode id=kode>
+					 <input type=hidden name=pg id=pg>
+					 <input type=hidden name=cpg id=cpg value="{{$pg}}">
+					 <input type=hidden name=komponen id=komponen value="{{$komponen}}">
+					 <input type=hidden name=subkomponen id=subkomponen>
+					 <input type=hidden name=bulan id=bulan>
+					 <input type=hidden name=tahun id=tahun value="{{$tahun}}">
+					 <input type=hidden name=kd_kro id=kd_kro value="{{$kd_kro}}">
+					 <input type=hidden name=mdl id=mdl value="{{$mdl}}">
+					 <input type=hidden name=kodea_kegiatan id=kodea_kegiatan value="{{$kodea_kegiatan}}">
+					 <input type=hidden name=kodea_kro id=kodea_kro value="{{$kodea_kro}}">
+					 <input type=hidden name=kodea_ro id=kodea_ro value="{{$kodea_ro}}">
+					 <input type=hidden name=kodea_komponen id=kodea_komponen value="{{$kodea_komponen}}">
+					 <input type=hidden name=kodeb_kegiatan id=kodeb_kegiatan value="{{$kodeb_kegiatan}}">
+					 <input type=hidden name=kodeb_kro id=kodeb_kro value="{{$kodeb_kro}}">
+					 <input type=hidden name=kodeb_ro id=kodeb_ro value="{{$kodeb_ro}}">
+					 <input type=hidden name=kodeb_komponen id=kodeb_komponen value="{{$kodeb_komponen}}">
+	            </form>
+				<script>
+					g_pg="{{$pg}}";
+					const findLabel = (labels, evt) => {
+					    let found = false;
+					    let res = null;
+					    labels.forEach(label => {
+					        if (evt.x > label.x && evt.x < label.x2 && evt.y > label.y && evt.y < label.y2) {
+					            res = {
+					                label: label.label,
+					                index: label.index
+					            };
+					            found = true;
+					        }
+					    });
+					    return [found, res];
+					};
+					const getLabelHitBoxes = (x) => {
+					    return x._labelItems.map((e, i) => ({
+					        x: e.options.translation[0] - x._labelSizes.widths[i],
+					        x2: e.options.translation[0] + x._labelSizes.widths[i] / 2,
+					        y: e.options.translation[1] - x._labelSizes.heights[i] / 2,
+					        y2: e.options.translation[1] + x._labelSizes.heights[i] / 2,
+					        label: e.label,
+					        index: i
+					    }));
+					};
+					const plugin = {
+					    id: 'chartClickXLabel',
+					    afterEvent: (chart, event, opts) => {
+					        const evt = event.event;
+					        if (evt.type !== 'click') {
+					            return;
+					        }
+							kode='';
+							mdl=$('#mdl').val();
+							if(g_pg=="ro"){
+								ro=chart.canvas.id.replace('graph','');
+								kode=$("#kode_"+ro).val()
+								ro=ro.replace(/_/g,'.');
+								kd=ro;
+							}
+							if(g_pg=="komponen"){
+								komponen=chart.canvas.id.replace('graph','');
+								kode=$("#kode_"+komponen).val()
+								komponen=komponen.replace(/_/g,'.');
+								kd=komponen;
+							}
+							else if(g_pg=="subkomponen"){
+								subkomponen=chart.canvas.id.replace('graph','');
+								kode=$("#kode_"+subkomponen).val()
+								kd=subkomponen
+							}
+					        const [found, labelInfo] = findLabel(getLabelHitBoxes(chart.scales.x), evt);
+					        if (found) {
+								$("#kd").val(kd);
+								$("#kode").val(kode);
+								$("#kd_dir").val({{$kd_dir}});
+								$("#bulan").val(labelInfo.label);
+								//alert('kd:'+kd+', kode:'+kode+',kd_dir:'+$("#kd_dir").val())
+								
+								@if($mdl=='tc')
+							  	  document.caput_form.action="{{route('capaian.input-target')}}";
+								  document.caput_form.submit();
+							    @else
+								  var form_data = new FormData();
+								  form_data.append('cpg', g_pg);
+								  form_data.append('kd', kd);
+								  form_data.append('kode', kode);
+								  form_data.append('kd_kro', '{{$kd_kro}}');
+								  form_data.append('tahun', {{$tahun}});
+								  form_data.append('kd_dir', {{$kd_dir}});
+								  form_data.append('kd_subdir', {{$kd_subdir}});
+								  form_data.append('bulan', labelInfo.label);
+								  form_data.append('_token', '{{csrf_token()}}')
+								  $.ajax({
+						          url: "{{route('capaian.check-input-capaian')}}",
+						          type: "POST",
+						          data: form_data,
+						          cache: false,
+						          processData: false,
+						          contentType: false,
+						          success: function (e)
+						          {	
+								  	  if(e=="1"){
+										  document.caput_form.action="{{route('capaian.input-capaian')}}";
+										  document.caput_form.submit();
+									  }
+									  else{
+									  	swal({
+						                    title: 'Aksi tidak valid',
+						                    text:  'Bulan sebelumnya harus diisi terlebih dahulu',
+						                    type:  'error'
+						                })
+									  }
+								 }});
+							    @endif
+					        }
+					    }
+					};
+				</script>
+				<form namr=frm1>
+				@php
+					if($pg=='direktorat'||$pg=='kegiatan'){
+						$jdlkol='Status Pengisian (%)';
+						$jdlkol_akum='Status Pengisian<br>(% Akumulatif)';
+					}
+					else{
+						$jdlkol='Capaian Output (%)';
+						$jdlkol_akum='Capaian Output<br>(% Akumulatif)';
+					}
+				@endphp
+				<div class="row">
+					<div  class="col-md-11"  id=ncaput style="background-image: linear-gradient(to right, rgba(204,204,255,0.7) , rgba(175, 235, 231, 0.7));"><br>
+						<div class="inner" style="align-content:center;text-align:center"><img src="{{ asset('images/spinner.gif') }}" width=40></div>
+						<table cellpadding=3 class="tbl_caput" width=100%>
+							<tr>
+								<td rowspan=2 width=7% align=center><div class="hd_caputa">+</div></td>
+								<td rowspan=2 class="hd_caput" width=20% align=center>Kode dan Nomenklatur<br>{{$judul}}</td>
+								<td rowspan=2 class="hd_caput" width=10% align=center>{!!$jdlkol_akum!!}</td>
+								<td class="hd_caput" width=24% colspan=3 align=center>Anggaran</td>
+								<td rowspan=2 class="hd_caput" width="absolute" align=center>{!!$jdlkol!!}</td>
+							</tr>
+							<tr>
+								<td align=center class="hd_caput" width=8% align=center>Alokasi</td>
+								<td align=center class="hd_caput" width=8% align=center>Realisasi</td>
+								<td align=center class="hd_caput" width=8% align=center>%</td>
+							</tr>
+							@foreach($caput_data as $caput_value)
+						<tr>
+							<td align=center><div class="isi_caputa">{!! $caput_value->plus !!}</div></td>
+							<td><div class="isi_caput" {!! $caput_value->nomenclick !!}>{!! $caput_value->nomenklatur !!}</div></td>
+							<td><div class="isi_caput">{{$caput_value->akum_pct}}</div></td>
+							<td><div class="isi_caput">{{$caput_value->pagu}}</div></td>
+							<td><div class="isi_caput">{{$caput_value->realisasi}}</div></td>
+							<td><div class="isi_caput">{{$caput_value->pct_ang}}</div></td>
+							<td>
+								<div class="chart-box" style="height:90px; width:100%;">
+			                        <canvas id="graph{{$caput_value->kdgraph}}"></canvas>
+			                    </div>
+							</td>
+						</tr>
+						<input type=hidden id="kode_{{$caput_value->kdgraph}}" name="kode_{{$caput_value->kdgraph}}" value="{{$caput_value->kode}}">
+						<script>
+							const graph{{$caput_value->kdgraph}} = document.getElementById('graph{{$caput_value->kdgraph}}');
+							
+							chart{{$caput_value->kdgraph}}= new Chart(graph{{$caput_value->kdgraph}}, {
+								type: 'bar',
+				                data: {
+				                    responsive:false,
+				                    maintainAspectRatio: false,
+				                    labels: ["JAN","FEB","MAR","APR","MEI","JUN","JUL","AGU","SEP","OKT","NOV","DES"],
+				                    datasets: [{
+				                        data: ["{{$caput_value->bulan_jan}}","{{$caput_value->bulan_feb}}","{{$caput_value->bulan_mar}}","{{$caput_value->bulan_apr}}","{{$caput_value->bulan_mei}}","{{$caput_value->bulan_jun}}","{{$caput_value->bulan_jul}}","{{$caput_value->bulan_agu}}","{{$caput_value->bulan_sep}}","{{$caput_value->bulan_okt}}","{{$caput_value->bulan_nov}}","{{$caput_value->bulan_des}}"],
+				                        backgroundColor: ["#005ebb"],
+				                    },
+									{
+				                        data: ["{{$caput_value->bulan_jan_sisa}}","{{$caput_value->bulan_feb_sisa}}","{{$caput_value->bulan_mar_sisa}}","{{$caput_value->bulan_apr_sisa}}","{{$caput_value->bulan_mei_sisa}}","{{$caput_value->bulan_jun_sisa}}","{{$caput_value->bulan_jul_sisa}}","{{$caput_value->bulan_agu_sisa}}","{{$caput_value->bulan_sep_sisa}}","{{$caput_value->bulan_okt_sisa}}","{{$caput_value->bulan_nov_sisa}}","{{$caput_value->bulan_des_sisa}}"],
+				                        backgroundColor: ["#48C3FE"],
+										pointRadius: 0,
+									    pointHitRadius: 0
+				                    },
+									{
+				                        data: ["{{$caput_value->bulan_jan_tnc}}","{{$caput_value->bulan_feb_tnc}}","{{$caput_value->bulan_mar_tnc}}","{{$caput_value->bulan_apr_tnc}}","{{$caput_value->bulan_mei_tnc}}","{{$caput_value->bulan_jun_tnc}}","{{$caput_value->bulan_jul_tnc}}","{{$caput_value->bulan_agu_tnc}}","{{$caput_value->bulan_sep_tnc}}","{{$caput_value->bulan_okt_tnc}}","{{$caput_value->bulan_nov_tnc}}","{{$caput_value->bulan_des_tnc}}"],
+				                    }],
+				                },
+				                options: {
+									maintainAspectRatio: false,
+				                    plugins: {
+				                        legend: {
+				                            display: false,
+				                        },
+										tooltip: {
+									      filter: function (tooltipItem) { 
+									        return tooltipItem.datasetIndex === 0
+									      }
+									    }
+				                    },
+									scales: {
+								        x: {
+								        	stacked: true,
+											ticks: {
+									           color: ["{{$caput_value->bulan_jan_tnc_clr}}","{{$caput_value->bulan_feb_tnc_clr}}","{{$caput_value->bulan_mar_tnc_clr}}","{{$caput_value->bulan_apr_tnc_clr}}","{{$caput_value->bulan_mei_tnc_clr}}","{{$caput_value->bulan_jun_tnc_clr}}","{{$caput_value->bulan_jul_tnc_clr}}","{{$caput_value->bulan_agu_tnc_clr}}","{{$caput_value->bulan_sep_tnc_clr}}","{{$caput_value->bulan_okt_tnc_clr}}","{{$caput_value->bulan_nov_tnc_clr}}","{{$caput_value->bulan_des_tnc_clr}}"]
+									        }
+								        },
+								        y: {
+											stacked: true,
+											beginAtZero: true,
+								            min: 0,
+								            max: 100,
+											ticks: {
+									          stepSize: 20
+									        },
+											grid: {
+									        	display: false
+									      	}
+								        }
+								    },
+				                }
+				            });
+							@if($pg=="ro"||$pg=="komponen"||$pg=="subkomponen")
+								Chart.register(plugin);
+							@endif
+							
+							//console.log(chart{{$caput_value->kdgraph}})
+							
+							graph{{$caput_value->kdgraph}}.onclick = (evt) => {
+							const res = chart{{$caput_value->kdgraph}}.getElementsAtEventForMode(
+							    evt,
+							    'nearest',
+							    { intersect: true },
+							    true
+							  );
+							  if (res.length === 0) {
+							    return;
+							  }
+							  kode='';
+							  klik=0;
+							  mdl=$('#mdl').val();
+							  idx='{{$caput_value->kdgraph}}';
+							  if(g_pg=="ro"){
+								  ro=idx;
+								  kode=$("#kode_"+ro).val()
+								  ro=ro.replace(/_/g,'.');
+								  kd=ro;
+								  klik=1;
+							  }
+							  else if(g_pg=="komponen"){
+								  komponen=idx;
+								  kode=$("#kode_"+komponen).val()
+								  komponen=komponen.replace(/_/g,'.');
+								  kd=komponen;
+								  klik=1;
+							  }
+							  else if(g_pg=="subkomponen"){
+								  subkomponen=idx;
+								  kode=$("#kode_"+subkomponen).val()
+								  kd=subkomponen;
+								  klik=1;
+							  }
+							  if(klik==1){
+								  $("#kd").val(kd);
+								  $("#kode").val(kode);
+								  $("#kd_dir").val({{$kd_dir}});
+								  $("#kd_subdir").val({{$kd_subdir}});
+								  $("#bulan").val(chart{{$caput_value->kdgraph}}.data.labels[res[0].index]);
+								  //alert('kd:'+kd+', kode:'+kode+',kd_dir:'+$("#kd_dir").val()+',bulan:'+chart{{$caput_value->kdgraph}}.data.labels[res[0].index])
+								  @if($mdl=='tc')
+								  	  document.caput_form.action="{{route('capaian.input-target')}}";
+									  document.caput_form.submit();
+								  @else
+									  var form_data = new FormData();
+									  form_data.append('cpg', g_pg);
+									  form_data.append('kd', kd);
+									  form_data.append('kode', kode);
+									  form_data.append('kd_kro', '{{$kd_kro}}');
+									  form_data.append('tahun', {{$tahun}});
+									  form_data.append('kd_dir', {{$kd_dir}});
+									  form_data.append('kd_subdir', {{$kd_subdir}});
+									  form_data.append('bulan', chart{{$caput_value->kdgraph}}.data.labels[res[0].index]);
+									  form_data.append('_token', '{{csrf_token()}}')
+									  $.ajax({
+							          url: "{{route('capaian.check-input-capaian')}}",
+							          type: "POST",
+							          data: form_data,
+							          cache: false,
+							          processData: false,
+							          contentType: false,
+							          success: function (e)
+							          {
+										  if(e=="1"){
+											  document.caput_form.action="{{route('capaian.input-capaian')}}";
+											  document.caput_form.submit();
+										  }
+										  else{
+										  	swal({
+							                    title: 'Aksi tidak valid',
+							                    text:  'Bulan sebelumnya harus diisi terlebih dahulu',
+							                    type:  'error'
+							                })
+										  }
+									 }});
+								  @endif
+							  }
+							};
+							
+							function formatNumber(number, decimalsLength, decimalSeparator, thousandSeparator) {
+							       var n = number,
+							           decimalsLength = isNaN(decimalsLength = Math.abs(decimalsLength)) ? 2 : decimalsLength,
+							           decimalSeparator = decimalSeparator == undefined ? "," : decimalSeparator,
+							           thousandSeparator = thousandSeparator == undefined ? "." : thousandSeparator,
+							           sign = n < 0 ? "-" : "",
+							           i = parseInt(n = Math.abs(+n || 0).toFixed(decimalsLength)) + "",
+							           j = (j = i.length) > 3 ? j % 3 : 0;
+							       
+							       return sign +
+							           (j ? i.substr(0, j) + thousandSeparator : "") +
+							           i.substr(j).replace(/(\d{3})(?=\d)/g, "$1" + thousandSeparator) +
+							           (decimalsLength ? decimalSeparator + Math.abs(n - i).toFixed(decimalsLength).slice(2) : "");
+							}
+						</script>
+						@endforeach
+						</table><br>
+					</div>
+				</div>
+				</form>
+			</div>
+		</div>
 
-                        // cell1.innerHTML = e.data[i]['pertanyaan'];
-                        // cell2.innerHTML = e.data[i]['jawaban'];
-                        cell1.innerHTML = e.data[i]['evidence'];
-                        cell2.innerHTML = '<button class="btn btn-danger" onclick="removeFormTarget(this)"> <i class="font-weight-bolder fas fa-times-circle"></i> </button>';
-                    }
-                }
+		<script>
+			function goto(pg,kd_dir,kd_subdir,kd,kode){
+				$('.inner').css({
+	                'position': 'absolute',
+	                'top': '50%',
+	                'left': '50%',
+	                'transform': 'translate(-50%, -50%)',
+					'display':'block',
+	            });
+				
+				$("#kd_dir").val(kd_dir);
+				$("#kd_subdir").val(kd_subdir);
+				$("#pg").val(pg);
+				$("#kd").val(kd);
+				$("#kode").val(kode);
+				document.caput_form.submit();
+			}
+			// menu togle
+			let toggle = document.querySelector('.toggle');
+			let navigation = document.querySelector('.navigation');
+			let main = document.querySelector('.main');
 
-            });
-        }
-
-        function openModalUpload(bulan, kode, type)
-        {
-            // $("#modal-input-upload").modal("show")
-            $("#bulan_upload").val(bulan)
-            $("#type_upload").val(type)
-            $("#kode_upload").val(kode)
-
-            openModalTarget(type, kode, bulan)
-        }
-
-        function remove()
-        {
-            
-            var data    = $('#data-capaian').treegrid('getSelected');
-            
-            if(!data)
-            {
-                swal({
-                    title: "Data Belum Dipilih",
-                    text:  "Klik Pada Data yang Akan Dihapus",
-                    type:  "error"
-                })
-            }
-            else
-            {
-                var type    = data.type;
-                var kode    = data.kode_treegrid;
-
-                swal({
-                    title: "Hapus Data Ini?",
-                    text: "Data yang Sudah Dihapus Tidak Dapat Dirollback. Lanjutkan?",
-                    type: "warning",
-                    showCancelButton: true,
-                    confirmButtonColor: "#2b982b",
-                    confirmButtonText: "Ya, Lanjutkan!",
-                    closeOnConfirm: true
-                }, function () {
-
-                    $('#data-capaian').treegrid('loading');-
-
-                    $.post('{{ route('capaian.hide-data') }}', {type, kode, _token: '{{csrf_token()}}'}, function(e){
-
-                        if(e.status == "success")
-                        {
-                            Toast.fire({
-                                icon: 'success',
-                                title: e.title
-                            })
-
-                            loadData()
-                        }
-                        else
-                        {
-                            Toast.fire({
-                                icon: 'error',
-                                title: e.message
-                            })
-                        }
-
-                    });
-
-                });
-            }
-        }
+			toggle.onclick = function(){
+				navigation.classList.toggle('active');
+				main.classList.toggle('active');
+			}
+			// add hovered class in selected list items 
+			let list = document.querySelectorAll('.navigation li');
+			function activelink(){
+				list.forEach((item) =>
+				item.classList.remove('hovered'));
+				this.classList.add('hovered');
+			}
+			list.forEach((item) =>
+			item.addEventListener('mouseover', activelink));
+		</script>
         
-        function loadSubdit()
-        {
-            var id_dir  = $('#direktorat').combobox('getValue')
-
-            $('#subdit').combobox({
-		        valueField: "id",
-		        textField: "text",
-		        method: 'get',
-		        url:'{{ route('tools.subdirektorat') }}?id_dir='+id_dir
-		    }).combobox('setValue', {{Auth::user()->id_subdir}})
-        }
-
-        function loadData()
-        {
-            $('#loader-datatable').show()
-            $('#wrap-datatable').show()
-
-            var id_dir      = $('#direktorat').combobox('getValue')
-            var id_subdir   = $('#subdit').combobox('getValue')
-            var triwulan    = $('#triwulan').combobox('getValue')
-
-            $('#data-capaian').treegrid('loading');
-            countRo()
-
-            $.post('{{ route('capaian.data-treegrid') }}', {id_dir, id_subdir, triwulan, _token: '{{csrf_token()}}'}, function(e){
-
-                $('#data-capaian').treegrid('loaded');
-				$('#data-capaian').treegrid('reload');
-				$('#data-capaian').treegrid({
-                    data:e,
-                    nowrap:false,
-                    animate: true,
-                    autoHeight:true
-                });
-
-                $('#loader-datatable').hide()
-            });
-        }
-
-        function addPadding(value,row,index)
-        {
-            return 'text-align: justify; padding: 8px';
-        }
-
-        function myLoadFilter(data,parentId){
-            function setData(data){
-                var todo = [];
-                for(var i=0; i<data.length; i++){
-                    todo.push(data[i]);
-                }
-                while(todo.length){
-                    var node = todo.shift();
-                    if (node.children && node.children.length){
-                        node.state = 'closed';
-                        node.children1 = node.children;
-                        node.children = undefined;
-                        todo = todo.concat(node.children1);
-                    }
-                }
-            }
-            
-            setData(data);
-            var tg = $(this);
-            var opts = tg.treegrid('options');
-            opts.onBeforeExpand = function(row){
-                if (row.children1){
-                    tg.treegrid('append',{
-                        parent: row[opts.idField],
-                        data: row.children1
-                    });
-                    row.children1 = undefined;
-                    tg.treegrid('expand', row[opts.idField]);
-                }
-                return row.children1 == undefined;
-            };
-            return data;
-        }
-
-        function onContextMenu(e,row){
-            if (row){
-                e.preventDefault();
-                $('#data-capaian').treegrid('select', row.kode_treegrid);
-                $('#mm').menu('show',{
-                    left: e.pageX,
-                    top: e.pageY
-                });                
-            }
-        }
-    </script>
-@endsection
+    </body>
+</html>

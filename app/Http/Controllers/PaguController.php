@@ -33,11 +33,13 @@ class PaguController extends Controller
                    
         foreach ($data as $value)
         {
+            $jenisRevisi        = stripos($value->title, 'DIPA') !== FALSE ? 'DIPA' : 'POK';
             $keterangan         = preg_replace( "/\r|\n/", "", $value->keterangan);
             $data[$i]->no       = $no.".";
             $data[$i]->tgl      = date("d/m/Y", strtotime($value->tanggal));
             $data[$i]->nominal  = number_format($value->pagu);
-            $data[$i]->judul    = '<a href="javascript:void(0)" onclick="openModalAction(\''.$value->id.'\', \''.$value->pagu.'\', \''.$value->title.'\', \''.$value->tanggal.'\', \''.$keterangan.'\')">'.$value->title.'</a>';
+            $data[$i]->judul    = '<a href="javascript:void(0)" onclick="openModalAction(\''.$value->id.'\', \''.$value->pagu.'\', \''.$value->title.'\', \''.$value->tanggal.'\', \''.$keterangan.'\')">'.$value->Title.'</a>';
+            $data[$i]->jenis    = $jenisRevisi;
 
             $i++;
             $no++;
