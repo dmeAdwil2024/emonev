@@ -18,7 +18,7 @@ class TesController extends Controller
      */
     public function index()
     {
-        $modul = 'Tes';
+        $modul = 'Import Realisasi';
         $current = 'Index';
         $realisasis = Tes::all();
         
@@ -32,7 +32,7 @@ class TesController extends Controller
      */
     public function create()
     {
-        $modul = 'Tes';
+        $modul = 'Import Realisasi';
         $current = 'Create';
         return view('contents.realisasi.create', compact('modul', 'current'));
     }
@@ -51,9 +51,9 @@ class TesController extends Controller
 
         $realisasi = new Tes();
         
-        // Automatically fill the 'no' field
-        $lastNo = Tes::max('no');
-        $realisasi->no = $lastNo ? $lastNo + 1 : 1;
+        // Automatically fill the 'id' field
+        $lastNo = Tes::max('id');
+        $realisasi->id = $lastNo ? $lastNo + 1 : 1;
         
         if ($request->hasFile('bukti_ref')) {
             $file = $request->file('bukti_ref');
@@ -64,35 +64,39 @@ class TesController extends Controller
 
         $realisasi->save();
 
-        return redirect()->route('realisasi.index')->with('success', 'Realisasi created successfully.');
+        return redirect()->route('tes.index')->with('success', 'Realisasi created successfully.');
     }
 
     /**
      * Show the form for editing the specified resource.
      *
-     * @param  string  $no
+     * @param  string  $id
      * @return \Illuminate\Http\Response
      */
-    public function edit($no)
+    public function edit($id)
     {
-        $realisasi = Tes::where('no', $no)->firstOrFail();
-        return view('realisasi.edit', compact('realisasi'));
+        $modul = 'Import Realisasi';
+        $current = 'Edit';
+        $realisasi = Tes::where('id', $id)->firstOrFail();
+
+        
+        return view('contents.realisasi.edit', compact('realisasi', 'modul', 'current'));
     }
 
     /**
      * Update the specified resource in storage.
      *
      * @param  \Illuminate\Http\Request  $request
-     * @param  string  $no
+     * @param  string  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, $no)
+    public function update(Request $request, $id)
     {
-        $request->validate([
+        $validatedData = $request->validate([
             'bukti_ref' => 'nullable|file|mimes:xlsx,xls|max:2048',
         ]);
 
-        $realisasi = Tes::where('no', $no)->firstOrFail();
+        $realisasi = Tes::where('id', $id)->firstOrFail();
         
         if ($request->hasFile('bukti_ref')) {
             // Delete old file if exists
@@ -100,7 +104,7 @@ class TesController extends Controller
                 Storage::delete('public/bukti_ref/' . $realisasi->bukti_ref);
             }
             
-            $file = $request->file('bukti_ref');
+            $file = $validatedData['bukti_ref'];
             $filename = time() . '_' . $file->getClientOriginalName();
             $file->storeAs('public/bukti_ref', $filename);
             $realisasi->bukti_ref = $filename;
@@ -108,7 +112,7 @@ class TesController extends Controller
 
         $realisasi->save();
 
-        return redirect()->route('realisasi.index')->with('success', 'Realisasi updated successfully.');
+        return redirect()->route('tes.index')->with('success', 'Realisasi updated successfully.');
     }
 
     /**
@@ -130,7 +134,7 @@ class TesController extends Controller
             
             try {
                 Excel::import(new TesImport, $file);
-                return redirect()->route('realisasi.index')->with('success', 'Data imported successfully.');
+                return redirect()->route('tes.index')->with('success', 'Data imported successfully.');
             } catch (\Exception $e) {
                 return redirect()->back()->with('error', 'Error importing data: ' . $e->getMessage());
             }
@@ -151,8 +155,8 @@ class TesController extends Controller
         return DataTables::of($realisasis)
             ->addIndexColumn()
             ->addColumn('action', function($row){
-                $actionBtn = '<a href="'.route('tes.edit', $row->no).'" class="edit btn btn-success btn-sm">Edit</a> ';
-                $actionBtn .= '<button class="delete btn btn-danger btn-sm" data-id="'.$row->no.'">Delete</button>';
+                $actionBtn = '<a href="'.route('tes.edit', $row->id).'" class="edit btn btn-success btn-sm">Edit</a> ';
+                $actionBtn .= '<button class="delete btn btn-danger btn-sm" data-id="'.$row->id.'">Delete</button>';
                 return $actionBtn;
             })
             ->rawColumns(['action'])
@@ -162,12 +166,12 @@ class TesController extends Controller
     /**
      * Display the contents of the Excel file.
      *
-     * @param  string  $no
+     * @param  string  $id
      * @return \Illuminate\Http\Response
      */
-    public function download($no)
+    public function download($id)
     {
-        $realisasi = Tes::where('no', $no)->firstOrFail();
+        $realisasi = Tes::where('id', $id)->firstOrFail();
 
         if (!$realisasi->bukti_ref) {
             return redirect()->back()->with('error', 'No Excel file found for this realisasi.');
@@ -186,12 +190,12 @@ class TesController extends Controller
     /**
      * Remove the specified resource from storage.
      *
-     * @param  string  $no
+     * @param  string  $id
      * @return \Illuminate\Http\Response
      */
-    public function destroy($no)
+    public function destroy($id)
     {
-        $realisasi = Tes::where('no', $no)->firstOrFail();
+        $realisasi = Tes::where('id', $id)->firstOrFail();
 
         // Delete the associated file if it exists
         if ($realisasi->bukti_ref) {

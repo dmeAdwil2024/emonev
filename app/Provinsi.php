@@ -18,7 +18,7 @@ class Provinsi extends Model
 
     public function getById($id_prov = '')
     {
-        if (empty($id_prov) || $id_prov === 'pusat') {
+        if (empty($id_prov)) {
             return $this->getAll();
         }
 

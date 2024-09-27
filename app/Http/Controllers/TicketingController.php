@@ -70,7 +70,7 @@ class TicketingController extends Controller
 
         $opsi = TicketStatus::OPSI;
         $label = TicketStatus::LABEL;
-
+  
         $months     = ['Semua', 'Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni', 'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'];
 
         $isPPK = $this->user->level == \App\UserAccess::LEVEL_PPK;
@@ -155,7 +155,8 @@ class TicketingController extends Controller
 
         $validator = Validator::make($request->all(), $validation, $message, $names);
 
-        if ($validator->fails()) {
+        if ($validator->fails())
+        {
             return response()->json([
                 'status'    => 'error',
                 'title'     => 'Validasi Error',
@@ -163,29 +164,33 @@ class TicketingController extends Controller
             ]);
         }
 
-        try {
+        try
+        {
             $matrik_rab         = "Tidak Ada File";
             $nota_dinas_ppk     = "Tidak Ada File";
             $dokumen_pendukung  = "Tidak Ada File";
 
             $direktorat         = $dir->where('id_dir', $request->direktorat)->first()->nama_dir;
 
-            if ($request->hasFile('nota_dinas_ppk')) {
+            if($request->hasFile('nota_dinas_ppk'))
+            {
                 $nota_dinas_ppk = $this->uploadFileFormatted($request, 'nota_dinas_ppk', $direktorat);
             }
 
-            if ($request->hasFile('matrik_rab')) {
+            if($request->hasFile('matrik_rab'))
+            {
                 $matrik_rab     = $this->uploadFileFormatted($request, 'matrik_rab', $direktorat);
             }
 
-            if ($request->hasFile('dokumen_pendukung')) {
+            if($request->hasFile('dokumen_pendukung'))
+            {
                 $dokumen_pendukung = $this->uploadFileFormatted($request, 'dokumen_pendukung', $direktorat);
             }
 
             $current_status = TicketStatus::BARU;
 
             $id_ticketing = $revisi->create([
-                'token'             => md5($request->nomor_surat . strtotime(date("ymdhis"))) . random_int(100000, 99999999),
+                'token'             => md5($request->nomor_surat.strtotime(date("ymdhis"))).random_int(100000, 99999999),
                 'key'               => random_int(100000, 999999),
                 'tahun_anggaran'    => $request->tahun_anggaran,
                 'nomor_surat'       => $request->nomor_surat,
@@ -228,12 +233,12 @@ class TicketingController extends Controller
              * please make sure to set your own email for testing
              * !! DO NOT spam other user email for testing !!
              */
-            $sendEmail      = false;
+            $sendEmail      = false;   
 
             $data_pejabat   = $pejabat->where('id_dir', Auth::user()->id_dir)->first();
             $email_pejabat  = isset($data_pejabat->email) ? $data_pejabat->email : '';
 
-            $text = Auth::user()->nama . " telah mengajukan revisi baru. Mohon segera ditindak lanjut";
+            $text = Auth::user()->nama." telah mengajukan revisi baru. Mohon segera ditindak lanjut";
 
             if (!empty($email_pejabat) && $sendEmail) {
                 $tools->sendingEmail($text, $email_pejabat, $request->nomor_surat);
@@ -241,11 +246,12 @@ class TicketingController extends Controller
 
             $this->record($id_ticketing->id, TicketStatus::ACTIVITY[$current_status], Auth::user()->id_akses, $nota_dinas_ppk, $matrik_rab, $dokumen_pendukung);
 
-
-            if ($request->provinsi == "undefined") {
-                $message_pptk   = "Pengajuan Revisi E-Ticketing Anda Berhasil Dikirim. Nomor Surat: " . $request->nomor_surat;
-                $message_ppk    = Auth::user()->nama . " telah mengajukan revisi E-Ticketing baru dengan Nomor Surat: " . $request->nomor_surat . ". Mohon segera ditindak lanjut";
-
+            
+            if($request->provinsi == "undefined")
+            {
+                $message_pptk   = "Pengajuan Revisi E-Ticketing Anda Berhasil Dikirim. Nomor Surat: ".$request->nomor_surat;
+                $message_ppk    = Auth::user()->nama." telah mengajukan revisi E-Ticketing baru dengan Nomor Surat: ".$request->nomor_surat.". Mohon segera ditindak lanjut";
+                
                 $no_hp_ppk = $user->where([
                     'id_dir'    => Auth::user()->id_dir,
                     'level'     => 2,
@@ -255,15 +261,17 @@ class TicketingController extends Controller
 
                 $tools->sendingWa($no_hp_ppk, $message_ppk, $request->nomor_surat, "Ticketing Revisi");
                 $tools->sendingWa(Auth::user()->no_hp, $message_pptk, $request->nomor_surat, "Ticketing Revisi");
-            } else {
-                $message_ppk    = "Pengajuan Revisi E-Ticketing Anda Berhasil Dikirim. Nomor Surat: " . $request->nomor_surat;
-                $message_bagren = Auth::user()->nama . " telah mengajukan revisi E-Ticketing daerah baru dengan Nomor Surat: " . $request->nomor_surat . ". Mohon segera ditindak lanjut";
+            }
+            else
+            {
+                $message_ppk    = "Pengajuan Revisi E-Ticketing Anda Berhasil Dikirim. Nomor Surat: ".$request->nomor_surat;
+                $message_bagren = Auth::user()->nama." telah mengajukan revisi E-Ticketing daerah baru dengan Nomor Surat: ".$request->nomor_surat.". Mohon segera ditindak lanjut";
 
                 $tools->sendingWa(Auth::user()->no_hp, $message_ppk, $request->nomor_surat, "Ticketing Revisi");
                 $tools->sendingWa(Auth::user()->no_hp, $message_bagren, $request->nomor_surat, "Ticketing Revisi");
             }
 
-            $message_bang_arief = "Ijin Bang Arief, " . Auth::user()->nama . " telah mengajukan Ticketing Revisi Pusat baru dengan Nomor Surat: " . $request->nomor_surat;
+            $message_bang_arief = "Ijin Bang Arief, ".Auth::user()->nama." telah mengajukan Ticketing Revisi Pusat baru dengan Nomor Surat: ".$request->nomor_surat;
             $tools->sendingWa("081213833316", $message_bang_arief, $request->nomor_surat, "Tickting Revisi");
 
             return response()->json([
@@ -271,7 +279,9 @@ class TicketingController extends Controller
                 'title'     => 'Tiket Revisi Berhasil Dibuat',
                 'message'   => 'Pengajuan Revisi Akan Segera Diproses'
             ]);
-        } catch (\Illuminate\Database\QueryException $e) {
+        }
+        catch (\Illuminate\Database\QueryException $e)
+        {
             return response()->json([
                 'status' => 'error',
                 'message' => $e->getMessage(),
@@ -333,117 +343,23 @@ class TicketingController extends Controller
     }
 
     /**
-     * 4.A - Halaman View PPK
-     */
-    public function viewPpk($id = null)
-    {
-        if ($this->user->level != \App\UserAccess::LEVEL_PPK) {
-            return redirect('ticketing/revisi-gwpp');
-        }
-
-        $type     = "Daerah";
-        $kegiatan = "GWPP";
-        $modul    = "E-Ticketing";
-        $current  = "Formulir Tindak Lanjut Revisi oleh KPA";
-
-        $t = new TicketRevisi;
-        $data = $t->find($id);
-
-        $l = new LogTicket;
-        $filelog = $l->getFileLogs($id);
-        $log = $l->getLogs($id);
-
-        return view('contents.e-ticketing.daerah.form-ppk', compact('current', 'modul', 'type', 'kegiatan', 'data', 'log', 'filelog'));
-    }
-
-    /**
-     * 4.A - Halaman View KPA
-     */
-    public function viewKpa($id = null)
-    {
-        if ($this->user->level != \App\UserAccess::LEVEL_KPA) {
-            return redirect('ticketing/revisi-gwpp');
-        }
-
-        $type     = "Daerah";
-        $kegiatan = "GWPP";
-        $modul    = "E-Ticketing";
-        $current  = "Formulir Tindak Lanjut Perbaikan";
-
-        $t = new TicketRevisi;
-        $data = $t->find($id);
-
-        $l = new LogTicket;
-        $filelog = $l->getFileLogs($id);
-        $log = $l->getLogs($id);
-
-        return view('contents.e-ticketing.daerah.form-kpa', compact('current', 'modul', 'type', 'kegiatan', 'data', 'log', 'filelog'));
-    }
-
-    /**
-     * 4.A - Halaman View Fasgub
-     */
-    public function viewFasgub($id = null)
-    {
-        if ($this->user->level != \App\UserAccess::LEVEL_FASGUB) {
-            return redirect('ticketing/revisi-gwpp');
-        }
-
-        $type     = "Daerah";
-        $kegiatan = "GWPP";
-        $modul    = "E-Ticketing";
-        $current  = "Formulir Tindak Lanjut Revisi oleh Bagren";
-
-        $t = new TicketRevisi;
-        $data = $t->find($id);
-
-        $l = new LogTicket;
-        $filelog = $l->getFileLogs($id);
-        $log = $l->getLogs($id);
-
-        return view('contents.e-ticketing.daerah.form-fasgub', compact('current', 'modul', 'type', 'kegiatan', 'data', 'log', 'filelog'));
-    }
-
-    /**
-     * 4.A - Halaman View Bagren
-     */
-    public function viewBagren($id = null)
-    {
-        if ($this->user->level != \App\UserAccess::LEVEL_BAGREN) {
-            return redirect('ticketing/revisi-gwpp');
-        }
-
-        $type     = "Daerah";
-        $kegiatan = "GWPP";
-        $modul    = "E-Ticketing";
-        $current  = "Formulir Tindak Lanjut Revisi oleh Bagren";
-
-        $t = new TicketRevisi;
-        $data = $t->find($id);
-
-        $l = new LogTicket;
-        $filelog = $l->getFileLogs($id);
-        $log = $l->getLogs($id);
-
-        return view('contents.e-ticketing.daerah.form-bagren', compact('current', 'modul', 'type', 'kegiatan', 'data', 'log', 'filelog'));
-    }
-    /**
      * 4.B - Simpan Revisi KPA (disetujui / dikembalikan untuk perbaikan)
      */
 
     public function submitRevisiKpa(Request $request)
     {
-        try {
+        try
+        {
             $user         = new User;
             $dir          = new Direktorat;
             $revisi       = new TicketRevisi;
             $tools        = new ToolsController;
             $lampiran_kpa = "Tidak Ada File";
-
+ 
             $dataRevisi = $revisi->where('id', $request->id)->first();
-
+        
             $validation = [];
-
+    
             $message = [
                 'required' => ':attribute tidak boleh kosong',
                 'max'      => ':attribute Ukuran Maksimal 10 MB'
@@ -454,7 +370,7 @@ class TicketingController extends Controller
                 'lampiran_kpa' => 'Nota Dinas KPA',
                 'catatan_kpa'  => 'Catatan',
             ];
-
+            
             if ($request->status_kpa === TicketStatus::DISETUJUI_KPA) {
                 $validation = [
                     'no_nota_kpa'  => 'required',
@@ -462,27 +378,29 @@ class TicketingController extends Controller
                 ];
 
                 if (! empty($dataRevisi->lampiran_kpa)) {
-                    unset($validation['lampiran_kpa']);
+                   unset($validation['lampiran_kpa']);
                 }
             } else {
                 $validation = [
                     'catatan_kpa' => 'required',
                 ];
             }
-
+        
             $validator = Validator::make($request->all(), $validation, $message, $names);
 
-            if ($validator->fails()) {
+            if ($validator->fails())
+            {
                 return response()->json([
                     'status'    => 'error',
                     'title'     => 'Validasi Error',
                     'message'   => $validator->errors()->all()
                 ]);
             }
-
+                
             $nomor_surat = $dataRevisi->nomor_surat;
 
-            if ($request->hasFile('lampiran_kpa')) {
+            if($request->hasFile('lampiran_kpa'))
+            {
                 $direktorat   = $dir->where('id_dir', $dataRevisi->direktorat)->first()->nama_dir;
                 $lampiran_kpa = $this->uploadFile($request, 'lampiran_kpa', $direktorat);
             }
@@ -499,7 +417,7 @@ class TicketingController extends Controller
             ]);
 
             if ($request->status_kpa === TicketStatus::DISETUJUI_KPA) {
-                $no_hp_bagren = $user->where('prov_handle', 'like', '%' . $dataRevisi->provinsi . '%')->where([
+                $no_hp_bagren = $user->where('prov_handle', 'like', '%'.$dataRevisi->provinsi.'%')->where([
                     'level'     => 5
                 ])->first()->no_hp;
 
@@ -508,8 +426,10 @@ class TicketingController extends Controller
 
                 $tools->sendingWa(Auth::user()->no_hp, $message_ppk, $nomor_surat, "Tickting Revisi");
                 $tools->sendingWa($no_hp_bagren, $message_bagren, $nomor_surat, "Tickting Revisi");
-            } else {
-                $message_ppk   = "Pengajuan Revisi E-Ticketing Anda dengan Nomor Surat: " . $nomor_surat . " *DITOLAK* oleh KPA. Mohon segera diperbaiki sesuai catatan dari Fasgub";
+            }
+            else
+            {
+                $message_ppk   = "Pengajuan Revisi E-Ticketing Anda dengan Nomor Surat: ".$nomor_surat." *DITOLAK* oleh KPA. Mohon segera diperbaiki sesuai catatan dari Fasgub";
 
                 $tools->sendingWa(Auth::user()->no_hp, $message_ppk, $nomor_surat, "Tickting Revisi");
             }
@@ -521,7 +441,9 @@ class TicketingController extends Controller
                 'title'   => 'Status Revisi E-Ticketing Berhasil Diubah',
                 'message' => 'Status Revisi E-Ticketing Berhasil Diubah'
             ]);
-        } catch (\Illuminate\Database\QueryException $e) {
+        }
+        catch (\Illuminate\Database\QueryException $e)
+        {
             return response()->json([
                 'status'  => 'error',
                 'message' => $e->getMessage(),
@@ -544,7 +466,7 @@ class TicketingController extends Controller
         $t = new TicketRevisi;
         $p = new Provinsi;
         $l = new LogTicket;
-
+    
         $data = $t->find($id);
         $prov = $p->find($data->provinsi);
 
@@ -560,13 +482,13 @@ class TicketingController extends Controller
             'id_ticketing' => $data->id,
             'user'         => Auth()->user()->id_akses,
         ])
-            ->whereIn('activity', [TicketStatus::ACTIVITY[TicketStatus::BARU], TicketStatus::ACTIVITY[TicketStatus::PERBAIKAN_FIX]])
-            ->count();
+        ->whereIn('activity', [TicketStatus::ACTIVITY[TicketStatus::BARU], TicketStatus::ACTIVITY[TicketStatus::PERBAIKAN_FIX]])
+        ->count();
 
         if ($totalRevisi > 2) {
             return redirect('ticketing/baru/' . $tahun . '/' . $id_prov . '-' . $namaprov . '/' . $satker);
         }
-
+    
         $type     = "Daerah";
         $kegiatan = "GWPP";
         $modul    = "E-Ticketing";
@@ -603,7 +525,7 @@ class TicketingController extends Controller
         if (! empty($dataRevisi->nota_dinas_ppk)) {
             unset($validation['nota_dinas_ppk']);
         }
-
+        
         if (! empty($dataRevisi->matrik_rab)) {
             unset($validation['matrik_rab']);
         }
@@ -632,7 +554,8 @@ class TicketingController extends Controller
 
         $validator = Validator::make($request->all(), $validation, $message, $names);
 
-        if ($validator->fails()) {
+        if ($validator->fails())
+        {
             return response()->json([
                 'status'    => 'error',
                 'title'     => 'Validasi Error',
@@ -640,7 +563,8 @@ class TicketingController extends Controller
             ]);
         }
 
-        try {
+        try
+        {
             $hasNodinBaru = false;
             $hasRabBaru   = false;
             $hasDokBaru   = false;
@@ -651,23 +575,26 @@ class TicketingController extends Controller
 
             $direktorat         = $dir->where('id_dir', $request->direktorat)->first()->nama_dir;
 
-            if ($request->hasFile('nota_dinas_ppk')) {
+            if($request->hasFile('nota_dinas_ppk'))
+            {
                 $hasNodinBaru   = true;
                 $nota_dinas_ppk = $this->uploadFileFormatted($request, 'nota_dinas_ppk', $direktorat);
             }
 
-            if ($request->hasFile('matrik_rab')) {
+            if($request->hasFile('matrik_rab'))
+            {
                 $hasRabBaru = true;
                 $matrik_rab = $this->uploadFileFormatted($request, 'matrik_rab', $direktorat);
             }
 
-            if ($request->hasFile('dokumen_pendukung')) {
+            if($request->hasFile('dokumen_pendukung'))
+            {
                 $hasDokBaru        = true;
                 $dokumen_pendukung = $this->uploadFileFormatted($request, 'dokumen_pendukung', $direktorat);
             }
 
             $current_status = TicketStatus::PERBAIKAN;
-
+    
             $fixRevisi = [
                 'nomor_surat'       => $request->nomor_surat,
                 'tanggal_surat'     => $request->tanggal_surat,
@@ -694,7 +621,7 @@ class TicketingController extends Controller
                 unset($fixRevisi['nota_dinas_ppk']);
                 unset($fixRevisi['nota_dinas_ppk_old']);
             }
-
+            
             if (! $hasRabBaru) {
                 unset($fixRevisi['matrik_rab']);
                 unset($fixRevisi['matrik_rab_old']);
@@ -718,12 +645,12 @@ class TicketingController extends Controller
              * please make sure to set your own email for testing
              * !! DO NOT spam other user email for testing !!
              */
-            $sendEmail      = false;
+            $sendEmail      = false;   
 
             $data_pejabat   = $pejabat->where('id_dir', Auth::user()->id_dir)->first();
             $email_pejabat  = isset($data_pejabat->email) ? $data_pejabat->email : '';
 
-            $text = Auth::user()->nama . " telah mengajukan revisi baru. Mohon segera ditindak lanjut";
+            $text = Auth::user()->nama." telah mengajukan revisi baru. Mohon segera ditindak lanjut";
 
             if (!empty($email_pejabat) && $sendEmail) {
                 $tools->sendingEmail($text, $email_pejabat, $request->nomor_surat);
@@ -731,11 +658,12 @@ class TicketingController extends Controller
 
             $this->record($request->id, TicketStatus::ACTIVITY[$current_status], Auth::user()->id_akses, $nota_dinas_ppk, $matrik_rab, $dokumen_pendukung);
 
-
-            if ($request->provinsi == "undefined") {
-                $message_pptk   = "Pengajuan Revisi E-Ticketing Anda Berhasil Dikirim. Nomor Surat: " . $request->nomor_surat;
-                $message_ppk    = Auth::user()->nama . " telah mengajukan perbaikan E-Ticketing dengan Nomor Surat: " . $request->nomor_surat . ". Mohon segera ditindak lanjut";
-
+            
+            if($request->provinsi == "undefined")
+            {
+                $message_pptk   = "Pengajuan Revisi E-Ticketing Anda Berhasil Dikirim. Nomor Surat: ".$request->nomor_surat;
+                $message_ppk    = Auth::user()->nama." telah mengajukan perbaikan E-Ticketing dengan Nomor Surat: ".$request->nomor_surat.". Mohon segera ditindak lanjut";
+                
                 $no_hp_ppk = $user->where([
                     'id_dir'    => Auth::user()->id_dir,
                     'level'     => 2,
@@ -745,15 +673,17 @@ class TicketingController extends Controller
 
                 $tools->sendingWa($no_hp_ppk, $message_ppk, $request->nomor_surat, "Ticketing Revisi");
                 $tools->sendingWa(Auth::user()->no_hp, $message_pptk, $request->nomor_surat, "Ticketing Revisi");
-            } else {
-                $message_ppk    = "Pengajuan Revisi E-Ticketing Anda Berhasil Dikirim. Nomor Surat: " . $request->nomor_surat;
-                $message_bagren = Auth::user()->nama . " telah mengajukan perbaikan E-Ticketing daerah baru dengan Nomor Surat: " . $request->nomor_surat . ". Mohon segera ditindak lanjut";
+            }
+            else
+            {
+                $message_ppk    = "Pengajuan Revisi E-Ticketing Anda Berhasil Dikirim. Nomor Surat: ".$request->nomor_surat;
+                $message_bagren = Auth::user()->nama." telah mengajukan perbaikan E-Ticketing daerah baru dengan Nomor Surat: ".$request->nomor_surat.". Mohon segera ditindak lanjut";
 
                 $tools->sendingWa(Auth::user()->no_hp, $message_ppk, $request->nomor_surat, "Ticketing Revisi");
                 $tools->sendingWa(Auth::user()->no_hp, $message_bagren, $request->nomor_surat, "Ticketing Revisi");
             }
 
-            $message_bang_arief = "Ijin Bang Arief, " . Auth::user()->nama . " telah mengajukan Ticketing Revisi Pusat baru dengan Nomor Surat: " . $request->nomor_surat;
+            $message_bang_arief = "Ijin Bang Arief, ".Auth::user()->nama." telah mengajukan Ticketing Revisi Pusat baru dengan Nomor Surat: ".$request->nomor_surat;
             $tools->sendingWa("081213833316", $message_bang_arief, $request->nomor_surat, "Tickting Revisi");
 
             return response()->json([
@@ -761,202 +691,9 @@ class TicketingController extends Controller
                 'title'     => 'Tiket Revisi Berhasil diperbaiki',
                 'message'   => 'Pengajuan Revisi Akan Segera Diproses'
             ]);
-        } catch (\Illuminate\Database\QueryException $e) {
-            return response()->json([
-                'status' => 'error',
-                'message' => $e->getMessage(),
-                'title' => 'Oopps.. Error Submit. Please Try Again'
-            ]);
         }
-    }
-
-    /**
-     * 5.B - Simpan update revisi oleh PPK
-     * Dikirim kembali ke KPAs
-     */
-    public function submitRevisiFasgub(Request $request)
-    {
-        $user       = new User;
-        $dir        = new Direktorat;
-        $revisi     = new TicketRevisi;
-        $pejabat    = new MasterPejabat;
-        $tools      = new ToolsController;
-
-        $dataRevisi = $revisi->find($request->id);
-
-        $validation = [
-            'nomor_surat'       => 'required',
-            'tanggal_surat'     => 'required|date',
-            'jenis_revisi'      => 'required',
-            'perihal'           => 'required',
-            'judul_kak'         => 'required',
-            'nota_dinas_ppk'    => 'max:10240|required',
-            'matrik_rab'        => 'max:10240|required',
-            'dokumen_pendukung' => 'max:10240|required',
-        ];
-
-        if (! empty($dataRevisi->nota_dinas_ppk)) {
-            unset($validation['nota_dinas_ppk']);
-        }
-
-        if (! empty($dataRevisi->matrik_rab)) {
-            unset($validation['matrik_rab']);
-        }
-
-        if (! empty($dataRevisi->dokumen_pendukung)) {
-            unset($validation['dokumen_pendukung']);
-        }
-
-        $message    = [
-            'required'  => ':attribute tidak boleh kosong',
-            'integer'   => ':attribute tidak valid',
-            'date'      => ':attribute tidak valid',
-            'max'       => ':attribute Ukuran Maksimal 10 MB'
-        ];
-
-        $names      = [
-            'nomor_surat'       => 'Nomor Surat',
-            'tanggal_surat'     => 'Tanggal Surat',
-            'jenis_revisi'      => 'Jenis Revisi',
-            'perihal'           => 'Perihal',
-            'judul_kak'         => 'Judul KAK',
-            'nota_dinas_ppk'    => 'Nota Dinas PPK',
-            'matrik_rab'        => 'Matrik RAB',
-            'dokumen_pendukung' => 'Dokumen Pendukung',
-        ];
-
-        $validator = Validator::make($request->all(), $validation, $message, $names);
-
-        if ($validator->fails()) {
-            return response()->json([
-                'status'    => 'error',
-                'title'     => 'Validasi Error',
-                'message'   => $validator->errors()->all()
-            ]);
-        }
-
-        try {
-            $hasNodinBaru = false;
-            $hasRabBaru   = false;
-            $hasDokBaru   = false;
-
-            $matrik_rab         = "Tidak Ada File";
-            $nota_dinas_ppk     = "Tidak Ada File";
-            $dokumen_pendukung  = "Tidak Ada File";
-
-            $direktorat         = $dir->where('id_dir', $request->direktorat)->first()->nama_dir;
-
-            if ($request->hasFile('nota_dinas_ppk')) {
-                $hasNodinBaru   = true;
-                $nota_dinas_ppk = $this->uploadFileFormatted($request, 'nota_dinas_ppk', $direktorat);
-            }
-
-            if ($request->hasFile('matrik_rab')) {
-                $hasRabBaru = true;
-                $matrik_rab = $this->uploadFileFormatted($request, 'matrik_rab', $direktorat);
-            }
-
-            if ($request->hasFile('dokumen_pendukung')) {
-                $hasDokBaru        = true;
-                $dokumen_pendukung = $this->uploadFileFormatted($request, 'dokumen_pendukung', $direktorat);
-            }
-
-            $current_status = $request->status_fasgub;
-
-            $fixRevisi = [
-                'nomor_surat'       => $request->nomor_surat,
-                'tanggal_surat'     => $request->tanggal_surat,
-                'direktorat'        => $request->direktorat,
-                'jenis_revisi'      => $request->jenis_revisi,
-                'perihal'           => $request->perihal,
-                'judul_kak'         => $request->judul_kak,
-                'nota_dinas_ppk'    => $nota_dinas_ppk,
-                'matrik_rab'        => $matrik_rab,
-                'dokumen_pendukung' => $dokumen_pendukung,
-                'nota_dinas_pptk_old'   => [$dataRevisi->nota_dinas_pptk],
-                'nota_dinas_ppk_old'    => [$dataRevisi->nota_dinas_ppk],
-                'matrik_rab_old'        => [$dataRevisi->matrik_rab],
-                'kak_old'               => [$dataRevisi->kak],
-                'dokumen_pendukung_old' => [$dataRevisi->dokumen_pendukung],
-                'keterangan'        => $request->keterangan,
-                'status'            => $current_status,
-                'current_status'    => $current_status,
-                'type'              => $request->type,
-                'created_by'        => Auth::user()->id_akses
-            ];
-
-            if (! $hasNodinBaru) {
-                unset($fixRevisi['nota_dinas_ppk']);
-                unset($fixRevisi['nota_dinas_ppk_old']);
-            }
-
-            if (! $hasRabBaru) {
-                unset($fixRevisi['matrik_rab']);
-                unset($fixRevisi['matrik_rab_old']);
-            }
-            if (! $hasDokBaru) {
-                unset($fixRevisi['dokumen_pendukung']);
-                unset($fixRevisi['dokumen_pendukung_old']);
-            }
-
-            $revisi->where('id', $request->id)->update($fixRevisi);
-
-            DB::table('tb_ticket_stats')->insert([
-                'ticket_id'  => $request->id,
-                'status'     => $current_status,
-                'created_at' => date('Y-m-d'),
-                'created_by' => Auth::user()->id_akses,
-            ]);
-
-            /**
-             * change $sendMail value to true to test email notification,
-             * please make sure to set your own email for testing
-             * !! DO NOT spam other user email for testing !!
-             */
-            // $sendEmail      = false;
-
-            // $data_pejabat   = $pejabat->where('id_dir', Auth::user()->id_dir)->first();
-            // $email_pejabat  = isset($data_pejabat->email) ? $data_pejabat->email : '';
-
-            // $text = Auth::user()->nama . " telah mengajukan revisi baru. Mohon segera ditindak lanjut";
-
-            // if (!empty($email_pejabat) && $sendEmail) {
-            //     $tools->sendingEmail($text, $email_pejabat, $request->nomor_surat);
-            // }
-
-            $this->record($request->id, TicketStatus::ACTIVITY[$current_status], Auth::user()->id_akses, $nota_dinas_ppk, $matrik_rab, $dokumen_pendukung);
-
-
-            if ($request->provinsi == "undefined") {
-                $message_pptk   = "Pengajuan Revisi E-Ticketing Anda Berhasil Dikirim. Nomor Surat: " . $request->nomor_surat;
-                $message_ppk    = Auth::user()->nama . " telah mengajukan perbaikan E-Ticketing dengan Nomor Surat: " . $request->nomor_surat . ". Mohon segera ditindak lanjut";
-
-                $no_hp_ppk = $user->where([
-                    'id_dir'    => Auth::user()->id_dir,
-                    'level'     => 2,
-                    //'prov'      => $request->provinsi
-                    'prov'      => ''
-                ])->first()->no_hp;
-
-                $tools->sendingWa($no_hp_ppk, $message_ppk, $request->nomor_surat, "Ticketing Revisi");
-                $tools->sendingWa(Auth::user()->no_hp, $message_pptk, $request->nomor_surat, "Ticketing Revisi");
-            } else {
-                $message_ppk    = "Pengajuan Revisi E-Ticketing Anda Berhasil Dikirim. Nomor Surat: " . $request->nomor_surat;
-                $message_bagren = Auth::user()->nama . " telah mengajukan perbaikan E-Ticketing daerah baru dengan Nomor Surat: " . $request->nomor_surat . ". Mohon segera ditindak lanjut";
-
-                $tools->sendingWa(Auth::user()->no_hp, $message_ppk, $request->nomor_surat, "Ticketing Revisi");
-                $tools->sendingWa(Auth::user()->no_hp, $message_bagren, $request->nomor_surat, "Ticketing Revisi");
-            }
-
-            // $message_bang_arief = "Ijin Bang Arief, " . Auth::user()->nama . " telah mengajukan Ticketing Revisi Pusat baru dengan Nomor Surat: " . $request->nomor_surat;
-            // $tools->sendingWa("081213833316", $message_bang_arief, $request->nomor_surat, "Tickting Revisi");
-
-            return response()->json([
-                'status'    => 'success',
-                'title'     => 'Tiket Revisi Berhasil diperbaiki',
-                'message'   => 'Pengajuan Revisi Akan Segera Diproses'
-            ]);
-        } catch (\Illuminate\Database\QueryException $e) {
+        catch (\Illuminate\Database\QueryException $e)
+        {
             return response()->json([
                 'status' => 'error',
                 'message' => $e->getMessage(),
@@ -995,16 +732,17 @@ class TicketingController extends Controller
      */
     public function submitRevisiBagren(Request $request)
     {
-        try {
+        try
+        {
             $user         = new User;
             $dir          = new Direktorat;
             $revisi       = new TicketRevisi;
             $tools        = new ToolsController;
-
+ 
             $dataRevisi = $revisi->where('id', $request->id)->first();
-
+        
             $validation = [];
-
+    
             $message = [
                 'required' => ':attribute tidak boleh kosong',
                 'max'      => ':attribute Ukuran Maksimal 10 MB'
@@ -1013,23 +751,24 @@ class TicketingController extends Controller
             $names = [
                 'catatan_verifikasi' => 'Catatan Verifikasi',
             ];
-
+            
             if ($request->status_verifikasi === TicketStatus::PERBAIKAN) {
                 $validation = [
                     'catatan_verifikasi' => 'required',
                 ];
             }
-
+        
             $validator = Validator::make($request->all(), $validation, $message, $names);
 
-            if ($validator->fails()) {
+            if ($validator->fails())
+            {
                 return response()->json([
                     'status'    => 'error',
                     'title'     => 'Validasi Error',
                     'message'   => $validator->errors()->all()
                 ]);
             }
-
+                
             $nomor_surat = $dataRevisi->nomor_surat;
 
             $data = [
@@ -1041,7 +780,7 @@ class TicketingController extends Controller
                 'verified_by'        => Auth::user()->id_akses
             ];
 
-            if ($request->status_verifikasi == TicketStatus::PERBAIKAN) {
+            if ($request->status_verifikasi == TicketStatus::PERBAIKAN ) {
                 $data['status_kpa'] = null;
                 $data['no_nota_kpa'] = null;
                 $data['lampiran_kpa'] = null;
@@ -1051,7 +790,7 @@ class TicketingController extends Controller
             $revisi->where('id', $request->id)->update($data);
 
             if ($request->status_verifikasi === TicketStatus::DISETUJUI_BAGREN) {
-                $no_hp_bagren = $user->where('prov_handle', 'like', '%' . $dataRevisi->provinsi . '%')->where([
+                $no_hp_bagren = $user->where('prov_handle', 'like', '%'.$dataRevisi->provinsi.'%')->where([
                     'level'     => 5
                 ])->first()->no_hp;
 
@@ -1060,7 +799,9 @@ class TicketingController extends Controller
 
                 $tools->sendingWa(Auth::user()->no_hp, $message_ppk, $nomor_surat, "Tickting Revisi");
                 $tools->sendingWa($no_hp_bagren, $message_bagren, $nomor_surat, "Tickting Revisi");
-            } else {
+            }
+            else
+            {
                 $message_ppk = "Pengajuan Revisi E-Ticketing Anda dengan Nomor Surat: {$nomor_surat} *DITOLAK* oleh Bagren. Mohon segera diperbaiki.";
 
                 $tools->sendingWa(Auth::user()->no_hp, $message_ppk, $nomor_surat, "Tickting Revisi");
@@ -1073,7 +814,9 @@ class TicketingController extends Controller
                 'title'   => 'Status Revisi E-Ticketing Berhasil Diubah',
                 'message' => 'Status Revisi E-Ticketing Berhasil Diubah'
             ]);
-        } catch (\Illuminate\Database\QueryException $e) {
+        }
+        catch (\Illuminate\Database\QueryException $e)
+        {
             return response()->json([
                 'status'  => 'error',
                 'message' => $e->getMessage(),
@@ -1108,6 +851,104 @@ class TicketingController extends Controller
     }
 
     /**
+     * 7.B - Simpan Revisi Bagren (disetujui / Diteliti / Ditolak)
+     */
+    public function submitRevisiFasgub(Request $request)
+    {
+        try
+        {
+            $user         = new User;
+            $dir          = new Direktorat;
+            $revisi       = new TicketRevisi;
+            $tools        = new ToolsController;
+ 
+            $dataRevisi = $revisi->where('id', $request->id)->first();
+        
+            $validation = [];
+    
+            $message = [
+                'required' => ':attribute tidak boleh kosong',
+                'max'      => ':attribute Ukuran Maksimal 10 MB'
+            ];
+
+            $names = [
+                'catatan_fasgub' => 'Catatan Fasgub',
+            ];
+            
+            if ($request->status_verifikasi === TicketStatus::PERBAIKAN) {
+                $validation = [
+                    'catatan_fasgub' => 'required',
+                ];
+            }
+        
+            $validator = Validator::make($request->all(), $validation, $message, $names);
+
+            if ($validator->fails())
+            {
+                return response()->json([
+                    'status'    => 'error',
+                    'title'     => 'Validasi Error',
+                    'message'   => $validator->errors()->all()
+                ]);
+            }
+                
+            $nomor_surat = $dataRevisi->nomor_surat;
+
+            $data = [
+                'catatan_fasgub' => $request->catatan_fasgub,
+                'status_fasgub'  => $request->status_fasgub,
+                'status'         => $request->status_fasgub,
+                'current_status' => $request->status_fasgub,
+                'fasgub_at'      => date("Y-m-d H:i:s"),
+                'fasgub_by'      => Auth::user()->id_akses
+            ];
+
+            if ($request->status_fasgub == TicketStatus::PERBAIKAN ) {
+                $data['status_kpa'] = null;
+                $data['no_nota_kpa'] = null;
+                $data['lampiran_kpa'] = null;
+                $data['catatan_kpa'] = [null];
+            }
+
+            $revisi->where('id', $request->id)->update($data);
+
+            if ($request->status_fasgub === TicketStatus::DISETUJUI_FASGUB) {
+                $no_hp_bagren = $user->where('prov_handle', 'like', '%'.$dataRevisi->provinsi.'%')->where([
+                    'level'     => 5
+                ])->first()->no_hp;
+
+                $message_ppk    = "Pengajuan Revisi E-Ticketing Anda dengan Nomor Surat: {$nomor_surat} Disetujui Oleh Fasgub";
+                $message_bagren = "Pengajuan Revisi E-Ticketing dengan Nomor Surat: {$nomor_surat} Disetujui Oleh Fasgub dan diteruskan ke Bagren. Silakan diproses";
+
+                $tools->sendingWa(Auth::user()->no_hp, $message_ppk, $nomor_surat, "Tickting Revisi");
+                $tools->sendingWa($no_hp_bagren, $message_bagren, $nomor_surat, "Tickting Revisi");
+            }
+            else
+            {
+                $message_ppk = "Pengajuan Revisi E-Ticketing Anda dengan Nomor Surat: {$nomor_surat} *DITOLAK* oleh Fasgub. Mohon segera diperbaiki.";
+
+                $tools->sendingWa(Auth::user()->no_hp, $message_ppk, $nomor_surat, "Tickting Revisi");
+            }
+
+            $this->record($request->id, TicketStatus::ACTIVITY[$request->status_fasgub], Auth::user()->id_akses);
+
+            return response()->json([
+                'status'  => 'success',
+                'title'   => 'Status Revisi E-Ticketing Berhasil Diubah',
+                'message' => 'Status Revisi E-Ticketing Berhasil Diubah'
+            ]);
+        }
+        catch (\Illuminate\Database\QueryException $e)
+        {
+            return response()->json([
+                'status'  => 'error',
+                'message' => $e->getMessage(),
+                'title'   => 'Oopps.. Error Processing. Please Try Again'
+            ]);
+        }
+    }
+
+    /**
      * X.1 - Helper List Satker berdasarkan nama provinsi terpilih
      */
     public function getSatkerProvinsi(Request $request)
@@ -1116,27 +957,27 @@ class TicketingController extends Controller
         $satker = $s->getSatkerProv($request->namaprov, $this->user->kdsatker);
 
         return response()->json([
-            'data' => $satker
-        ]);
+                'data' => $satker
+            ]);
     }
 
     /**
      * X.2 - Helper Rekap status Ticket Revisi berdasarkan Satker terpilih
      */
     public function getRekapSatker(Request $request)
-    {
+    {   
         $t = new TicketRevisi;
         $rekap = $t->getRekap($request->satker, $request->tahun, $request->bulan);
 
         return response()->json([
-            'data' => $rekap
-        ]);
+                'data' => $rekap
+            ]);
     }
 
     /**
      * X.3 - Helper Link berdasarkan status Revisi
      */
-
+    
 
     public function viewGgwpDaerahListPerbaikan()
     {
@@ -1170,23 +1011,23 @@ class TicketingController extends Controller
     public function suratPengesahan(Request $request)
     {
         ini_set('max_execution_time', 300);
-        ini_set("memory_limit", "512M");
-
+        ini_set("memory_limit","512M");
+        
         $url = url()->current();
         $token = $request->token;
 
         $ticket = new TicketRevisi;
         $data   = $ticket->where('token', $token)->first();
-        $img_logo = env('APP_URL') . '/images/logo-kemendagri.png';
-        $img_logo = env('APP_URL') . '/images/logo-emonev.png';
+        $img_logo = env('APP_URL').'/images/logo-kemendagri.png';
+        $img_logo = env('APP_URL').'/images/logo-emonev.png';
         return view('landers.surat-pengesahan-preview', compact('data', 'token', 'img_logo', 'img_emonev'));
     }
 
     public function downloadSuratPengesahan(Request $request)
     {
         ini_set('max_execution_time', 300);
-        ini_set("memory_limit", "512M");
-
+        ini_set("memory_limit","512M");
+        
         $url = url()->current();
         $token = $request->token;
 
@@ -1195,23 +1036,23 @@ class TicketingController extends Controller
         $img_logo = public_path('images/logo-kemendagri.png');
         $img_emonev = public_path('images/logo-emonev.png');
         $pdf = Pdf::loadView('landers.surat-pengesahan-preview', ['data' => $data, 'token' => $token, 'img_logo' => $img_logo, 'img_emonev' => $img_emonev]);
-
-        return $pdf->stream('Preview Surat Persetujuan - ' . $token . '.pdf');
+        
+        return $pdf->stream('Preview Surat Persetujuan - '.$token.'.pdf');
     }
 
     public function betaTesting()
     {
         ini_set('max_execution_time', 300);
-        ini_set("memory_limit", "512M");
-
+        ini_set("memory_limit","512M");
+        
         // $url = url()->current();
         // $token = $request->token;
         $token  = "db13bb90650fdc2210068cc331d89228";
 
         $ticket = new TicketRevisi;
         $data   = $ticket->where('token', $token)->first();
-        $img_logo = env('APP_URL') . '/images/logo-kemendagri.png';
-        $img_emonev = env('APP_URL') . '/images/logo-emonev.png';
+        $img_logo = env('APP_URL').'/images/logo-kemendagri.png';
+        $img_emonev = env('APP_URL').'/images/logo-emonev.png';
         return view('landers.surat-pengesahan-preview', compact('data', 'token', 'img_logo', 'img_emonev'));
     }
 
@@ -1221,40 +1062,50 @@ class TicketingController extends Controller
         $tembusan_pengesahan    = [];
         $deskripsi_pengesahan   = [];
 
-        if ($request->has('catatan') && !empty($request->catatan)) {
+        if($request->has('catatan') && !empty($request->catatan))
+        {
             $catatan    = [];
-            $notes      = explode('|', $request->catatan);
+            $notes      = explode('|',$request->catatan);
 
-            foreach ($notes as $note) {
-                if (!empty($note)) {
+            foreach($notes as $note)
+            {
+                if(!empty($note))
+                {
                     $catatan[] = $note;
                 }
             }
         }
 
-        if ($request->has('deskripsi_pengesahan') && !empty($request->deskripsi_pengesahan)) {
+        if($request->has('deskripsi_pengesahan') && !empty($request->deskripsi_pengesahan))
+        {
             $deskripsi_pengesahan    = [];
-            $deskripsis      = explode('|', $request->deskripsi_pengesahan);
+            $deskripsis      = explode('|',$request->deskripsi_pengesahan);
 
-            foreach ($deskripsis as $deskripsi) {
-                if (!empty($deskripsi)) {
+            foreach($deskripsis as $deskripsi)
+            {
+                if(!empty($deskripsi))
+                {
                     $deskripsi_pengesahan[] = $deskripsi;
                 }
             }
         }
 
-        if ($request->has('tembusan') && !empty($request->tembusan)) {
-            $tembusans              = explode('|', $request->tembusan);
+        if($request->has('tembusan') && !empty($request->tembusan))
+        {
+            $tembusans              = explode('|',$request->tembusan);
             $tembusan_pengesahan    = [];
 
-            foreach ($tembusans as $tembusan) {
-                if (!empty($tembusan)) {
+            foreach($tembusans as $tembusan)
+            {
+                if(!empty($tembusan))
+                {
                     $tembusan_pengesahan[] = $tembusan;
                 }
             }
         }
 
-        try {
+        try
+        {
             $dir            = new Direktorat;
             $revisi         = new TicketRevisi;
             $tools          = new ToolsController;
@@ -1264,8 +1115,9 @@ class TicketingController extends Controller
 
             $catatan_simpan = "<ol>";
 
-            foreach ($catatan as $value) {
-                $catatan_simpan .= '<li>' . $value . '</li>';
+            foreach ($catatan as $value)
+            {
+                $catatan_simpan .= '<li>'.$value.'</li>';
             }
 
             $catatan_simpan .= "</ol>";
@@ -1274,11 +1126,13 @@ class TicketingController extends Controller
             $revisi->where('id', $request->id)->update([
                 'catatan_verifikasi'    => $catatan,
                 'tanggal_pengesahan'    => date("Y-m-d", strtotime($request->tanggal_pengesahan)),
-                'nomor_surat_pengesahan' => $request->nomor_surat_pengesahan,
+                'nomor_surat_pengesahan'=> $request->nomor_surat_pengesahan,
                 'deskripsi_pengesahan'  => $deskripsi_pengesahan,
                 'tembusan'              => $tembusan_pengesahan
             ]);
-        } catch (\Illuminate\Database\QueryException $e) {
+        }
+        catch (\Illuminate\Database\QueryException $e)
+        {
 
             return response()->json([
                 'status' => 'error',
@@ -1422,12 +1276,12 @@ class TicketingController extends Controller
             // $tools->sendingEmail($text, $email_pejabat, $request->nomor_surat);
             $this->record($id_ticketing->id, "Mengajukan Revisi E-Ticketing", Auth::user()->id_akses);
 
-
+            
             if($request->provinsi == "undefined")
             {
                 $message_pptk   = "Pengajuan Revisi E-Ticketing Anda Berhasil Dikirim. Nomor Surat: ".$request->nomor_surat;
                 $message_ppk    = Auth::user()->nama." telah mengajukan revisi E-Ticketing baru dengan Nomor Surat: ".$request->nomor_surat.". Mohon segera ditindak lanjut";
-
+                
                 $no_hp_ppk = $user->where([
                     'id_dir'    => Auth::user()->id_dir,
                     'level'     => 2,
@@ -1475,17 +1329,22 @@ class TicketingController extends Controller
         $pejabat    = new MasterPejabat;
         $tools      = new ToolsController;
 
-        try {
-            $data_old   = $revisi->where('id', $request->id)->first();
+        try
+        {
+            $data_old   = $revisi->where('id', $request->id)->first(); 
             $direktorat = $dir->where('id_dir', $data_old->direktorat)->first()->nama_dir;
 
-            if ($request->hasFile('nota_dinas_pptk')) {
+            if($request->hasFile('nota_dinas_pptk'))
+            {
                 $nota_dinas_pptk_old     = $data_old->nota_dinas_pptk;
                 $arr_nota_dinas_pptk_old = $data_old->nota_dinas_pptk_old;
-
-                if (!in_array("BELUM ADA DOKUMEN LAMA", $arr_nota_dinas_pptk_old)) {
+                
+                if(!in_array("BELUM ADA DOKUMEN LAMA", $arr_nota_dinas_pptk_old))
+                {
                     array_push($arr_nota_dinas_pptk_old, $nota_dinas_pptk_old);
-                } else {
+                }
+                else
+                {
                     $arr_nota_dinas_pptk_old = [$nota_dinas_pptk_old];
                 }
 
@@ -1497,13 +1356,17 @@ class TicketingController extends Controller
                 ]);
             }
 
-            if ($request->hasFile('nota_dinas_ppk')) {
+            if($request->hasFile('nota_dinas_ppk'))
+            {
                 $nota_dinas_ppk_old     = $data_old->nota_dinas_ppk;
                 $arr_nota_dinas_ppk_old = $data_old->nota_dinas_ppk_old;
-
-                if (!in_array("BELUM ADA DOKUMEN LAMA", $arr_nota_dinas_ppk_old)) {
+                
+                if(!in_array("BELUM ADA DOKUMEN LAMA", $arr_nota_dinas_ppk_old))
+                {
                     array_push($arr_nota_dinas_ppk_old, $nota_dinas_ppk_old);
-                } else {
+                }
+                else
+                {
                     $arr_nota_dinas_ppk_old = [$nota_dinas_ppk_old];
                 }
 
@@ -1515,13 +1378,17 @@ class TicketingController extends Controller
                 ]);
             }
 
-            if ($request->hasFile('matrik_rab')) {
+            if($request->hasFile('matrik_rab'))
+            {
                 $matrik_rab_old     = $data_old->matrik_rab;
                 $arr_matrik_rab_old = $data_old->matrik_rab_old;
 
-                if (!in_array("BELUM ADA DOKUMEN LAMA", $arr_matrik_rab_old)) {
+                if(!in_array("BELUM ADA DOKUMEN LAMA", $arr_matrik_rab_old))
+                {
                     array_push($arr_matrik_rab_old, $matrik_rab_old);
-                } else {
+                }
+                else
+                {
                     $arr_matrik_rab_old = [$matrik_rab_old];
                 }
 
@@ -1533,13 +1400,17 @@ class TicketingController extends Controller
                 ]);
             }
 
-            if ($request->hasFile('kak')) {
+            if($request->hasFile('kak'))
+            {
                 $kak_old     = $data_old->kak;
                 $arr_kak_old = $data_old->kak_old;
 
-                if (!in_array("BELUM ADA DOKUMEN LAMA", $arr_kak_old)) {
+                if(!in_array("BELUM ADA DOKUMEN LAMA", $arr_kak_old))
+                {
                     array_push($arr_kak_old, $kak_old);
-                } else {
+                }
+                else
+                {
                     $arr_kak_old = [$kak_old];
                 }
 
@@ -1551,13 +1422,17 @@ class TicketingController extends Controller
                 ]);
             }
 
-            if ($request->hasFile('dokumen_pendukung')) {
+            if($request->hasFile('dokumen_pendukung'))
+            {
                 $dokumen_pendukung_old     = $data_old->dokumen_pendukung;
                 $arr_dokumen_pendukung_old = $data_old->dokumen_pendukung_old;
 
-                if (!in_array("BELUM ADA DOKUMEN LAMA", $arr_dokumen_pendukung_old)) {
+                if(!in_array("BELUM ADA DOKUMEN LAMA", $arr_dokumen_pendukung_old))
+                {
                     array_push($arr_dokumen_pendukung_old, $dokumen_pendukung_old);
-                } else {
+                }
+                else
+                {
                     $arr_dokumen_pendukung_old = [$dokumen_pendukung_old];
                 }
 
@@ -1575,7 +1450,7 @@ class TicketingController extends Controller
 
             $data_pejabat   = $pejabat->where('id_dir', Auth::user()->id_dir)->first();
             $email_pejabat  = $data_pejabat->email;
-            $text = Auth::user()->nama . " telah mengajukan perubahan revisi ticketing baru. Mohon segera ditindak lanjut";
+            $text = Auth::user()->nama." telah mengajukan perubahan revisi ticketing baru. Mohon segera ditindak lanjut";
             // $tools->sendingEmail($text, $email_pejabat, $data_old->nomor_surat);
             $this->record($request->id, "Telah melakukan Perbaikan Data Revisi E-Ticketing", Auth::user()->id_akses);
 
@@ -1590,7 +1465,9 @@ class TicketingController extends Controller
                 'title'     => 'Tiket Revisi Berhasil Diubah',
                 'message'   => 'Pengajuan Revisi Akan Segera Diproses'
             ]);
-        } catch (\Illuminate\Database\QueryException $e) {
+        }
+        catch (\Illuminate\Database\QueryException $e)
+        {
 
             return response()->json([
                 'status' => 'error',
@@ -1606,17 +1483,20 @@ class TicketingController extends Controller
         $dir        = new Direktorat;
         $revisi     = new TicketRevisi;
 
-        try {
+        try
+        {
             $i      = 0;
             $data   = $revisi->leftJoin('tbm_dir', 'tb_ticket_rev.direktorat', '=', 'tbm_dir.id_dir')->orderBy('id', 'DESC');
 
-            if (Auth::user()->level == "2") {
+            if(Auth::user()->level == "2")
+            {
                 $data = $revisi
-                    ->leftJoin('tbm_dir', 'tb_ticket_rev.direktorat', '=', 'tbm_dir.id_dir')
-                    ->where('provinsi', 'undefined')
-                    ->where('direktorat', Auth::user()->id_dir)->orderBy('id', 'DESC');
+                        ->leftJoin('tbm_dir', 'tb_ticket_rev.direktorat', '=', 'tbm_dir.id_dir')
+                        ->where('provinsi', 'undefined')
+                        ->where('direktorat', Auth::user()->id_dir)->orderBy('id', 'DESC');
 
-                if (is_numeric(Auth::user()->prov)) {
+                if(is_numeric(Auth::user()->prov))
+                {
                     $data = $revisi
                         ->leftJoin('tbm_dir', 'tb_ticket_rev.direktorat', '=', 'tbm_dir.id_dir')
                         ->where('type', $request->type)
@@ -1624,62 +1504,79 @@ class TicketingController extends Controller
                         ->where('direktorat', Auth::user()->id_dir)->orderBy('id', 'DESC');
                 }
 
-                if (Auth::user()->username == "198505062004121001") {
+                if(Auth::user()->username == "198505062004121001")
+                {
                     $data = $revisi
                         ->leftJoin('tbm_dir', 'tb_ticket_rev.direktorat', '=', 'tbm_dir.id_dir')
                         ->where('provinsi', 'undefined')->orderBy('id', 'DESC');
 
-                    if ($request->type == "gwpp") {
+                    if($request->type == "gwpp")
+                    {
                         $data = $revisi
                             ->leftJoin('tbm_dir', 'tb_ticket_rev.direktorat', '=', 'tbm_dir.id_dir')
                             ->where('type', $request->type)->orderBy('id', 'DESC');
-                    } else if ($request->type == "sarpras") {
+                    }
+                    else if($request->type == "sarpras")
+                    {
                         $data = $revisi
                             ->leftJoin('tbm_dir', 'tb_ticket_rev.direktorat', '=', 'tbm_dir.id_dir')
                             ->where('type', $request->type)->orderBy('id', 'DESC');
                     }
                 }
-            } else if (Auth::user()->level == "3") {
+            }
+            else if(Auth::user()->level == "3")
+            {
                 // if(!is_numeric(Auth::user()->prov))
                 // {
-                $data   = $revisi
-                    ->leftJoin('tbm_dir', 'tb_ticket_rev.direktorat', '=', 'tbm_dir.id_dir')
-                    ->where('created_by', Auth::user()->id_akses)
-                    ->where('type', $request->type)
-                    ->orderBy('id', 'DESC');
+                    $data   = $revisi
+                                ->leftJoin('tbm_dir', 'tb_ticket_rev.direktorat', '=', 'tbm_dir.id_dir')
+                                ->where('created_by', Auth::user()->id_akses)
+                                ->where('type', $request->type)
+                                ->orderBy('id', 'DESC');
                 // }
-
-            } else if (Auth::user()->level == "1") {
-                if (strtolower(Auth::user()->prov) == "all") {
+                
+            }
+            else if(Auth::user()->level == "1")
+            {
+                if(strtolower(Auth::user()->prov ) == "all")
+                {
                     $data = $revisi
-                        ->leftJoin('tbm_dir', 'tb_ticket_rev.direktorat', '=', 'tbm_dir.id_dir')
-                        ->where('direktorat', Auth::user()->id_dir)
-                        ->where('type', $request->type)
-                        ->orderBy('id', 'DESC');
-                } else {
-                    $data = $revisi
-                        ->leftJoin('tbm_dir', 'tb_ticket_rev.direktorat', '=', 'tbm_dir.id_dir')
-                        ->where('direktorat', Auth::user()->id_dir)
-                        ->where('provinsi', Auth::user()->prov)
-                        ->where('type', $request->type)
-                        ->orderBy('id', 'DESC');
+                            ->leftJoin('tbm_dir', 'tb_ticket_rev.direktorat', '=', 'tbm_dir.id_dir')
+                            ->where('direktorat', Auth::user()->id_dir)
+                            ->where('type', $request->type)
+                            ->orderBy('id', 'DESC');
                 }
-            } else if (Auth::user()->level == "5") {
+                else
+                {
+                    $data = $revisi
+                            ->leftJoin('tbm_dir', 'tb_ticket_rev.direktorat', '=', 'tbm_dir.id_dir')
+                            ->where('direktorat', Auth::user()->id_dir)
+                            ->where('provinsi', Auth::user()->prov)
+                            ->where('type', $request->type)
+                            ->orderBy('id', 'DESC');
+                }
+            }
+            else if(Auth::user()->level == "5")
+            {
                 $data = $revisi
-                    ->leftJoin('tbm_dir', 'tb_ticket_rev.direktorat', '=', 'tbm_dir.id_dir')
-                    ->whereNotNull('approved_by')
-                    ->where('provinsi', 'undefined')
-                    ->orderBy('id', 'DESC');
+                        ->leftJoin('tbm_dir', 'tb_ticket_rev.direktorat', '=', 'tbm_dir.id_dir')
+                        ->whereNotNull('approved_by')
+                        ->where('provinsi', 'undefined')
+                        ->orderBy('id', 'DESC');
 
-                if (strtolower(Auth::user()->prov) == "all") {
-                    if ($request->type == "gwpp") {
+                if(strtolower(Auth::user()->prov) == "all")
+                {
+                    if($request->type == "gwpp")
+                    {
                         $data = $revisi
                             ->leftJoin('tbm_dir', 'tb_ticket_rev.direktorat', '=', 'tbm_dir.id_dir')
                             ->where('provinsi', 'not like', '%undefined%')
                             // ->whereNotNull('status_fasgub')
                             ->where('type', $request->type)
                             ->orderBy('id', 'DESC');
-                    } else {
+                    }
+                    else
+                    {
                         $data = $revisi
                             ->leftJoin('tbm_dir', 'tb_ticket_rev.direktorat', '=', 'tbm_dir.id_dir')
                             ->where('provinsi', 'not like', '%undefined%')
@@ -1687,8 +1584,11 @@ class TicketingController extends Controller
                             ->where('type', $request->type)
                             ->orderBy('id', 'DESC');
                     }
-                } else {
-                    if ($request->type == "gwpp") {
+                }
+                else
+                {
+                    if($request->type == "gwpp")
+                    {
                         $data = $revisi
                             ->leftJoin('tbm_dir', 'tb_ticket_rev.direktorat', '=', 'tbm_dir.id_dir')
                             ->where('provinsi', 'like', Auth::user()->prov)
@@ -1696,14 +1596,17 @@ class TicketingController extends Controller
                             ->where('type', $request->type)
                             ->orderBy('id', 'DESC');
 
-                        if (Auth::user()->prov_handle != NULL) {
+                        if(Auth::user()->prov_handle != NULL)
+                        {
                             $data = $revisi
                                 ->leftJoin('tbm_dir', 'tb_ticket_rev.direktorat', '=', 'tbm_dir.id_dir')
                                 ->whereIn('provinsi', Auth::user()->prov_handle)
                                 ->where('type', $request->type)
                                 ->orderBy('id', 'DESC');
                         }
-                    } else {
+                    }
+                    else
+                    {
                         $data = $revisi
                             ->leftJoin('tbm_dir', 'tb_ticket_rev.direktorat', '=', 'tbm_dir.id_dir')
                             ->where('provinsi', 'like', Auth::user()->prov)
@@ -1711,16 +1614,18 @@ class TicketingController extends Controller
                             ->where('type', $request->type)
                             ->orderBy('id', 'DESC');
 
-                        if (Auth::user()->direktorat_handle != NULL) {
-                            if ($request->type != "sarpras") {
-                                $data = $revisi
+                            if(Auth::user()->direktorat_handle != NULL)
+                            {
+                                if($request->type != "sarpras")
+                                {
+                                    $data = $revisi
                                     ->leftJoin('tbm_dir', 'tb_ticket_rev.direktorat', '=', 'tbm_dir.id_dir')
                                     ->whereIn('direktorat', Auth::user()->direktorat_handle)
                                     ->where('type', $request->type)
                                     ->orderBy('id', 'DESC');
+                                }
                             }
-                        }
-                    }
+                    }   
                 }
 
                 // if(Auth::user()->prov_handle != NULL)
@@ -1743,17 +1648,22 @@ class TicketingController extends Controller
                 //         ->orderBy('id', 'DESC');
                 //     }
                 // }
-            } else if (Auth::user()->level == "0") {
+            }
+            else if(Auth::user()->level == "0")
+            {
                 $data = $revisi->leftJoin('tbm_dir', 'tb_ticket_rev.direktorat', '=', 'tbm_dir.id_dir')->orderBy('id', 'DESC');
 
-                if ($request->type == "gwpp") {
+                if($request->type == "gwpp")
+                {
                     $data = $revisi
                         ->leftJoin('tbm_dir', 'tb_ticket_rev.direktorat', '=', 'tbm_dir.id_dir')
                         ->where('provinsi', 'not like', '%undefined%')
                         // ->whereNotNull('status_fasgub')
                         ->where('type', $request->type)
                         ->orderBy('id', 'DESC');
-                } else {
+                }
+                else
+                {
                     $data = $revisi
                         ->leftJoin('tbm_dir', 'tb_ticket_rev.direktorat', '=', 'tbm_dir.id_dir')
                         ->where('provinsi', 'like', '%undefined%')
@@ -1761,28 +1671,33 @@ class TicketingController extends Controller
                         ->where('type', $request->type)
                         ->orderBy('id', 'DESC');
                 }
-            } else if (Auth::user()->level == "7") {
+            }
+            else if(Auth::user()->level == "7")
+            {
                 $data = $revisi
-                    ->leftJoin('tbm_dir', 'tb_ticket_rev.direktorat', '=', 'tbm_dir.id_dir')
-                    ->where('created_by', Auth::user()->id_akses)
-                    ->orderBy('id', 'DESC');
+                            ->leftJoin('tbm_dir', 'tb_ticket_rev.direktorat', '=', 'tbm_dir.id_dir')
+                            ->where('created_by', Auth::user()->id_akses)
+                            ->orderBy('id', 'DESC');
 
-                if ($request->type == "gwpp") {
+                if($request->type == "gwpp")
+                {
                     $data = $revisi
-                        ->leftJoin('tbm_dir', 'tb_ticket_rev.direktorat', '=', 'tbm_dir.id_dir')
-                        // ->where('provinsi', 'not like', '%undefined%')
-                        ->whereIn('provinsi', Auth::user()->prov_handle)
-                        // ->whereNotNull('status_verifikasi')
-                        ->where('type', $request->type)
-                        ->orderBy('id', 'DESC');
+                            ->leftJoin('tbm_dir', 'tb_ticket_rev.direktorat', '=', 'tbm_dir.id_dir')
+                            // ->where('provinsi', 'not like', '%undefined%')
+                            ->whereIn('provinsi', Auth::user()->prov_handle)
+                            // ->whereNotNull('status_verifikasi')
+                            ->where('type', $request->type)
+                            ->orderBy('id', 'DESC');
                 }
-            } else if (Auth::user()->level == "8" || Auth::user()->level == "9") {
+            }
+            else if(Auth::user()->level == "8" || Auth::user()->level == "9")
+            {
                 $data = $revisi
-                    ->leftJoin('tbm_dir', 'tb_ticket_rev.direktorat', '=', 'tbm_dir.id_dir')
-                    // ->where('provinsi', 'not like', '%undefined%')
-                    ->whereIn('provinsi', Auth::user()->prov_handle)
-                    ->where('type', $request->type)
-                    ->orderBy('id', 'DESC');
+                            ->leftJoin('tbm_dir', 'tb_ticket_rev.direktorat', '=', 'tbm_dir.id_dir')
+                            // ->where('provinsi', 'not like', '%undefined%')
+                            ->whereIn('provinsi', Auth::user()->prov_handle)
+                            ->where('type', $request->type)
+                            ->orderBy('id', 'DESC');
             }
 
             // if($request->status != "all")
@@ -1795,24 +1710,34 @@ class TicketingController extends Controller
             //     }
             // }
 
-            if ($request->status != "all") {
+            if($request->status != "all")
+            {
                 $data   = $data->where('status', 'like', $request->status);
             }
 
             $data   = $data->where('tahun_anggaran', $request->tahun);
             $data   = $data->get();
             // Progress column value
-            foreach ($data as $value) {
-                if ($value->status == "approved" || strtolower($value->status) == "disetujui") {
+            foreach($data as $value)
+            {
+                if($value->status == "approved" || strtolower($value->status) == "disetujui")
+                {
                     $data[$i]->status_style = '<span class="bg-success p-2">SELESAI DIPROSES</span>';
-                } else if ($value->status == "BUTUH PERBAIKAN" || $value->status == "DITOLAK" || $value->status == "Butuh Perbaikan") {
-                    $data[$i]->status_style = '<span class="bg-danger p-2">' . strtoupper($value->status) . '</span>';
-                } else if ($value->status == "new") {
+                }
+                else if($value->status == "BUTUH PERBAIKAN" || $value->status == "DITOLAK" || $value->status == "Butuh Perbaikan")
+                {
+                    $data[$i]->status_style = '<span class="bg-danger p-2">'.strtoupper($value->status).'</span>';
+                }
+                else if($value->status == "new")
+                {
                     $data[$i]->status_style     = '<span class="bg-info p-2">PENGAJUAN BARU</span>';
                     // $data[$i]->tahap1           = '<span class="bg-success text-uppercase p-2" title="di ajukan oleh ppk">'.date("d/m/Y H:i", strtotime($value->created_at)).'</span>';
                     // $data[$i]->tahap1_daerah    = '<span class="bg-success text-uppercase p-2" title="di ajukan oleh ppk">'.date("d/m/Y H:i", strtotime($value->created_at)).'</span>';
-                } else {
-                    $data[$i]->status_style = '<span class="bg-warning p-2 ' . $value->status . '">' . strtoupper($value->status) . '</span>';
+                }
+
+                else
+                {
+                    $data[$i]->status_style = '<span class="bg-warning p-2 '.$value->status.'">'.strtoupper($value->status).'</span>';
                 }
 
                 $data[$i]->aksi     = '<div class="btn-group">
@@ -1821,13 +1746,13 @@ class TicketingController extends Controller
                         <span class="sr-only">Toggle Dropdown</span>
                     </button>
                     <div class="dropdown-menu" role="menu">
-                        <a class="dropdown-item" href="javascript:void(0)" onclick="openDetail(' . $value->id . ')">Lihat Detail
+                        <a class="dropdown-item" href="javascript:void(0)" onclick="openDetail('.$value->id.')">Lihat Detail
                         <div class="dropdown-divider"></div>
                     </div>
                 </div>
                 ';
                 // pengajuan = tahap 1
-                $data[$i]->tahap1           = '<span class="bg-success text-uppercase p-2" title="Pengajuan Baru">' . date("d/m/Y H:i", strtotime($value->created_at)) . '</span>';
+                $data[$i]->tahap1           = '<span class="bg-success text-uppercase p-2" title="Pengajuan Baru">'.date("d/m/Y H:i", strtotime($value->created_at)).'</span>';
                 // $data[$i]->tahap2           = '<span class="bg-warning text-uppercase p-2">Belum Diproses</span>';
                 // $data[$i]->tahap3           = '<span class="bg-warning text-uppercase p-2">Belum Diproses</span>';
                 // $data[$i]->tahap_status     = '<span class="bg-warning text-uppercase p-2">Belum Diproses</span>';
@@ -1836,7 +1761,7 @@ class TicketingController extends Controller
                 $data[$i]->tahap3           = '';
                 $data[$i]->tahap_status     = '';
 
-                $data[$i]->tahap1_daerah    = '<span class="bg-success text-uppercase p-2" title="Pengajuan Baru">' . date("d/m/Y H:i", strtotime($value->created_at)) . '</span>';
+                $data[$i]->tahap1_daerah    = '<span class="bg-success text-uppercase p-2" title="Pengajuan Baru">'.date("d/m/Y H:i", strtotime($value->created_at)).'</span>';
                 // $data[$i]->tahap2_daerah    = '<span class="bg-warning text-uppercase p-2">Belum Diproses</span>';
                 // $data[$i]->tahap3_daerah    = '<span class="bg-warning text-uppercase p-2">Belum Diproses</span>';
                 // $data[$i]->tahap4_daerah    = '<span class="bg-warning text-uppercase p-2">Belum Diproses</span>';
@@ -1844,27 +1769,40 @@ class TicketingController extends Controller
                 $data[$i]->tahap2_daerah    = '';
                 $data[$i]->tahap3_daerah    = '';
                 $data[$i]->tahap4_daerah    = '';
+                
+                $data[$i]->keterangan_revisi     = '<a href="javascript:void(0)" onclick="openDetail('.$value->id.')">'.$value->nomor_surat.'<br> <small>'.$value->perihal.'</small>'.'</a>';
 
-                $data[$i]->keterangan_revisi     = '<a href="javascript:void(0)" onclick="openDetail(' . $value->id . ')">' . $value->nomor_surat . '<br> <small>' . $value->perihal . '</small>' . '</a>';
-
-                if ($request->type == "gwpp") {
-                    if ($value->status_fasgub == "disetujui") {
-                        $data[$i]->tahap3_daerah    = '<span class="bg-success text-uppercase p-2">' . date("d/m/Y H:i", strtotime($value->fasgub_at)) . '</span>';
-                    } else if ($value->status_fasgub == "perbaikan") {
+                if($request->type == "gwpp")
+                {
+                    if($value->status_fasgub== "disetujui")
+                    {
+                        $data[$i]->tahap3_daerah    = '<span class="bg-success text-uppercase p-2">'.date("d/m/Y H:i", strtotime($value->fasgub_at)).'</span>';
+                    }
+                    else if($value->status_fasgub== "perbaikan")
+                    {
                         $data[$i]->tahap3_daerah    = '<span class="bg-danger text-uppercase p-2">BUTUH PERBAIKAN</span>';
                     }
-                } else {
-                    if ($value->status_ban == "disetujui") {
-                        $data[$i]->tahap3_daerah    = '<span class="bg-success text-uppercase p-2">' . date("d/m/Y H:i", strtotime($value->ban_at)) . '</span>';
-                    } else if ($value->status_ban == "perbaikan") {
+                }
+                else
+                {
+                    if($value->status_ban== "disetujui")
+                    {
+                        $data[$i]->tahap3_daerah    = '<span class="bg-success text-uppercase p-2">'.date("d/m/Y H:i", strtotime($value->ban_at)).'</span>';
+                    }
+                    else if($value->status_ban== "perbaikan")
+                    {
                         $data[$i]->tahap3_daerah    = '<span class="bg-danger text-uppercase p-2">BUTUH PERBAIKAN</span>';
                     }
                 }
 
-                if ($value->status_kpa == "disetujui") {
-                    $data[$i]->tahap2           = '<span class="bg-success text-uppercase p-2" title="Petugas Sudah Memperbaiki">' . date("d/m/Y H:i", strtotime($value->kpa_at)) . '</span>';
-                    $data[$i]->tahap2_daerah    = '<span class="bg-success text-uppercase p-2" title="Petugas Sudah Memperbaiki">' . date("d/m/Y H:i", strtotime($value->kpa_at)) . '</span>';
-                } else if ($value->status_kpa == "perbaikan") {
+                if($value->status_kpa== "disetujui")
+                {
+                    $data[$i]->tahap2           = '<span class="bg-success text-uppercase p-2" title="Petugas Sudah Memperbaiki">'.date("d/m/Y H:i", strtotime($value->kpa_at)).'</span>';
+                    $data[$i]->tahap2_daerah    = '<span class="bg-success text-uppercase p-2" title="Petugas Sudah Memperbaiki">'.date("d/m/Y H:i", strtotime($value->kpa_at)).'</span>';
+                    
+                }
+                else if($value->status_kpa== "perbaikan")
+                {
                     $data[$i]->tahap2_daerah    = '<span class="bg-danger text-uppercase p-2">BUTUH PERBAIKAN</span>';
                     //$data[$i]->tahap4_daerah    = '';
                 }
@@ -1886,23 +1824,30 @@ class TicketingController extends Controller
                 //     $data[$i]->tahap2           = '';
                 //     $data[$i]->tahap2_daerah    = '';
                 // }
-                if ($value->status_approval == "disetujui") {
-                    $data[$i]->tahap2           = '<span class="bg-success text-uppercase p-2">' . date("d/m/Y H:i", strtotime($value->approved_at)) . '</span>';
-                } else if ($value->status_approval == "perbaikan") {
+                if($value->status_approval == "disetujui")
+                {
+                    $data[$i]->tahap2           = '<span class="bg-success text-uppercase p-2">'.date("d/m/Y H:i", strtotime($value->approved_at)).'</span>';
+                }
+                else if($value->status_approval == "perbaikan")
+                {
                     $data[$i]->tahap2           = '<span class="bg-danger text-uppercase p-2">BUTUH PERBAIKAN</span>';
                 }
 
-                if ($value->status_verifikasi == "disetujui") {
-                    $data[$i]->tahap3           = '<span class="bg-success text-uppercase p-2">' . date("d/m/Y H:i", strtotime($value->verified_at)) . '</span>';
+                if($value->status_verifikasi == "disetujui")
+                {
+                    $data[$i]->tahap3           = '<span class="bg-success text-uppercase p-2">'.date("d/m/Y H:i", strtotime($value->verified_at)).'</span>';
 
-                    $data[$i]->tahap4_daerah    = '<span class="bg-success text-uppercase p-2">' . date("d/m/Y H:i", strtotime($value->verified_at)) . '</span>';
-                } else if ($value->status_verifikasi == "perbaikan") {
+                    $data[$i]->tahap4_daerah    = '<span class="bg-success text-uppercase p-2">'.date("d/m/Y H:i", strtotime($value->verified_at)).'</span>';
+                }
+                else if($value->status_verifikasi == "perbaikan")
+                {
                     $data[$i]->tahap3           = '<span class="bg-danger text-uppercase p-2">BUTUH PERBAIKAN</span>';
                     $data[$i]->tahap4_daerah    = '';
                 }
 
                 // new logic condition : 2 > 1 > 5 > 7 > 5
-                if ($value->status == "BUTUH PERBAIKAN" && $value->status_approval == NULL) {
+                if($value->status == "BUTUH PERBAIKAN" && $value->status_approval == NULL)
+                {
                     // $data[$i]->tahap1           = '<span class="bg-danger text-uppercase p-2" title="">BUTUH PERBAIKAN</span>';
                     // $data[$i]->tahap1_daerah    = '<span class="bg-danger text-uppercase p-2" title="">BUTUH PERBAIKAN</span>';
                     // $data[$i]->tahap2           = '<span class="bg-danger text-uppercase p-2" title="">'.date("d/m/Y H:i", strtotime($value->fasgub_at)).'</span>';
@@ -1918,22 +1863,25 @@ class TicketingController extends Controller
                     //     $data[$i]->tahap4           = '<span class="bg-danger text-uppercase p-2" title="Permohonan Perbaikan">'.date("d/m/Y H:i", strtotime($value->updated_at)).'</span>';
                     //     $data[$i]->tahap4_daerah    = '<span class="bg-danger text-uppercase p-2" title="Permohonan Perbaikan">'.date("d/m/Y H:i", strtotime($value->updated_at)).'</span>';
                     // }
-                }
-                if ($value->status == "Perbaikan Disubmit" && $value->status_approval == NULL) {
-                    $data[$i]->tahap1           = '<span class="bg-success text-uppercase p-2" title="">' . date("d/m/Y H:i", strtotime($value->created_at)) . '</span>';
-                    $data[$i]->tahap1_daerah    = '<span class="bg-success text-uppercase p-2" title="">' . date("d/m/Y H:i", strtotime($value->created_at)) . '</span>';
+                } 
+                if($value->status == "Perbaikan Disubmit" && $value->status_approval == NULL)
+                {
+                    $data[$i]->tahap1           = '<span class="bg-success text-uppercase p-2" title="">'.date("d/m/Y H:i", strtotime($value->created_at)).'</span>';
+                    $data[$i]->tahap1_daerah    = '<span class="bg-success text-uppercase p-2" title="">'.date("d/m/Y H:i", strtotime($value->created_at)).'</span>';
                     // $data[$i]->tahap2           = '<span class="bg-danger text-uppercase p-2" title="">'.date("d/m/Y H:i", strtotime($value->updated_at)).'</span>';
                     // $data[$i]->tahap2_daerah    = '<span class="bg-danger text-uppercase p-2" title="">'.date("d/m/Y H:i", strtotime($value->updated_at)).'</span>';
                     $data[$i]->tahap2           = '';
                     $data[$i]->tahap2_daerah    = '';
                 }
-                if ($value->status_kpa == "disetujui" && $value->status == "Selesai Diproses KPA") {
-                    $data[$i]->tahap1           = '<span class="bg-success text-uppercase p-2" title="">' . date("d/m/Y H:i", strtotime($value->created_at)) . '</span>';
-                    $data[$i]->tahap1_daerah    = '<span class="bg-success text-uppercase p-2" title="">' . date("d/m/Y H:i", strtotime($value->created_at)) . '</span>';
-                    $data[$i]->tahap2           = '<span class="bg-success text-uppercase p-2" title="">' . date("d/m/Y H:i", strtotime($value->kpa_at)) . '</span>';
-                    $data[$i]->tahap2_daerah    = '<span class="bg-success text-uppercase p-2" title="">' . date("d/m/Y H:i", strtotime($value->kpa_at)) . '</span>';
+                if($value->status_kpa== "disetujui" && $value->status == "Selesai Diproses KPA")
+                {
+                    $data[$i]->tahap1           = '<span class="bg-success text-uppercase p-2" title="">'.date("d/m/Y H:i", strtotime($value->created_at)).'</span>';
+                    $data[$i]->tahap1_daerah    = '<span class="bg-success text-uppercase p-2" title="">'.date("d/m/Y H:i", strtotime($value->created_at)).'</span>';
+                    $data[$i]->tahap2           = '<span class="bg-success text-uppercase p-2" title="">'.date("d/m/Y H:i", strtotime($value->kpa_at)).'</span>';
+                    $data[$i]->tahap2_daerah    = '<span class="bg-success text-uppercase p-2" title="">'.date("d/m/Y H:i", strtotime($value->kpa_at)).'</span>';
                 }
-                if ($value->status == "BUTUH PERBAIKAN" && $value->status_approval == NULL && $value->status_kpa == "disetujui") {
+                if($value->status == "BUTUH PERBAIKAN" && $value->status_approval == NULL && $value->status_kpa== "disetujui")
+                {
                     // $data[$i]->tahap1           = '<span class="bg-danger text-uppercase p-2" title="">BUTUH PERBAIKAN</span>';
                     // $data[$i]->tahap1_daerah    = '<span class="bg-danger text-uppercase p-2" title="">BUTUH PERBAIKAN</span>';
                     // $data[$i]->tahap2           = '<span class="bg-danger text-uppercase p-2" title="">'.date("d/m/Y H:i", strtotime($value->fasgub_at)).'</span>';
@@ -1948,25 +1896,28 @@ class TicketingController extends Controller
                     $data[$i]->tahap3           = '';
                     $data[$i]->tahap4_daerah    = '';
                 }
-                if ($value->status == "Perbaikan Disubmit" && $value->status_approval == NULL && $value->status_kpa == "disetujui") {
-                    $data[$i]->tahap1           = '<span class="bg-success text-uppercase p-2" title="">' . date("d/m/Y H:i", strtotime($value->created_at)) . '</span>';
-                    $data[$i]->tahap1_daerah    = '<span class="bg-success text-uppercase p-2" title="">' . date("d/m/Y H:i", strtotime($value->created_at)) . '</span>';
-                    $data[$i]->tahap2           = '<span class="bg-success text-uppercase p-2" title="">' . date("d/m/Y H:i", strtotime($value->fasgub_at)) . '</span>';
-                    $data[$i]->tahap2_daerah    = '<span class="bg-success text-uppercase p-2" title="">' . date("d/m/Y H:i", strtotime($value->fasgub_at)) . '</span>';
+                if($value->status == "Perbaikan Disubmit" && $value->status_approval == NULL && $value->status_kpa== "disetujui")
+                {
+                    $data[$i]->tahap1           = '<span class="bg-success text-uppercase p-2" title="">'.date("d/m/Y H:i", strtotime($value->created_at)).'</span>';
+                    $data[$i]->tahap1_daerah    = '<span class="bg-success text-uppercase p-2" title="">'.date("d/m/Y H:i", strtotime($value->created_at)).'</span>';
+                    $data[$i]->tahap2           = '<span class="bg-success text-uppercase p-2" title="">'.date("d/m/Y H:i", strtotime($value->fasgub_at)).'</span>';
+                    $data[$i]->tahap2_daerah    = '<span class="bg-success text-uppercase p-2" title="">'.date("d/m/Y H:i", strtotime($value->fasgub_at)).'</span>';
                     // $data[$i]->tahap4           = '<span class="bg-success text-uppercase p-2" title="Permohonan Perbaikan">'.date("d/m/Y H:i", strtotime($value->updated_at)).'</span>';
                     // $data[$i]->tahap4_daerah    = '<span class="bg-success text-uppercase p-2" title="Permohonan Perbaikan">'.date("d/m/Y H:i", strtotime($value->updated_at)).'</span>';
                     $data[$i]->tahap3           = '';
                     $data[$i]->tahap4_daerah    = '';
                 }
-                if ($value->status == "Disetujui Bagren" && $value->status_approval == NULL && $value->status_kpa == "disetujui") {
-                    $data[$i]->tahap1           = '<span class="bg-success text-uppercase p-2" title="">' . date("d/m/Y H:i", strtotime($value->created_at)) . '</span>';
-                    $data[$i]->tahap1_daerah    = '<span class="bg-success text-uppercase p-2" title="">' . date("d/m/Y H:i", strtotime($value->created_at)) . '</span>';
-                    $data[$i]->tahap2           = '<span class="bg-success text-uppercase p-2" title="">' . date("d/m/Y H:i", strtotime($value->kpa_at)) . '</span>';
-                    $data[$i]->tahap2_daerah    = '<span class="bg-success text-uppercase p-2" title="">' . date("d/m/Y H:i", strtotime($value->kpa_at)) . '</span>';
-                    $data[$i]->tahap3           = '<span class="bg-success text-uppercase p-2" title="">' . date("d/m/Y H:i", strtotime($value->verified_at)) . '</span>';
-                    $data[$i]->tahap4_daerah    = '<span class="bg-success text-uppercase p-2" title="">' . date("d/m/Y H:i", strtotime($value->verified_at)) . '</span>';
+                if($value->status == "Disetujui Bagren" && $value->status_approval == NULL && $value->status_kpa== "disetujui")
+                {
+                    $data[$i]->tahap1           = '<span class="bg-success text-uppercase p-2" title="">'.date("d/m/Y H:i", strtotime($value->created_at)).'</span>';
+                    $data[$i]->tahap1_daerah    = '<span class="bg-success text-uppercase p-2" title="">'.date("d/m/Y H:i", strtotime($value->created_at)).'</span>';
+                    $data[$i]->tahap2           = '<span class="bg-success text-uppercase p-2" title="">'.date("d/m/Y H:i", strtotime($value->kpa_at)).'</span>';
+                    $data[$i]->tahap2_daerah    = '<span class="bg-success text-uppercase p-2" title="">'.date("d/m/Y H:i", strtotime($value->kpa_at)).'</span>';
+                    $data[$i]->tahap3           = '<span class="bg-success text-uppercase p-2" title="">'.date("d/m/Y H:i", strtotime($value->verified_at)).'</span>';
+                    $data[$i]->tahap4_daerah    = '<span class="bg-success text-uppercase p-2" title="">'.date("d/m/Y H:i", strtotime($value->verified_at)).'</span>';
                 }
-                if ($value->status == "BUTUH PERBAIKAN" && $value->status_approval == NULL && $value->status_kpa == "disetujui") {
+                if($value->status == "BUTUH PERBAIKAN" && $value->status_approval == NULL && $value->status_kpa== "disetujui")
+                {
                     // $data[$i]->tahap1           = '<span class="bg-danger text-uppercase p-2" title="">BUTUH PERBAIKAN</span>';
                     // $data[$i]->tahap1_daerah    = '<span class="bg-danger text-uppercase p-2" title="">BUTUH PERBAIKAN</span>';
                     // $data[$i]->tahap2           = '<span class="bg-danger text-uppercase p-2" title="">'.date("d/m/Y H:i", strtotime($value->kpa_at)).'</span>';
@@ -1983,32 +1934,35 @@ class TicketingController extends Controller
                     $data[$i]->tahap3_daerah    = '';
                     $data[$i]->tahap4_daerah    = '';
                 }
-                if ($value->status == "Perbaikan Disubmit" && $value->status_approval == NULL && $value->status_kpa == "disetujui") {
-                    $data[$i]->tahap1           = '<span class="bg-success text-uppercase p-2" title="">' . date("d/m/Y H:i", strtotime($value->created_at)) . '</span>';
-                    $data[$i]->tahap1_daerah    = '<span class="bg-success text-uppercase p-2" title="">' . date("d/m/Y H:i", strtotime($value->created_at)) . '</span>';
-                    $data[$i]->tahap2           = '<span class="bg-danger text-uppercase p-2" title="">' . date("d/m/Y H:i", strtotime($value->kpa_at)) . '</span>';
-                    $data[$i]->tahap2_daerah    = '<span class="bg-danger text-uppercase p-2" title="">' . date("d/m/Y H:i", strtotime($value->kpa_at)) . '</span>';
-                    $data[$i]->tahap3           = '<span class="bg-danger text-uppercase p-2" title="">' . date("d/m/Y H:i", strtotime($value->verified_at)) . '</span>';
+                if($value->status == "Perbaikan Disubmit" && $value->status_approval == NULL && $value->status_kpa== "disetujui")
+                {
+                    $data[$i]->tahap1           = '<span class="bg-success text-uppercase p-2" title="">'.date("d/m/Y H:i", strtotime($value->created_at)).'</span>';
+                    $data[$i]->tahap1_daerah    = '<span class="bg-success text-uppercase p-2" title="">'.date("d/m/Y H:i", strtotime($value->created_at)).'</span>';
+                    $data[$i]->tahap2           = '<span class="bg-danger text-uppercase p-2" title="">'.date("d/m/Y H:i", strtotime($value->kpa_at)).'</span>';
+                    $data[$i]->tahap2_daerah    = '<span class="bg-danger text-uppercase p-2" title="">'.date("d/m/Y H:i", strtotime($value->kpa_at)).'</span>';
+                    $data[$i]->tahap3           = '<span class="bg-danger text-uppercase p-2" title="">'.date("d/m/Y H:i", strtotime($value->verified_at)).'</span>';
                     // $data[$i]->tahap3_daerah    = '<span class="bg-danger text-uppercase p-2" title="">'.date("d/m/Y H:i", strtotime($value->fasgub_at)).'</span>';
-                    $data[$i]->tahap4_daerah    = '<span class="bg-danger text-uppercase p-2" title="">' . date("d/m/Y H:i", strtotime($value->verified_at)) . '</span>';
+                    $data[$i]->tahap4_daerah    = '<span class="bg-danger text-uppercase p-2" title="">'.date("d/m/Y H:i", strtotime($value->verified_at)).'</span>';
                 }
-                if ($value->status == "Selesai Diproses Fasgub" && $value->status_fasgub == "disetujui") {
-                    $data[$i]->tahap1           = '<span class="bg-success text-uppercase p-2" title="">' . date("d/m/Y H:i", strtotime($value->created_at)) . '</span>';
-                    $data[$i]->tahap1_daerah    = '<span class="bg-success text-uppercase p-2" title="">' . date("d/m/Y H:i", strtotime($value->created_at)) . '</span>';
-                    $data[$i]->tahap2           = '<span class="bg-success text-uppercase p-2" title="">' . date("d/m/Y H:i", strtotime($value->kpa_at)) . '</span>';
-                    $data[$i]->tahap2_daerah    = '<span class="bg-success text-uppercase p-2" title="">' . date("d/m/Y H:i", strtotime($value->kpa_at)) . '</span>';
-                    $data[$i]->tahap3           = '<span class="bg-danger text-uppercase p-2" title="">' . date("d/m/Y H:i", strtotime($value->verified_at)) . '</span>';
+                if($value->status == "Selesai Diproses Fasgub" && $value->status_fasgub== "disetujui")
+                {
+                    $data[$i]->tahap1           = '<span class="bg-success text-uppercase p-2" title="">'.date("d/m/Y H:i", strtotime($value->created_at)).'</span>';
+                    $data[$i]->tahap1_daerah    = '<span class="bg-success text-uppercase p-2" title="">'.date("d/m/Y H:i", strtotime($value->created_at)).'</span>';
+                    $data[$i]->tahap2           = '<span class="bg-success text-uppercase p-2" title="">'.date("d/m/Y H:i", strtotime($value->kpa_at)).'</span>';
+                    $data[$i]->tahap2_daerah    = '<span class="bg-success text-uppercase p-2" title="">'.date("d/m/Y H:i", strtotime($value->kpa_at)).'</span>';
+                    $data[$i]->tahap3           = '<span class="bg-danger text-uppercase p-2" title="">'.date("d/m/Y H:i", strtotime($value->verified_at)).'</span>';
                     // $data[$i]->tahap3_daerah    = '<span class="bg-danger text-uppercase p-2" title="">'.date("d/m/Y H:i", strtotime($value->fasgub_at)).'</span>';
                     //$data[$i]->tahap4_daerah    = '<span class="bg-danger text-uppercase p-2" title="">'.date("d/m/Y H:i", strtotime($value->verified_at)).'</span>';
                 }
-                if ($value->status == "Disetujui" && $value->status_fasgub == "disetujui") {
-                    $data[$i]->tahap1           = '<span class="bg-success text-uppercase p-2" title="">' . date("d/m/Y H:i", strtotime($value->created_at)) . '</span>';
-                    $data[$i]->tahap1_daerah    = '<span class="bg-success text-uppercase p-2" title="">' . date("d/m/Y H:i", strtotime($value->created_at)) . '</span>';
-                    $data[$i]->tahap2           = '<span class="bg-success text-uppercase p-2" title="">' . date("d/m/Y H:i", strtotime($value->kpa_at)) . '</span>';
-                    $data[$i]->tahap2_daerah    = '<span class="bg-success text-uppercase p-2" title="">' . date("d/m/Y H:i", strtotime($value->kpa_at)) . '</span>';
-                    $data[$i]->tahap3           = '<span class="bg-success text-uppercase p-2" title="">' . date("d/m/Y H:i", strtotime($value->verified_at)) . '</span>';
-                    $data[$i]->tahap3_daerah    = '<span class="bg-success text-uppercase p-2" title="">' . date("d/m/Y H:i", strtotime($value->fasgub_at)) . '</span>';
-                    $data[$i]->tahap4_daerah    = '<span class="bg-success text-uppercase p-2" title="">' . date("d/m/Y H:i", strtotime($value->verified_at)) . '</span>';
+                if($value->status == "Disetujui" && $value->status_fasgub== "disetujui")
+                {
+                    $data[$i]->tahap1           = '<span class="bg-success text-uppercase p-2" title="">'.date("d/m/Y H:i", strtotime($value->created_at)).'</span>';
+                    $data[$i]->tahap1_daerah    = '<span class="bg-success text-uppercase p-2" title="">'.date("d/m/Y H:i", strtotime($value->created_at)).'</span>';
+                    $data[$i]->tahap2           = '<span class="bg-success text-uppercase p-2" title="">'.date("d/m/Y H:i", strtotime($value->kpa_at)).'</span>';
+                    $data[$i]->tahap2_daerah    = '<span class="bg-success text-uppercase p-2" title="">'.date("d/m/Y H:i", strtotime($value->kpa_at)).'</span>';
+                    $data[$i]->tahap3           = '<span class="bg-success text-uppercase p-2" title="">'.date("d/m/Y H:i", strtotime($value->verified_at)).'</span>';
+                    $data[$i]->tahap3_daerah    = '<span class="bg-success text-uppercase p-2" title="">'.date("d/m/Y H:i", strtotime($value->fasgub_at)).'</span>';
+                    $data[$i]->tahap4_daerah    = '<span class="bg-success text-uppercase p-2" title="">'.date("d/m/Y H:i", strtotime($value->verified_at)).'</span>';
                 }
                 // if($value->approved_by == '1')
                 // {
@@ -2038,8 +1992,9 @@ class TicketingController extends Controller
                 // }
                 //
 
-                if (Auth::user()->level == "0" || Auth::user()->level == "2") {
-                    $data[$i]->keterangan_revisi     = '<a href="javascript:void(0)" onclick="openFormProses(' . $value->id . ', \'ppk\')">' . $value->nomor_surat . '<br> <small>' . $value->perihal . '</small>' . '</a>';
+                if(Auth::user()->level == "0" || Auth::user()->level == "2")
+                {
+                    $data[$i]->keterangan_revisi     = '<a href="javascript:void(0)" onclick="openFormProses('.$value->id.', \'ppk\')">'.$value->nomor_surat.'<br> <small>'.$value->perihal.'</small>'.'</a>';
 
                     $data[$i]->aksi     = '<div class="btn-group">
                         <button type="button" class="btn btn-info">Action</button>
@@ -2047,14 +2002,16 @@ class TicketingController extends Controller
                             <span class="sr-only">Toggle Dropdown</span>
                         </button>
                         <div class="dropdown-menu" role="menu">
-                            <a class="dropdown-item" href="javascript:void(0)" onclick="openDetail(' . $value->id . ')">Lihat Detail</a>
+                            <a class="dropdown-item" href="javascript:void(0)" onclick="openDetail('.$value->id.')">Lihat Detail</a>
                             <div class="dropdown-divider"></div>
-                            <a class="dropdown-item" href="javascript:void(0)" onclick="openFormProses(' . $value->id . ', \'ppk\')">Approval Pengajuan</a>
+                            <a class="dropdown-item" href="javascript:void(0)" onclick="openFormProses('.$value->id.', \'ppk\')">Approval Pengajuan</a>
                         </div>
                     </div>
                     ';
-                } else if (Auth::user()->level == "0" || Auth::user()->level == "5") {
-                    $data[$i]->keterangan_revisi     = '<a href="javascript:void(0)" onclick="openFormProses(' . $value->id . ', \'bagren\')">' . $value->nomor_surat . '<br> <small>' . $value->perihal . '</small>' . '</a>';
+                }
+                else if(Auth::user()->level == "0" || Auth::user()->level == "5")
+                {
+                    $data[$i]->keterangan_revisi     = '<a href="javascript:void(0)" onclick="openFormProses('.$value->id.', \'bagren\')">'.$value->nomor_surat.'<br> <small>'.$value->perihal.'</small>'.'</a>';
 
                     $data[$i]->aksi     = '<div class="btn-group">
                         <button type="button" class="btn btn-info">Action</button>
@@ -2062,14 +2019,16 @@ class TicketingController extends Controller
                             <span class="sr-only">Toggle Dropdown</span>
                         </button>
                         <div class="dropdown-menu" role="menu">
-                            <a class="dropdown-item" href="javascript:void(0)" onclick="openDetail(' . $value->id . ')">Lihat Detail</a>
+                            <a class="dropdown-item" href="javascript:void(0)" onclick="openDetail('.$value->id.')">Lihat Detail</a>
                             <div class="dropdown-divider"></div>
-                            <a class="dropdown-item" href="javascript:void(0)" onclick="openFormProses(' . $value->id . ', \'bagren\')">Verifikasi Pengajuan</a>
+                            <a class="dropdown-item" href="javascript:void(0)" onclick="openFormProses('.$value->id.', \'bagren\')">Verifikasi Pengajuan</a>
                         </div>
                     </div>
                     ';
-                } else if (Auth::user()->level == "1") {
-                    $data[$i]->keterangan_revisi     = '<a href="javascript:void(0)" onclick="openFormProses(' . $value->id . ', \'kpa\')">' . $value->nomor_surat . '<br> <small>' . $value->perihal . '</small>' . '</a>';
+                }
+                else if(Auth::user()->level == "1")
+                {
+                    $data[$i]->keterangan_revisi     = '<a href="javascript:void(0)" onclick="openFormProses('.$value->id.', \'kpa\')">'.$value->nomor_surat.'<br> <small>'.$value->perihal.'</small>'.'</a>';
 
                     $data[$i]->aksi     = '<div class="btn-group">
                         <button type="button" class="btn btn-info">Action</button>
@@ -2077,14 +2036,16 @@ class TicketingController extends Controller
                             <span class="sr-only">Toggle Dropdown</span>
                         </button>
                         <div class="dropdown-menu" role="menu">
-                            <a class="dropdown-item" href="javascript:void(0)" onclick="openDetail(' . $value->id . ')">Lihat Detail</a>
+                            <a class="dropdown-item" href="javascript:void(0)" onclick="openDetail('.$value->id.')">Lihat Detail</a>
                             <div class="dropdown-divider"></div>
-                            <a class="dropdown-item" href="javascript:void(0)" onclick="openFormProses(' . $value->id . ', \'kpa\')">Verifikasi Pengajuan</a>
+                            <a class="dropdown-item" href="javascript:void(0)" onclick="openFormProses('.$value->id.', \'kpa\')">Verifikasi Pengajuan</a>
                         </div>
                     </div>
                     ';
-                } else if (Auth::user()->level == "7") {
-                    $data[$i]->keterangan_revisi     = '<a href="javascript:void(0)" onclick="openFormProses(' . $value->id . ', \'fasgub\')">' . $value->nomor_surat . '<br> <small>' . $value->perihal . '</small>' . '</a>';
+                }
+                else if(Auth::user()->level == "7")
+                {
+                    $data[$i]->keterangan_revisi     = '<a href="javascript:void(0)" onclick="openFormProses('.$value->id.', \'fasgub\')">'.$value->nomor_surat.'<br> <small>'.$value->perihal.'</small>'.'</a>';
 
                     $data[$i]->aksi     = '<div class="btn-group">
                         <button type="button" class="btn btn-info">Action</button>
@@ -2092,14 +2053,16 @@ class TicketingController extends Controller
                             <span class="sr-only">Toggle Dropdown</span>
                         </button>
                         <div class="dropdown-menu" role="menu">
-                            <a class="dropdown-item" href="javascript:void(0)" onclick="openDetail(' . $value->id . ')">Lihat Detail</a>
+                            <a class="dropdown-item" href="javascript:void(0)" onclick="openDetail('.$value->id.')">Lihat Detail</a>
                             <div class="dropdown-divider"></div>
-                            <a class="dropdown-item" href="javascript:void(0)" onclick="openFormProses(' . $value->id . ', \'fasgub\')">Verifikasi Pengajuan</a>
+                            <a class="dropdown-item" href="javascript:void(0)" onclick="openFormProses('.$value->id.', \'fasgub\')">Verifikasi Pengajuan</a>
                         </div>
                     </div>
                     ';
-                } else if (Auth::user()->level == "8" || Auth::user()->level == "9") {
-                    $data[$i]->keterangan_revisi     = '<a href="javascript:void(0)" onclick="openFormProses(' . $value->id . ', \'ban\')">' . $value->nomor_surat . '<br> <small>' . $value->perihal . '</small>' . '</a>';
+                }
+                else if(Auth::user()->level == "8" || Auth::user()->level == "9")
+                {
+                    $data[$i]->keterangan_revisi     = '<a href="javascript:void(0)" onclick="openFormProses('.$value->id.', \'ban\')">'.$value->nomor_surat.'<br> <small>'.$value->perihal.'</small>'.'</a>';
 
                     $data[$i]->aksi     = '<div class="btn-group">
                         <button type="button" class="btn btn-info">Action</button>
@@ -2107,46 +2070,56 @@ class TicketingController extends Controller
                             <span class="sr-only">Toggle Dropdown</span>
                         </button>
                         <div class="dropdown-menu" role="menu">
-                            <a class="dropdown-item" href="javascript:void(0)" onclick="openDetail(' . $value->id . ')">Lihat Detail</a>
+                            <a class="dropdown-item" href="javascript:void(0)" onclick="openDetail('.$value->id.')">Lihat Detail</a>
                             <div class="dropdown-divider"></div>
-                            <a class="dropdown-item" href="javascript:void(0)" onclick="openFormProses(' . $value->id . ', \'ban\')">Verifikasi Pengajuan</a>
+                            <a class="dropdown-item" href="javascript:void(0)" onclick="openFormProses('.$value->id.', \'ban\')">Verifikasi Pengajuan</a>
                         </div>
                     </div>
                     ';
                 }
 
-                if (strtolower($value->status) == "ditolak") {
+                if(strtolower($value->status) == "ditolak")
+                {
                     $data[$i]->tahap1               = '<span class="bg-danger text-uppercase p-2">DITOLAK</span>';
                     $data[$i]->tahap2               = '<span class="bg-danger text-uppercase p-2">DITOLAK</span>';
                     $data[$i]->tahap3               = '<span class="bg-danger text-uppercase p-2">DITOLAK</span>';
-                    $data[$i]->keterangan_revisi    = $value->nomor_surat . '<br> <small>' . $value->perihal . '</small>';
+                    $data[$i]->keterangan_revisi    = $value->nomor_surat.'<br> <small>'.$value->perihal.'</small>';
                 }
 
-                if ($value->provinsi == "undefined") {
+                if($value->provinsi == "undefined")
+                {
                     $data[$i]->nama_provinsi        = "Pusat";
-                } else {
+                }
+                else
+                {
                     $data[$i]->nama_provinsi        = $provinsi->where('id_prov', $value->provinsi)->first()->namaprov;
                 }
 
-                if ($value->direktorat == "0") {
+                if($value->direktorat == "0")
+                {
                     $data[$i]->nama_direktorat      = "Dekon";
-                } else {
+                }
+                else
+                {
                     $data[$i]->nama_direktorat      = $dir->where('id_dir', $value->direktorat)->first()->nama_dir;
                 }
 
                 $data[$i]->status_pengesahan        = '<span title="Belum Disahkan" class="text-danger text-uppercase p-2"><i class="fas fa-clock"></i></span>';
+                
+                if($value->nomor_surat_pengesahan != null || !empty($value->nomor_surat_pengesahan))
+                {
+                    $url                         = '<a title="Download Surat Pengesahan" href="'.env('APP_URL').'/'.$value->token.'/ticketing"><span class="text-success text-uppercase p-2"> <i class="fas fa-download"></i> </span></a>';
 
-                if ($value->nomor_surat_pengesahan != null || !empty($value->nomor_surat_pengesahan)) {
-                    $url                         = '<a title="Download Surat Pengesahan" href="' . env('APP_URL') . '/' . $value->token . '/ticketing"><span class="text-success text-uppercase p-2"> <i class="fas fa-download"></i> </span></a>';
-
-                    $data[$i]->status_pengesahan = $url;
+                    $data[$i]->status_pengesahan = $url; 
                 }
 
                 $i++;
             }
 
             return $data;
-        } catch (\Illuminate\Database\QueryException $e) {
+        }
+        catch (\Illuminate\Database\QueryException $e)
+        {
 
             return response()->json([
                 'status' => 'error',
@@ -2175,19 +2148,20 @@ class TicketingController extends Controller
         $data->nama_provinsi    = $provinsi->where('id_prov', $data->provinsi)->first()->namaprov;
         $data->nama_direktorat  = $direktorat->where('id_dir', $data->direktorat)->first()->nama_dir;
 
-        if (is_numeric($data->nama_pejabat)) {
+        if(is_numeric($data->nama_pejabat))
+        {
             $data->nama_lkp_pjb     = $pejabat->where('id', $data->nama_pejabat)->first()->nama_pejabat;
         }
 
-        $data->download_nota_dinas_pptk  = '<a href="' . route('download.dokumen', ['jenis_file' => 'nota_dinas_pptk', 'nama_file' => $data->nota_dinas_pptk]) . '?id_ticket=' . $request->id . '" class="btn btn-success"> <i class="fas fa-download"></i> <br> Download</a>';
+        $data->download_nota_dinas_pptk  = '<a href="'.route('download.dokumen', ['jenis_file' => 'nota_dinas_pptk', 'nama_file' => $data->nota_dinas_pptk]).'?id_ticket='.$request->id.'" class="btn btn-success"> <i class="fas fa-download"></i> <br> Download</a>';
 
-        $data->download_nota_dinas_ppk  = '<a href="' . route('download.dokumen', ['jenis_file' => 'nota_dinas_ppk', 'nama_file' => $data->nota_dinas_ppk]) . '?id_ticket=' . $request->id . '" class="btn btn-success"> <i class="fas fa-download"></i> <br> Download</a>';
+        $data->download_nota_dinas_ppk  = '<a href="'.route('download.dokumen', ['jenis_file' => 'nota_dinas_ppk', 'nama_file' => $data->nota_dinas_ppk]).'?id_ticket='.$request->id.'" class="btn btn-success"> <i class="fas fa-download"></i> <br> Download</a>';
 
-        $data->download_kak  = '<a href="' . route('download.dokumen', ['jenis_file' => 'kak', 'nama_file' => $data->kak]) . '?id_ticket=' . $request->id . '" class="btn btn-success"> <i class="fas fa-download"></i> <br> Download</a>';
+        $data->download_kak  = '<a href="'.route('download.dokumen', ['jenis_file' => 'kak', 'nama_file' => $data->kak]).'?id_ticket='.$request->id.'" class="btn btn-success"> <i class="fas fa-download"></i> <br> Download</a>';
 
-        $data->download_matrik_rab  = '<a href="' . route('download.dokumen', ['jenis_file' => 'matrik_rab', 'nama_file' => $data->matrik_rab]) . '?id_ticket=' . $request->id . '" class="btn btn-success"> <i class="fas fa-download"></i> <br> Download</a>';
+        $data->download_matrik_rab  = '<a href="'.route('download.dokumen', ['jenis_file' => 'matrik_rab', 'nama_file' => $data->matrik_rab]).'?id_ticket='.$request->id.'" class="btn btn-success"> <i class="fas fa-download"></i> <br> Download</a>';
 
-        $data->download_dokumen_pendukung  = '<a href="' . route('download.dokumen', ['jenis_file' => 'dokumen_pendukung', 'nama_file' => $data->dokumen_pendukung]) . '?id_ticket=' . $request->id . '" class="btn btn-success"> <i class="fas fa-download"></i> <br> Download</a>';
+        $data->download_dokumen_pendukung  = '<a href="'.route('download.dokumen', ['jenis_file' => 'dokumen_pendukung', 'nama_file' => $data->dokumen_pendukung]).'?id_ticket='.$request->id.'" class="btn btn-success"> <i class="fas fa-download"></i> <br> Download</a>';
 
         $data->download_lampiran_kabagkeu  = '-';
 
@@ -2195,41 +2169,49 @@ class TicketingController extends Controller
 
         $data->download_kpa = "-";
 
-        if (strtolower($data->status) == "disetujui") {
-            $data->download_sp  = '<a href="' . route('pengesahan-ticketing', ['token' => $data->token]) . '" class="btn btn-success btn-block"> <i class="fas fa-download"></i> &nbsp; Download Surat Pengesahan</a>';
+        if(strtolower($data->status) == "disetujui")
+        {
+            $data->download_sp  = '<a href="'.route('pengesahan-ticketing', ['token' => $data->token]).'" class="btn btn-success btn-block"> <i class="fas fa-download"></i> &nbsp; Download Surat Pengesahan</a>';
         }
 
         // Dokumen Pengantar Kabagren
         $dokumen_kabagren = $dokumen->where('id', $data->lampiran_kabagren)->first();
-
+        
         $data->download_nota_pengantar_kabagren  = '-';
 
-        if ($data->kak == "Tidak Ada File") {
+        if($data->kak == "Tidak Ada File")
+        {
             $data->download_kak  = '-';
         }
 
-        if ($data->matrik_rab == "Tidak Ada File") {
+        if($data->matrik_rab == "Tidak Ada File")
+        {
             $data->download_matrik_rab  = '-';
         }
 
-        if ($data->dokumen_pendukung == "Tidak Ada File") {
+        if($data->dokumen_pendukung == "Tidak Ada File")
+        {
             $data->download_dokumen_pendukung  = '-';
         }
 
-        if ($data->nota_dinas_pptk == "Tidak Ada File") {
+        if($data->nota_dinas_pptk == "Tidak Ada File")
+        {
             $data->download_nota_dinas_pptk  = '-';
         }
 
-        if ($data->lampiran_kabagren != null || !empty($data->lampiran_kabagren)) {
-            $data->download_nota_pengantar_kabagren  = '<a href="' . env('APP_URL') . $dokumen_kabagren->path . $dokumen_kabagren->file . '?id_ticket=' . $request->id . '" class="btn btn-success"> <i class="fas fa-download"></i> <br> Download</a>';
+        if($data->lampiran_kabagren != null || !empty($data->lampiran_kabagren))
+        {
+            $data->download_nota_pengantar_kabagren  = '<a href="'.env('APP_URL').$dokumen_kabagren->path.$dokumen_kabagren->file.'?id_ticket='.$request->id.'" class="btn btn-success"> <i class="fas fa-download"></i> <br> Download</a>';
         }
 
-        if ($data->lampiran_kpa != null || !empty($data->lampiran_kpa)) {
-            $data->download_kpa  = $data->download_kpa  = '<a href="' . route('download.dokumen', ['jenis_file' => 'lampiran_kpa', 'nama_file' => $data->lampiran_kpa]) . '?id_ticket=' . $request->id . '" class="btn btn-success"> <i class="fas fa-download"></i> <br> Download</a>';
+        if($data->lampiran_kpa != null || !empty($data->lampiran_kpa))
+        {
+            $data->download_kpa  = $data->download_kpa  = '<a href="'.route('download.dokumen', ['jenis_file' => 'lampiran_kpa', 'nama_file' => $data->lampiran_kpa]).'?id_ticket='.$request->id.'" class="btn btn-success"> <i class="fas fa-download"></i> <br> Download</a>';
         }
 
-        if ($data->lampiran_kabagkeu != null || !empty($data->lampiran_kabagkeu)) {
-            $data->download_lampiran_kabagkeu  = $data->download_lampiran_kabagkeu  = '<a href="' . route('download.dokumen', ['jenis_file' => 'lampiran_kabagkeu', 'nama_file' => $data->lampiran_kabagkeu]) . '?id_ticket=' . $request->id . '" class="btn btn-success"> <i class="fas fa-download"></i> <br> Download</a>';
+        if($data->lampiran_kabagkeu != null || !empty($data->lampiran_kabagkeu))
+        {
+            $data->download_lampiran_kabagkeu  = $data->download_lampiran_kabagkeu  = '<a href="'.route('download.dokumen', ['jenis_file' => 'lampiran_kabagkeu', 'nama_file' => $data->lampiran_kabagkeu]).'?id_ticket='.$request->id.'" class="btn btn-success"> <i class="fas fa-download"></i> <br> Download</a>';
         }
 
         $nota_pengantar_kabagren = $dokumen->where(['direktorat' => $data->direktorat, 'owned_by' => '5', 'status' => '1'])->get();
@@ -2250,7 +2232,8 @@ class TicketingController extends Controller
 
     public function removeRevisi(Request $request)
     {
-        try {
+        try
+        {
             $revisi = new TicketRevisi;
 
             $revisi->where('id', $request->id)->delete();
@@ -2261,7 +2244,9 @@ class TicketingController extends Controller
                 'title'     => 'Tiket Revisi Berhasil Dihapus',
                 'message'   => 'Tiket Revisi Berhasil Dihapus'
             ]);
-        } catch (\Illuminate\Database\QueryException $e) {
+        }
+        catch (\Illuminate\Database\QueryException $e)
+        {
 
             return response()->json([
                 'status' => 'error',
@@ -2275,18 +2260,22 @@ class TicketingController extends Controller
     {
         $catatan    = [];
 
-        if ($request->has('catatan') && !empty($request->catatan)) {
+        if($request->has('catatan') && !empty($request->catatan))
+        {
             $catatan    = [];
-            $notes      = explode('|', $request->catatan);
+            $notes      = explode('|',$request->catatan);
 
-            foreach ($notes as $note) {
-                if (!empty($note)) {
+            foreach($notes as $note)
+            {
+                if(!empty($note))
+                {
                     $catatan[] = $note;
                 }
             }
         }
 
-        try {
+        try
+        {
             $user           = new User;
             $dir            = new Direktorat;
             $revisi         = new TicketRevisi;
@@ -2298,13 +2287,15 @@ class TicketingController extends Controller
 
             $catatan_simpan = "<ol>";
 
-            foreach ($catatan as $value) {
-                $catatan_simpan .= '<li>' . $value . '</li>';
+            foreach ($catatan as $value)
+            {
+                $catatan_simpan .= '<li>'.$value.'</li>';
             }
 
             $catatan_simpan .= "</ol>";
 
-            if ($request->status == "disetujui") {
+            if($request->status == "disetujui")
+            {
                 $revisi->where('id', $request->id)->update([
                     'catatan_verifikasi'    => $catatan,
                     'status'                => "Selesai Diproses Bagren",
@@ -2313,11 +2304,11 @@ class TicketingController extends Controller
                     'verified_by'           => Auth::user()->id_akses
                 ]);
 
-                $message_pptk   = "Pengajuan Revisi E-Ticketing Anda dengan Nomor Surat: " . $nomor_surat . " Sudah Diproses oleh Bagren dan akan diteruskan ke Kepala Bagian Perencanaan untuk ditindak lanjut penerbitan POK";
+                $message_pptk   = "Pengajuan Revisi E-Ticketing Anda dengan Nomor Surat: ".$nomor_surat." Sudah Diproses oleh Bagren dan akan diteruskan ke Kepala Bagian Perencanaan untuk ditindak lanjut penerbitan POK";
 
-                $message_ppk   = "Pengajuan Revisi E-Ticketing Nomor Surat: " . $nomor_surat . " Selesai Diproses oleh Bagren";
+                $message_ppk   = "Pengajuan Revisi E-Ticketing Nomor Surat: ".$nomor_surat." Selesai Diproses oleh Bagren";
 
-                $message_bagren    = "Anda sudah melakukan approval dan saat ini usulan Revisi E-Ticketing baru dengan Nomor Surat: " . $nomor_surat . " akan ditindak lanjut penerbitan POK";
+                $message_bagren    = "Anda sudah melakukan approval dan saat ini usulan Revisi E-Ticketing baru dengan Nomor Surat: ".$nomor_surat." akan ditindak lanjut penerbitan POK";
 
                 $no_hp_ppk = $user->where([
                     'id_akses'    => $approved_by
@@ -2331,12 +2322,15 @@ class TicketingController extends Controller
                 $tools->sendingWa($no_hp_pptk, $message_pptk, $nomor_surat, "Tickting Revisi");
                 $tools->sendingWa(Auth::user()->no_hp, $message_bagren, $nomor_surat, "Tickting Revisi");
 
-                $this->record($request->id, "Menyetujui Revisi E-Ticketing. Catatan: " . $catatan_simpan, Auth::user()->id_akses);
-            } else {
+                $this->record($request->id, "Menyetujui Revisi E-Ticketing. Catatan: ".$catatan_simpan, Auth::user()->id_akses);
+            }
+            else
+            {
                 $tolak = $revisi->where('id', $request->id)->first()->tolak;
-                $jumlah_tolak = $tolak + 1;
+                $jumlah_tolak = $tolak+1;
 
-                if ($jumlah_tolak >= 3) {
+                if($jumlah_tolak >= 3)
+                {
                     $revisi->where('id', $request->id)->update([
                         'catatan_verifikasi'    => $catatan,
                         'status'                => "DITOLAK",
@@ -2346,7 +2340,9 @@ class TicketingController extends Controller
                         'verified_by'           => Auth::user()->id_akses,
                         'tolak'                 => $jumlah_tolak
                     ]);
-                } else {
+                }
+                else
+                {
                     $revisi->where('id', $request->id)->update([
                         'catatan_verifikasi'    => $catatan,
                         'status'                => "BUTUH PERBAIKAN",
@@ -2358,14 +2354,14 @@ class TicketingController extends Controller
                     ]);
                 }
 
-                $message_pptk   = "Pengajuan Revisi E-Ticketing Anda dengan Nomor Surat: " . $nomor_surat . " *DITOLAK* oleh Bagren. Segera perbaiki dokumen Anda sesuai catatan dari Bagren";
+                $message_pptk   = "Pengajuan Revisi E-Ticketing Anda dengan Nomor Surat: ".$nomor_surat." *DITOLAK* oleh Bagren. Segera perbaiki dokumen Anda sesuai catatan dari Bagren";
 
                 $tools->sendingWa(Auth::user()->no_hp, $message_pptk, $nomor_surat, "Tickting Revisi");
 
-                $this->record($request->id, "Menolak Revisi E-Ticketing. Catatan: " . $catatan_simpan, Auth::user()->id_akses);
+                $this->record($request->id, "Menolak Revisi E-Ticketing. Catatan: ".$catatan_simpan, Auth::user()->id_akses);
             }
 
-            $message_bang_arief = "Ijin Bang Arief, " . Auth::user()->nama . " (Bagren) telah memproses Revisi E-Ticketing dengan Nomor Surat: " . $nomor_surat . " [action: " . $request->status . "]";
+            $message_bang_arief = "Ijin Bang Arief, ".Auth::user()->nama." (Bagren) telah memproses Revisi E-Ticketing dengan Nomor Surat: ".$nomor_surat." [action: ".$request->status."]";
             $tools->sendingWa("081213833316", $message_bang_arief, $nomor_surat, "Tickting Revisi");
 
             return response()->json([
@@ -2373,7 +2369,9 @@ class TicketingController extends Controller
                 'title'     => 'Status Pengajuan Berhasil Diubah',
                 'message'   => 'Status Pengajuan Berhasil Diubah'
             ]);
-        } catch (\Illuminate\Database\QueryException $e) {
+        }
+        catch (\Illuminate\Database\QueryException $e)
+        {
 
             return response()->json([
                 'status' => 'error',
@@ -2388,18 +2386,22 @@ class TicketingController extends Controller
         $user       = new User;
         $catatan    = [];
 
-        if ($request->has('catatan') && !empty($request->catatan)) {
+        if($request->has('catatan') && !empty($request->catatan))
+        {
             $catatan    = [];
-            $notes      = explode('|', $request->catatan);
+            $notes      = explode('|',$request->catatan);
 
-            foreach ($notes as $note) {
-                if (!empty($note)) {
+            foreach($notes as $note)
+            {
+                if(!empty($note))
+                {
                     $catatan[] = $note;
                 }
             }
         }
 
-        try {
+        try
+        {
             $dir            = new Direktorat;
             $revisi         = new TicketRevisi;
             $nota_dinas_ppk = "Tidak Ada File";
@@ -2410,18 +2412,21 @@ class TicketingController extends Controller
 
             $catatan_simpan = "<ol>";
 
-            foreach ($catatan as $value) {
-                $catatan_simpan .= '<li>' . $value . '</li>';
+            foreach ($catatan as $value)
+            {
+                $catatan_simpan .= '<li>'.$value.'</li>';
             }
 
             $catatan_simpan .= "</ol>";
 
-            if ($request->hasFile('nota_dinas_ppk')) {
+            if($request->hasFile('nota_dinas_ppk'))
+            {
                 $direktorat         = $dir->where('id_dir', $revisi->where('id', $request->id)->first()->direktorat)->first()->nama_dir;
                 $nota_dinas_ppk     = $this->uploadFile($request, 'nota_dinas_ppk', $direktorat);
             }
 
-            if ($request->status == "disetujui") {
+            if($request->status == "disetujui")
+            {
                 $revisi->where('id', $request->id)->update([
                     'catatan_approval'  => $catatan,
                     'nota_dinas_ppk'    => $nota_dinas_ppk,
@@ -2431,17 +2436,17 @@ class TicketingController extends Controller
                     'approved_by'       => Auth::user()->id_akses
                 ]);
 
-                $message_pptk   = "Pengajuan Revisi E-Ticketing Anda dengan Nomor Surat: " . $nomor_surat . " Sudah Diproses oleh PPK dan akan diteruskan ke Bagian Perencanaan untuk ditindak lanjut";
+                $message_pptk   = "Pengajuan Revisi E-Ticketing Anda dengan Nomor Surat: ".$nomor_surat." Sudah Diproses oleh PPK dan akan diteruskan ke Bagian Perencanaan untuk ditindak lanjut";
 
-                $message_bagren = "Revisi E-Ticketing baru dengan Nomor Surat: " . $nomor_surat . " selesai diproses oleh PPK dan diteruskan ke Bagian Perencanaan. Mohon segera ditindak lanjut";
+                $message_bagren = "Revisi E-Ticketing baru dengan Nomor Surat: ".$nomor_surat." selesai diproses oleh PPK dan diteruskan ke Bagian Perencanaan. Mohon segera ditindak lanjut";
 
-                $message_ppk    = "Anda sudah melakukan approval dan saat ini usulan revisi dengan Nomor Surat: " . $nomor_surat . " telah diteruskan ke Bagian Perencanaan untuk proses lebih lanjut";
+                $message_ppk    = "Anda sudah melakukan approval dan saat ini usulan revisi dengan Nomor Surat: ".$nomor_surat." telah diteruskan ke Bagian Perencanaan untuk proses lebih lanjut";
 
                 $no_hp_pptk = $user->where([
                     'id_akses'    => $created_by
                 ])->first()->no_hp;
 
-                $no_hp_bagren = $user->where('direktorat_handle', 'like', '%' . Auth::user()->id_dir . '%')->where([
+                $no_hp_bagren = $user->where('direktorat_handle', 'like', '%'.Auth::user()->id_dir.'%')->where([
                     'level'     => 5,
                     'prov'      => 'pusat'
                 ])->first()->no_hp;
@@ -2450,8 +2455,10 @@ class TicketingController extends Controller
                 $tools->sendingWa($no_hp_bagren, $message_bagren, $nomor_surat, "Tickting Revisi");
                 $tools->sendingWa(Auth::user()->no_hp, $message_ppk, $nomor_surat, "Tickting Revisi");
 
-                $this->record($request->id, "Menyetujui Revisi E-Ticketing. Dokumen: " . $nota_dinas_ppk . ". Catatan: " . $catatan_simpan, Auth::user()->id_akses);
-            } else {
+                $this->record($request->id, "Menyetujui Revisi E-Ticketing. Dokumen: ".$nota_dinas_ppk.". Catatan: ".$catatan_simpan, Auth::user()->id_akses);
+            }
+            else
+            {
                 $revisi->where('id', $request->id)->update([
                     'catatan_approval'  => $catatan,
                     'nota_dinas_ppk'    => $nota_dinas_ppk,
@@ -2461,9 +2468,9 @@ class TicketingController extends Controller
                     'approved_by'       => Auth::user()->id_akses
                 ]);
 
-                $message_pptk   = "Pengajuan Revisi E-Ticketing Anda dengan Nomor Surat: " . $nomor_surat . " *DITOLAK* oleh PPK. Mohon segera diperbaiki sesuai catatan dari PPK";
+                $message_pptk   = "Pengajuan Revisi E-Ticketing Anda dengan Nomor Surat: ".$nomor_surat." *DITOLAK* oleh PPK. Mohon segera diperbaiki sesuai catatan dari PPK";
 
-                $message_ppk    = "Anda sudah menolak usulan revisi dengan Nomor Surat: " . $nomor_surat . ".";
+                $message_ppk    = "Anda sudah menolak usulan revisi dengan Nomor Surat: ".$nomor_surat.".";
 
                 $no_hp_pptk = $user->where([
                     'id_akses'    => $created_by
@@ -2472,11 +2479,11 @@ class TicketingController extends Controller
                 // $tools->sendingWa(Auth::user()->no_hp, $message_pptk);
                 $tools->sendingWa($no_hp_pptk, $message_pptk, $nomor_surat, "Tickting Revisi");
                 $tools->sendingWa(Auth::user()->no_hp, $message_ppk, $nomor_surat, "Tickting Revisi");
-
-                $this->record($request->id, "Menolak Revisi E-Ticketing. Dokumen: " . $nota_dinas_ppk . ". Catatan: " . $catatan_simpan, Auth::user()->id_akses);
+                
+                $this->record($request->id, "Menolak Revisi E-Ticketing. Dokumen: ".$nota_dinas_ppk.". Catatan: ".$catatan_simpan, Auth::user()->id_akses);
             }
 
-            $message_bang_arief = "Ijin Bang Arief, " . Auth::user()->nama . " (PPK) telah memproses Revisi E-Ticketing dengan Nomor Surat: " . $nomor_surat . " [action: " . $request->status . "]";
+            $message_bang_arief = "Ijin Bang Arief, ".Auth::user()->nama." (PPK) telah memproses Revisi E-Ticketing dengan Nomor Surat: ".$nomor_surat." [action: ".$request->status."]";
             $tools->sendingWa("081213833316", $message_bang_arief, $nomor_surat, "Tickting Revisi");
 
             return response()->json([
@@ -2484,7 +2491,9 @@ class TicketingController extends Controller
                 'title'     => 'Status Pengajuan Berhasil Diubah',
                 'message'   => 'Status Pengajuan Berhasil Diubah'
             ]);
-        } catch (\Illuminate\Database\QueryException $e) {
+        }
+        catch (\Illuminate\Database\QueryException $e)
+        {
 
             return response()->json([
                 'status' => 'error',
@@ -2500,40 +2509,50 @@ class TicketingController extends Controller
         $tembusan_pengesahan    = [];
         $deskripsi_pengesahan   = [];
 
-        if ($request->has('catatan') && !empty($request->catatan)) {
+        if($request->has('catatan') && !empty($request->catatan))
+        {
             $catatan    = [];
-            $notes      = explode('|', $request->catatan);
+            $notes      = explode('|',$request->catatan);
 
-            foreach ($notes as $note) {
-                if (!empty($note)) {
+            foreach($notes as $note)
+            {
+                if(!empty($note))
+                {
                     $catatan[] = $note;
                 }
             }
         }
 
-        if ($request->has('deskripsi_pengesahan') && !empty($request->deskripsi_pengesahan)) {
+        if($request->has('deskripsi_pengesahan') && !empty($request->deskripsi_pengesahan))
+        {
             $deskripsi_pengesahan    = [];
-            $deskripsis      = explode('|', $request->deskripsi_pengesahan);
+            $deskripsis      = explode('|',$request->deskripsi_pengesahan);
 
-            foreach ($deskripsis as $deskripsi) {
-                if (!empty($deskripsi)) {
+            foreach($deskripsis as $deskripsi)
+            {
+                if(!empty($deskripsi))
+                {
                     $deskripsi_pengesahan[] = $deskripsi;
                 }
             }
         }
 
-        if ($request->has('tembusan') && !empty($request->tembusan)) {
-            $tembusans              = explode('|', $request->tembusan);
+        if($request->has('tembusan') && !empty($request->tembusan))
+        {
+            $tembusans              = explode('|',$request->tembusan);
             $tembusan_pengesahan    = [];
 
-            foreach ($tembusans as $tembusan) {
-                if (!empty($tembusan)) {
+            foreach($tembusans as $tembusan)
+            {
+                if(!empty($tembusan))
+                {
                     $tembusan_pengesahan[] = $tembusan;
                 }
             }
         }
 
-        try {
+        try
+        {
             $user           = new User;
             $dir            = new Direktorat;
             $revisi         = new TicketRevisi;
@@ -2544,67 +2563,72 @@ class TicketingController extends Controller
 
             $catatan_simpan = "<ol>";
 
-            foreach ($catatan as $value) {
-                $catatan_simpan .= '<li>' . $value . '</li>';
+            foreach ($catatan as $value)
+            {
+                $catatan_simpan .= '<li>'.$value.'</li>';
             }
 
             $catatan_simpan .= "</ol>";
 
 
-            if ($request->status_verifikasi == "DISETUJUI BAGREN") {
+            if($request->status == "disetujui")
+            {
 
-                if ($data_old->provinsi == "undefined") {
+                if($data_old->provinsi == "undefined")
+                {
                     $revisi->where('id', $request->id)->update([
                         'catatan_verifikasi'    => $catatan,
-                        'current_status'        => "DISETUJUI BAGREN",
                         'status'                => "Selesai Diproses Bagren",
                         'status_verifikasi'     => $request->status,
                         'verified_at'           => date("Y-m-d H:i:s"),
                         'verified_by'           => Auth::user()->id_akses
                     ]);
-
-                    $message_ppk   = "Pengajuan Revisi E-Ticketing Anda dengan Nomor Surat: " . $nomor_surat . " Sudah Diproses oleh Bagren dan akan diteruskan ke KPA untuk ditindak lanjut penerbitan POK";
-
-                    $message_kpa = "Revisi E-Ticketing baru dengan Nomor Surat: " . $nomor_surat . " selesai diproses oleh Bagian Perencanaan dan diteruskan ke KPA. Mohon segera ditindak lanjut";
+    
+                    $message_ppk   = "Pengajuan Revisi E-Ticketing Anda dengan Nomor Surat: ".$nomor_surat." Sudah Diproses oleh Bagren dan akan diteruskan ke KPA untuk ditindak lanjut penerbitan POK";
+    
+                    $message_kpa= "Revisi E-Ticketing baru dengan Nomor Surat: ".$nomor_surat." selesai diproses oleh Bagian Perencanaan dan diteruskan ke KPA. Mohon segera ditindak lanjut";
 
                     $tools->sendingWa(Auth::user()->no_hp, $message_ppk, $nomor_surat, "Tickting Revisi");
                     $tools->sendingWa(Auth::user()->no_hp, $message_kpa, $nomor_surat, "Tickting Revisi");
-                } else {
-                    if (!empty($request->nomor_surat_pengesahan)) {
+                }
+                else
+                {
+                    if(!empty($request->nomor_surat_pengesahan))
+                    {
                         $revisi->where('id', $request->id)->update([
                             'catatan_verifikasi'    => $catatan,
-                            'status'                => $request->status_verifikasi,
-                            'current_status'        => "DISETUJUI BAGREN",
+                            'status'                => "Disetujui",
                             'status_verifikasi'     => 'disetujui',
                             'verified_at'           => date("Y-m-d H:i:s"),
                             'tanggal_pengesahan'    => date("Y-m-d", strtotime($request->tanggal_pengesahan)),
-                            'nomor_surat_pengesahan' => $request->nomor_surat_pengesahan,
+                            'nomor_surat_pengesahan'=> $request->nomor_surat_pengesahan,
                             'deskripsi_pengesahan'  => $deskripsi_pengesahan,
                             'tembusan'              => $tembusan_pengesahan,
                             'verified_by'           => Auth::user()->id_akses
                         ]);
 
-                        $message_ppk   = "Pengajuan Revisi E-Ticketing Anda dengan Nomor Surat: " . $nomor_surat . " Sudah Diproses oleh Bagren. Silakan kunjungi link berikut untuk download surat persetujuan revisi: " . env('APP_URL') . "/" . $data_old->token . "/ticketing atau download melalui Aplikasi E-Monev";
-                    } else {
+                        $message_ppk   = "Pengajuan Revisi E-Ticketing Anda dengan Nomor Surat: ".$nomor_surat." Sudah Diproses oleh Bagren. Silakan kunjungi link berikut untuk download surat persetujuan revisi: ".env('APP_URL')."/".$data_old->token."/ticketing atau download melalui Aplikasi E-Monev";
+                    }
+                    else
+                    {
                         $revisi->where('id', $request->id)->update([
                             'catatan_verifikasi'    => $catatan,
                             'status'                => "Disetujui Bagren",
-                            'current_status'        => "DISETUJUI BAGREN",
                             'status_verifikasi'     => $request->status,
                             'verified_at'           => date("Y-m-d H:i:s"),
                             'verified_by'           => Auth::user()->id_akses
                         ]);
 
-                        $message_ppk    = "Pengajuan Revisi E-Ticketing Anda dengan Nomor Surat: " . $nomor_surat . " Sudah Diproses oleh Bagren.";
-                        $message_fasgub = Auth::user()->nama . " Telah menyetujui Revisi E-Ticketing dengan Nomor Surat: " . $nomor_surat . ". Silakan diproses agar bisa diterbitkan surat persetujuan oleh bagren.";
+                        $message_ppk    = "Pengajuan Revisi E-Ticketing Anda dengan Nomor Surat: ".$nomor_surat." Sudah Diproses oleh Bagren.";
+                        $message_fasgub = Auth::user()->nama." Telah menyetujui Revisi E-Ticketing dengan Nomor Surat: ".$nomor_surat.". Silakan diproses agar bisa diterbitkan surat persetujuan oleh bagren.";
 
-                        $no_hp_fasgub = $user->where('prov_handle', 'like', '%' . $data_old->provinsi . '%')->where([
+                        $no_hp_fasgub = $user->where('prov_handle', 'like', '%'.$data_old->provinsi.'%')->where([
                             'level'     => 7
                         ])->first()->no_hp;
 
                         $tools->sendingWa($no_hp_fasgub, $message_fasgub, $nomor_surat, "Tickting Revisi");
                     }
-
+    
                     $no_hp_ppk = $user->where([
                         'id_akses'    => $data_old->created_by
                     ])->first()->no_hp;
@@ -2612,14 +2636,13 @@ class TicketingController extends Controller
                     $tools->sendingWa($no_hp_ppk, $message_ppk, $nomor_surat, "Tickting Revisi");
                 }
 
-                $this->record($request->id, "Menyetujui Revisi E-Ticketing. Catatan: " . $catatan_simpan, Auth::user()->id_akses);
-            } else {
+                $this->record($request->id, "Menyetujui Revisi E-Ticketing. Catatan: ".$catatan_simpan, Auth::user()->id_akses);
+            }
+            else
+            {
                 $revisi->where('id', $request->id)->update([
                     'catatan_verifikasi'    => $catatan,
-                    'status_kpa'            => null,
-                    'status_fasgub'         => null,
                     'status'                => "BUTUH PERBAIKAN",
-                    'current_status'        => "BUTUH PERBAIKAN",
                     'status_approval'       => NULL,
                     'status_verifikasi'     => NULL,
                     'status_fasgub'         => NULL,
@@ -2627,11 +2650,11 @@ class TicketingController extends Controller
                     'verified_by'           => Auth::user()->id_akses
                 ]);
 
-                $message_pptk   = "Pengajuan Revisi E-Ticketing Anda dengan Nomor Surat: " . $nomor_surat . " *DITOLAK* oleh Bagren. Segera perbaiki dokumen Anda sesuai catatan dari Bagren";
+                $message_pptk   = "Pengajuan Revisi E-Ticketing Anda dengan Nomor Surat: ".$nomor_surat." *DITOLAK* oleh Bagren. Segera perbaiki dokumen Anda sesuai catatan dari Bagren";
 
                 $tools->sendingWa(Auth::user()->no_hp, $message_pptk, $nomor_surat, "Tickting Revisi");
 
-                $this->record($request->id, "Menolak Revisi E-Ticketing. Catatan: " . $catatan_simpan, Auth::user()->id_akses);
+                $this->record($request->id, "Menolak Revisi E-Ticketing. Catatan: ".$catatan_simpan, Auth::user()->id_akses);
             }
 
             return response()->json([
@@ -2639,7 +2662,9 @@ class TicketingController extends Controller
                 'title'     => 'Status Pengajuan Berhasil Diubah',
                 'message'   => 'Status Pengajuan Berhasil Diubah'
             ]);
-        } catch (\Illuminate\Database\QueryException $e) {
+        }
+        catch (\Illuminate\Database\QueryException $e)
+        {
 
             return response()->json([
                 'status' => 'error',
@@ -2648,23 +2673,27 @@ class TicketingController extends Controller
             ]);
         }
     }
-
+    
     public function submitFasgub(Request $request)
     {
         $catatan    = [];
 
-        if ($request->has('catatan') && !empty($request->catatan)) {
+        if($request->has('catatan') && !empty($request->catatan))
+        {
             $catatan    = [];
-            $notes      = explode('|', $request->catatan);
+            $notes      = explode('|',$request->catatan);
 
-            foreach ($notes as $note) {
-                if (!empty($note)) {
+            foreach($notes as $note)
+            {
+                if(!empty($note))
+                {
                     $catatan[] = $note;
                 }
             }
         }
 
-        try {
+        try
+        {
             $user           = new User;
             $dir            = new Direktorat;
             $revisi         = new TicketRevisi;
@@ -2677,75 +2706,62 @@ class TicketingController extends Controller
                 'id_akses'    => $data_old->created_by
             ])->first()->no_hp;
 
-            $no_hp_bagren = $user->where('prov_handle', 'like', '%' . $data_old->provinsi . '%')->where([
+            $no_hp_bagren = $user->where('prov_handle', 'like', '%'.$data_old->provinsi.'%')->where([
                 'level'     => 5
             ])->first()->no_hp;
 
-            if ($request->status_fasgub == "DISETUJUI FASGUB") {
+            if($request->status == "disetujui")
+            {
                 $revisi->where('id', $request->id)->update([
                     'catatan_fasgub'    => $catatan,
-                    'current_status'     => $request->status_fasgub,
-                    'status_fasgub'     => $request->status_fasgub,
+                    'status_fasgub'     => $request->status,
                     'status_verifikasi' => null,
-                    'status'            => "DISETUJUI FASGUB",
+                    'status'            => "Selesai Diproses Fasgub",
                     'fasgub_at'         => date("Y-m-d H:i:s"),
                     'fasgub_by'         => Auth::user()->id_akses
                 ]);
 
-                $message_ppk        = "Pengajuan Revisi E-Ticketing Anda dengan Nomor Surat: " . $nomor_surat . " Sudah Diproses oleh Fasgub dan akan diteruskan ke Bagian Perencanaan untuk ditindak lanjut";
+                $message_ppk        = "Pengajuan Revisi E-Ticketing Anda dengan Nomor Surat: ".$nomor_surat." Sudah Diproses oleh Fasgub dan akan diteruskan ke Bagian Perencanaan untuk ditindak lanjut";
 
-                $message_bagren     = "Revisi E-Ticketing baru dengan Nomor Surat: " . $nomor_surat . " selesai diproses oleh Fasgub dan diteruskan ke Bagian Perencanaan untuk diterbitkan surat pengesahan. Mohon segera ditindak lanjut";
-
-                $tools->sendingWa($no_hp_ppk, $message_ppk, $nomor_surat, "Tickting Revisi");
-                $tools->sendingWa($no_hp_bagren, $message_bagren, $nomor_surat, "Tickting Revisi");
-            } else if ($request->status_fasgub == "DITOLAK FASGUB") {
-                $revisi->where('id', $request->id)->update([
-                    'catatan_fasgub'    => $catatan,
-                    'status_fasgub'     => $request->status_fasgub,
-                    'status_verifikasi' => null,
-                    'status'            => "DITOLAK FASGUB",
-                    'fasgub_at'         => date("Y-m-d H:i:s"),
-                    'fasgub_by'         => Auth::user()->id_akses
-                ]);
-
-                $message_ppk        = "Pengajuan Revisi E-Ticketing Anda dengan Nomor Surat: " . $nomor_surat . " Sudah Diproses oleh Fasgub dan akan diteruskan ke Bagian Perencanaan untuk ditindak lanjut";
-
-                $message_bagren     = "Revisi E-Ticketing baru dengan Nomor Surat: " . $nomor_surat . " selesai diproses oleh Fasgub dan diteruskan ke Bagian Perencanaan untuk diterbitkan surat pengesahan. Mohon segera ditindak lanjut";
+                $message_bagren     = "Revisi E-Ticketing baru dengan Nomor Surat: ".$nomor_surat." selesai diproses oleh Fasgub dan diteruskan ke Bagian Perencanaan untuk diterbitkan surat pengesahan. Mohon segera ditindak lanjut";
 
                 $tools->sendingWa($no_hp_ppk, $message_ppk, $nomor_surat, "Tickting Revisi");
                 $tools->sendingWa($no_hp_bagren, $message_bagren, $nomor_surat, "Tickting Revisi");
-            } else {
+            }
+            else
+            {
                 $revisi->where('id', $request->id)->update([
                     'catatan_fasgub'  => $catatan,
-                    'status_kpa'   => NULL,
                     'status_fasgub'   => NULL,
-                    'current_status'  => $request->status_fasgub,
                     'status'          => "BUTUH PERBAIKAN",
                     'fasgub_at'       => date("Y-m-d H:i:s"),
                     'fasgub_by'       => Auth::user()->id_akses
                 ]);
 
-                $message_ppk   = "Pengajuan Revisi E-Ticketing Anda dengan Nomor Surat: " . $nomor_surat . " *DITOLAK* oleh Fasgub. Mohon segera diperbaiki sesuai catatan dari Fasgub";
+                $message_ppk   = "Pengajuan Revisi E-Ticketing Anda dengan Nomor Surat: ".$nomor_surat." *DITOLAK* oleh Fasgub. Mohon segera diperbaiki sesuai catatan dari Fasgub";
 
                 $tools->sendingWa($no_hp_ppk, $message_ppk, $nomor_surat, "Tickting Revisi");
             }
 
             $catatan_simpan = "<ol>";
 
-            foreach ($catatan as $value) {
-                $catatan_simpan .= '<li>' . $value . '</li>';
+            foreach ($catatan as $value)
+            {
+                $catatan_simpan .= '<li>'.$value.'</li>';
             }
 
             $catatan_simpan .= "</ol>";
 
-            $this->record($request->id, "Melakukan Approval Revisi E-Ticketing. Catatan: " . $catatan_simpan, Auth::user()->id_akses);
+            $this->record($request->id, "Melakukan Approval Revisi E-Ticketing. Catatan: ".$catatan_simpan, Auth::user()->id_akses);
 
             return response()->json([
                 'status'    => 'success',
                 'title'     => 'Status Pengajuan Berhasil Diubah',
                 'message'   => 'Status Pengajuan Berhasil Diubah'
             ]);
-        } catch (\Illuminate\Database\QueryException $e) {
+        }
+        catch (\Illuminate\Database\QueryException $e)
+        {
 
             return response()->json([
                 'status' => 'error',
@@ -2759,25 +2775,30 @@ class TicketingController extends Controller
     {
         $catatan    = [];
 
-        if ($request->has('catatan') && !empty($request->catatan)) {
+        if($request->has('catatan') && !empty($request->catatan))
+        {
             $catatan    = [];
-            $notes      = explode('|', $request->catatan);
+            $notes      = explode('|',$request->catatan);
 
-            foreach ($notes as $note) {
-                if (!empty($note)) {
+            foreach($notes as $note)
+            {
+                if(!empty($note))
+                {
                     $catatan[] = $note;
                 }
             }
         }
 
-        try {
+        try
+        {
             $dir            = new Direktorat;
             $revisi         = new TicketRevisi;
             $tools          = new ToolsController;
 
             $nomor_surat = $revisi->where('id', $request->id)->first()->nomor_surat;
 
-            if ($request->status == "disetujui") {
+            if($request->status == "disetujui")
+            {
                 $revisi->where('id', $request->id)->update([
                     'catatan_ban'   => $catatan,
                     'status_ban'    => $request->status,
@@ -2786,13 +2807,15 @@ class TicketingController extends Controller
                     'ban_by'        => Auth::user()->id_akses
                 ]);
 
-                $message_ppk        = "Pengajuan Revisi E-Ticketing Anda dengan Nomor Surat: " . $nomor_surat . " Sudah Diproses oleh SUBDIT BAN dan akan diteruskan ke Bagian Perencanaan untuk ditindak lanjut";
+                $message_ppk        = "Pengajuan Revisi E-Ticketing Anda dengan Nomor Surat: ".$nomor_surat." Sudah Diproses oleh SUBDIT BAN dan akan diteruskan ke Bagian Perencanaan untuk ditindak lanjut";
 
-                $message_bagren     = "Revisi E-Ticketing baru dengan Nomor Surat: " . $nomor_surat . " selesai diproses oleh SUBDIT BAN dan diteruskan ke Bagian Perencanaan. Mohon segera ditindak lanjut";
+                $message_bagren     = "Revisi E-Ticketing baru dengan Nomor Surat: ".$nomor_surat." selesai diproses oleh SUBDIT BAN dan diteruskan ke Bagian Perencanaan. Mohon segera ditindak lanjut";
 
                 $tools->sendingWa(Auth::user()->no_hp, $message_ppk, $nomor_surat, "Tickting Revisi");
                 $tools->sendingWa(Auth::user()->no_hp, $message_bagren, $nomor_surat, "Tickting Revisi");
-            } else {
+            }
+            else
+            {
                 $revisi->where('id', $request->id)->update([
                     'catatan_ban'  => $catatan,
                     'status_ban'   => NULL,
@@ -2801,27 +2824,30 @@ class TicketingController extends Controller
                     'ban_by'       => Auth::user()->id_akses
                 ]);
 
-                $message_ppk   = "Pengajuan Revisi E-Ticketing Anda dengan Nomor Surat: " . $nomor_surat . " *DITOLAK* oleh SUBDIT BAN. Mohon segera diperbaiki sesuai catatan dari SUBDIT BAN";
+                $message_ppk   = "Pengajuan Revisi E-Ticketing Anda dengan Nomor Surat: ".$nomor_surat." *DITOLAK* oleh SUBDIT BAN. Mohon segera diperbaiki sesuai catatan dari SUBDIT BAN";
 
                 $tools->sendingWa(Auth::user()->no_hp, $message_ppk, $nomor_surat, "Tickting Revisi");
             }
 
             $catatan_simpan = "<ol>";
 
-            foreach ($catatan as $value) {
-                $catatan_simpan .= '<li>' . $value . '</li>';
+            foreach ($catatan as $value)
+            {
+                $catatan_simpan .= '<li>'.$value.'</li>';
             }
 
             $catatan_simpan .= "</ol>";
 
-            $this->record($request->id, "Melakukan Approval Revisi E-Ticketing. Catatan: " . $catatan_simpan, Auth::user()->id_akses);
+            $this->record($request->id, "Melakukan Approval Revisi E-Ticketing. Catatan: ".$catatan_simpan, Auth::user()->id_akses);
 
             return response()->json([
                 'status'    => 'success',
                 'title'     => 'Status Pengajuan Berhasil Diubah',
                 'message'   => 'Status Pengajuan Berhasil Diubah'
             ]);
-        } catch (\Illuminate\Database\QueryException $e) {
+        }
+        catch (\Illuminate\Database\QueryException $e)
+        {
 
             return response()->json([
                 'status' => 'error',
@@ -2835,18 +2861,22 @@ class TicketingController extends Controller
     {
         $catatan    = [];
 
-        if ($request->has('catatan') && !empty($request->catatan)) {
+        if($request->has('catatan') && !empty($request->catatan))
+        {
             $catatan    = [];
-            $notes      = explode('|', $request->catatan);
+            $notes      = explode('|',$request->catatan);
 
-            foreach ($notes as $note) {
-                if (!empty($note)) {
+            foreach($notes as $note)
+            {
+                if(!empty($note))
+                {
                     $catatan[] = $note;
                 }
             }
         }
 
-        try {
+        try
+        {
             $user           = new User;
             $dir            = new Direktorat;
             $revisi         = new TicketRevisi;
@@ -2856,12 +2886,14 @@ class TicketingController extends Controller
             $data_old = $revisi->where('id', $request->id)->first();
             $nomor_surat = $revisi->where('id', $request->id)->first()->nomor_surat;
 
-            if ($request->hasFile('nota_dinas_kpa')) {
+            if($request->hasFile('nota_dinas_kpa'))
+            {
                 $direktorat         = $dir->where('id_dir', $revisi->where('id', $request->id)->first()->direktorat)->first()->nama_dir;
                 $nota_dinas_kpa     = $this->uploadFile($request, 'nota_dinas_kpa', $direktorat);
             }
 
-            if ($request->status == "disetujui") {
+            if($request->status == "disetujui")
+            {
                 $revisi->where('id', $request->id)->update([
                     'catatan_kpa'   => $catatan,
                     'lampiran_kpa'  => $nota_dinas_kpa,
@@ -2872,16 +2904,18 @@ class TicketingController extends Controller
                     'kpa_by'     => Auth::user()->id_akses
                 ]);
 
-                $no_hp_bagren = $user->where('prov_handle', 'like', '%' . $data_old->provinsi . '%')->where([
+                $no_hp_bagren = $user->where('prov_handle', 'like', '%'.$data_old->provinsi.'%')->where([
                     'level'     => 5
                 ])->first()->no_hp;
 
-                $message_ppk        = "Pengajuan Revisi E-Ticketing Anda dengan Nomor Surat: " . $nomor_surat . " Disetujui Oleh KPA";
-                $message_bagren     = "Pengajuan Revisi E-Ticketing dengan Nomor Surat: " . $nomor_surat . " Disetujui Oleh KPA dan diteruskan ke Bagren. Silakan diproses";
+                $message_ppk        = "Pengajuan Revisi E-Ticketing Anda dengan Nomor Surat: ".$nomor_surat." Disetujui Oleh KPA";
+                $message_bagren     = "Pengajuan Revisi E-Ticketing dengan Nomor Surat: ".$nomor_surat." Disetujui Oleh KPA dan diteruskan ke Bagren. Silakan diproses";
 
                 $tools->sendingWa(Auth::user()->no_hp, $message_ppk, $nomor_surat, "Tickting Revisi");
                 $tools->sendingWa(Auth::user()->no_hp_bagren, $message_bagren, $nomor_surat, "Tickting Revisi");
-            } else {
+            }
+            else
+            {
                 $revisi->where('id', $request->id)->update([
                     'catatan_fasgub'  => $catatan,
                     'status_kpa'      => NULL,
@@ -2893,27 +2927,30 @@ class TicketingController extends Controller
                     'fasgub_by'       => Auth::user()->id_akses
                 ]);
 
-                $message_ppk   = "Pengajuan Revisi E-Ticketing Anda dengan Nomor Surat: " . $nomor_surat . " *DITOLAK* oleh KPA. Mohon segera diperbaiki sesuai catatan dari Fasgub";
+                $message_ppk   = "Pengajuan Revisi E-Ticketing Anda dengan Nomor Surat: ".$nomor_surat." *DITOLAK* oleh KPA. Mohon segera diperbaiki sesuai catatan dari Fasgub";
 
                 $tools->sendingWa(Auth::user()->no_hp, $message_ppk, $nomor_surat, "Tickting Revisi");
             }
 
             $catatan_simpan = "<ol>";
 
-            foreach ($catatan as $value) {
-                $catatan_simpan .= '<li>' . $value . '</li>';
+            foreach ($catatan as $value)
+            {
+                $catatan_simpan .= '<li>'.$value.'</li>';
             }
 
             $catatan_simpan .= "</ol>";
 
-            $this->record($request->id, "Melakukan Approval Revisi E-Ticketing. Catatan: " . $catatan_simpan, Auth::user()->id_akses);
+            $this->record($request->id, "Melakukan Approval Revisi E-Ticketing. Catatan: ".$catatan_simpan, Auth::user()->id_akses);
 
             return response()->json([
                 'status'    => 'success',
                 'title'     => 'Status Pengajuan Berhasil Diubah',
                 'message'   => 'Status Pengajuan Berhasil Diubah'
             ]);
-        } catch (\Illuminate\Database\QueryException $e) {
+        }
+        catch (\Illuminate\Database\QueryException $e)
+        {
 
             return response()->json([
                 'status' => 'error',
@@ -2927,11 +2964,12 @@ class TicketingController extends Controller
     {
         $files = $request->File($type);
 
-        if (!empty($files)) {
-            $ext        = $type . "_" . strtotime(date("Y-m-d H:i:s")) . "." . $files->clientExtension();
+        if(!empty($files))
+        {
+            $ext        = $type."_".strtotime(date("Y-m-d H:i:s"))."." .$files->clientExtension();
             $name_file  = $ext;
 
-            $files->storeAs('./assets/files/' . $direktorat . '/', $ext);
+            $files->storeAs('./assets/files/'.$direktorat.'/', $ext);
 
             return $name_file;
         }
@@ -2941,11 +2979,12 @@ class TicketingController extends Controller
     {
         $files = $request->File($type);
 
-        if (!empty($files)) {
+        if(!empty($files))
+        {
             $ticket = new TicketRevisi;
 
             $filenameFormatted = $ticket->getIncrementFilename($request, $type) . '.' . $files->clientExtension();
-            $files->storeAs('./assets/files/' . $direktorat . '/', $filenameFormatted);
+            $files->storeAs('./assets/files/'.$direktorat.'/', $filenameFormatted);
 
             return $filenameFormatted;
         }
@@ -2972,39 +3011,41 @@ class TicketingController extends Controller
 
         $revisi = $ticket->where('id', $request->id_ticketing)->first();
         $data   = $log
-            ->select('*', 'tb_log_ticketing.created_at as log_time')
-            ->leftJoin('tb_akses', 'tb_log_ticketing.user', '=', 'tb_akses.id_akses')
-            ->where('id_ticketing', $request->id_ticketing)->orderBy('tb_log_ticketing.created_at', 'DESC')->get();
+                ->select('*', 'tb_log_ticketing.created_at as log_time')
+                ->leftJoin('tb_akses', 'tb_log_ticketing.user', '=', 'tb_akses.id_akses')
+                ->where('id_ticketing', $request->id_ticketing)->orderBy('tb_log_ticketing.created_at', 'DESC')->get();
 
         $return = '<div class="timeline timeline-inverse">';
 
-        if ($revisi->nomor_surat_pengesahan != null || !empty($revisi->nomor_surat_pengesahan)) {
+        if($revisi->nomor_surat_pengesahan != null || !empty($revisi->nomor_surat_pengesahan))
+        {
             $return .= '<div>
                 <i class="fas fa-file bg-info"></i>
 
                 <div class="timeline-item">
-                    <span class="time">' . date("d/m/Y H:i", strtotime($revisi->updated_at)) . '</span>
+                    <span class="time">'.date("d/m/Y H:i", strtotime($revisi->updated_at)).'</span>
 
                     <h3 class="timeline-header"><a href="#">Link Download Surat Pengesahan Aktif</a> </h3>
 
                     <div class="timeline-body">
-                        Silakan klik link berikut untuk download surat pengesahan: <a href="' . env('APP_URL') . '/' . $revisi->token . '/ticketing">' . env('APP_URL') . '/' . $revisi->token . '/ticketing</a>
+                        Silakan klik link berikut untuk download surat pengesahan: <a href="'.env('APP_URL').'/'.$revisi->token.'/ticketing">'.env('APP_URL').'/'.$revisi->token.'/ticketing</a>
                     </div>
                 </div>
             </div>';
         }
 
-        foreach ($data as $value) {
+        foreach ($data as $value)
+        {
             $return .= '<div>
                 <i class="fas fa-file bg-info"></i>
 
                 <div class="timeline-item">
-                    <span class="time">' . date("d/m/Y H:i", strtotime($value->log_time)) . '</span>
+                    <span class="time">'.date("d/m/Y H:i", strtotime($value->log_time)).'</span>
 
-                    <h3 class="timeline-header"><a href="#">' . $value->nama . '</a> </h3>
+                    <h3 class="timeline-header"><a href="#">'.$value->nama.'</a> </h3>
 
                     <div class="timeline-body">
-                        ' . $value->activity . '
+                        '.$value->activity.'
                     </div>
                 </div>
             </div>';
@@ -3028,107 +3069,109 @@ class TicketingController extends Controller
             [
                 'jenis_summarize'   => 'Jumlah Revisi',
                 'dekon'             => $model
-                    ->where([
-                        'direktorat'    => '1237',
-                        'provinsi'      => 'undefined'
-                    ])
-                    ->whereMonth('tanggal_surat', $request->bulan)
-                    ->whereYear('tanggal_surat', $request->tahun)->count(),
+                                        ->where([
+                                            'direktorat'    => '1237',
+                                            'provinsi'      => 'undefined'
+                                        ])
+                                        ->whereMonth('tanggal_surat', $request->bulan)
+                                        ->whereYear('tanggal_surat', $request->tahun)->count(),
                 'waskoban'          => $model
-                    ->where([
-                        'direktorat'    => '1238',
-                        'provinsi'      => 'undefined'
-                    ])
-                    ->whereMonth('tanggal_surat', $request->bulan)
-                    ->whereYear('tanggal_surat', $request->tahun)->count(),
+                                        ->where([
+                                            'direktorat'    => '1238',
+                                            'provinsi'      => 'undefined'
+                                        ])
+                                        ->whereMonth('tanggal_surat', $request->bulan)
+                                        ->whereYear('tanggal_surat', $request->tahun)->count(),
                 'polpp'             => $model
-                    ->where([
-                        'direktorat'    => '1239',
-                        'provinsi'      => 'undefined'
-                    ])
-                    ->whereMonth('tanggal_surat', $request->bulan)
-                    ->whereYear('tanggal_surat', $request->tahun)->count(),
+                                        ->where([
+                                            'direktorat'    => '1239',
+                                            'provinsi'      => 'undefined'
+                                        ])
+                                        ->whereMonth('tanggal_surat', $request->bulan)
+                                        ->whereYear('tanggal_surat', $request->tahun)->count(),
                 'topobad'           => $model
-                    ->where([
-                        'direktorat'    => '1241',
-                        'provinsi'      => 'undefined'
-                    ])
-                    ->whereMonth('tanggal_surat', $request->bulan)
-                    ->whereYear('tanggal_surat', $request->tahun)->count(),
+                                        ->where([
+                                            'direktorat'    => '1241',
+                                            'provinsi'      => 'undefined'
+                                        ])
+                                        ->whereMonth('tanggal_surat', $request->bulan)
+                                        ->whereYear('tanggal_surat', $request->tahun)->count(),
                 'mpbk'              => $model
-                    ->where([
-                        'direktorat'    => '1240',
-                        'provinsi'      => 'undefined'
-                    ])
-                    ->whereMonth('tanggal_surat', $request->bulan)
-                    ->whereYear('tanggal_surat', $request->tahun)->count(),
+                                        ->where([
+                                            'direktorat'    => '1240',
+                                            'provinsi'      => 'undefined'
+                                        ])
+                                        ->whereMonth('tanggal_surat', $request->bulan)
+                                        ->whereYear('tanggal_surat', $request->tahun)->count(),
                 'sekre'             => $model
-                    ->where([
-                        'direktorat'    => '1242',
-                        'provinsi'      => 'undefined'
-                    ])
-                    ->whereMonth('tanggal_surat', $request->bulan)
-                    ->whereYear('tanggal_surat', $request->tahun)->count(),
+                                        ->where([
+                                            'direktorat'    => '1242',
+                                            'provinsi'      => 'undefined'
+                                        ])
+                                        ->whereMonth('tanggal_surat', $request->bulan)
+                                        ->whereYear('tanggal_surat', $request->tahun)->count(),
                 'total'             => $model
-                    ->where([
-                        'provinsi'      => 'undefined'
-                    ])
-                    ->whereMonth('tanggal_surat', $request->bulan)
-                    ->whereYear('tanggal_surat', $request->tahun)->count()
+                                        ->where([
+                                            'provinsi'      => 'undefined'
+                                        ])
+                                        ->whereMonth('tanggal_surat', $request->bulan)
+                                        ->whereYear('tanggal_surat', $request->tahun)->count()
             ],
             [
                 'jenis_summarize'   => 'Jumlah Usulan Kegiatan',
                 'dekon'             => $model1
-                    ->where([
-                        'direktorat'    => '1237',
-                        'provinsi'      => 'undefined'
-                    ])
-                    ->whereMonth('tanggal_surat', $request->bulan)
-                    ->whereYear('tanggal_surat', $request->tahun)->count(),
+                                        ->where([
+                                            'direktorat'    => '1237',
+                                            'provinsi'      => 'undefined'
+                                        ])
+                                        ->whereMonth('tanggal_surat', $request->bulan)
+                                        ->whereYear('tanggal_surat', $request->tahun)->count(),
                 'waskoban'          => $model1
-                    ->where([
-                        'direktorat'    => '1238',
-                        'provinsi'      => 'undefined'
-                    ])
-                    ->whereMonth('tanggal_surat', $request->bulan)
-                    ->whereYear('tanggal_surat', $request->tahun)->count(),
+                                        ->where([
+                                            'direktorat'    => '1238',
+                                            'provinsi'      => 'undefined'
+                                        ])
+                                        ->whereMonth('tanggal_surat', $request->bulan)
+                                        ->whereYear('tanggal_surat', $request->tahun)->count(),
                 'polpp'             => $model1
-                    ->where([
-                        'direktorat'    => '1239',
-                        'provinsi'      => 'undefined'
-                    ])
-                    ->whereMonth('tanggal_surat', $request->bulan)
-                    ->whereYear('tanggal_surat', $request->tahun)->count(),
+                                        ->where([
+                                            'direktorat'    => '1239',
+                                            'provinsi'      => 'undefined'
+                                        ])
+                                        ->whereMonth('tanggal_surat', $request->bulan)
+                                        ->whereYear('tanggal_surat', $request->tahun)->count(),
                 'topobad'           => $model1
-                    ->where([
-                        'direktorat'    => '1241',
-                        'provinsi'      => 'undefined'
-                    ])
-                    ->whereMonth('tanggal_surat', $request->bulan)
-                    ->whereYear('tanggal_surat', $request->tahun)->count(),
+                                        ->where([
+                                            'direktorat'    => '1241',
+                                            'provinsi'      => 'undefined'
+                                        ])
+                                        ->whereMonth('tanggal_surat', $request->bulan)
+                                        ->whereYear('tanggal_surat', $request->tahun)->count(),
                 'mpbk'              => $model1
-                    ->where([
-                        'direktorat'    => '1240',
-                        'provinsi'      => 'undefined'
-                    ])
-                    ->whereMonth('tanggal_surat', $request->bulan)
-                    ->whereYear('tanggal_surat', $request->tahun)->count(),
+                                        ->where([
+                                            'direktorat'    => '1240',
+                                            'provinsi'      => 'undefined'
+                                        ])
+                                        ->whereMonth('tanggal_surat', $request->bulan)
+                                        ->whereYear('tanggal_surat', $request->tahun)->count(),
                 'sekre'             => $model1
-                    ->where([
-                        'direktorat'    => '1242',
-                        'provinsi'      => 'undefined'
-                    ])
-                    ->whereMonth('tanggal_surat', $request->bulan)
-                    ->whereYear('tanggal_surat', $request->tahun)->count(),
+                                        ->where([
+                                            'direktorat'    => '1242',
+                                            'provinsi'      => 'undefined'
+                                        ])
+                                        ->whereMonth('tanggal_surat', $request->bulan)
+                                        ->whereYear('tanggal_surat', $request->tahun)->count(),
                 'total'             => $model1
-                    ->where([
-                        'provinsi'      => 'undefined'
-                    ])
-                    ->whereMonth('tanggal_surat', $request->bulan)
-                    ->whereYear('tanggal_surat', $request->tahun)->count(),
+                                        ->where([
+                                            'provinsi'      => 'undefined'
+                                        ])
+                                        ->whereMonth('tanggal_surat', $request->bulan)
+                                        ->whereYear('tanggal_surat', $request->tahun)->count(),
             ]
         ];
 
         return $return;
+        
+        
     }
 }

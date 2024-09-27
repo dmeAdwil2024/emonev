@@ -19,9 +19,9 @@
                             <table class="table table-bordered" style="width: 100%">
                                 <tr>
                                     <td class="align-middle" style="width: 45%">ID Pengajuan Revisi</td>
-                                    <td class="align-middle" style="width: 50%">
-                                        <input type="text" id="id_revisi_proses" class="form-control" disabled>
-                                        <input type="text" id="token_revisi_proses" class="form-control" style="display:none" disabled>
+                                    <td class="align-middle" style="width: 50%"> 
+                                        <input type="text" id="id_revisi_proses" class="form-control" disabled> 
+                                        <input type="text" id="token_revisi_proses" class="form-control" style="display:none" disabled> 
                                     </td>
                                 </tr>
                                 <tr>
@@ -84,7 +84,7 @@
                                                     </div>
                                                 </span>
                                             </div>
-                                        </div>
+                                        </div>  
                                     </td>
                                 </tr>
                                 <tr>
@@ -107,7 +107,7 @@
                                                     </div>
                                                 </span>
                                             </div>
-                                        </div>
+                                        </div>  
                                     </td>
                                 </tr>
                                 <!-- <tr>
@@ -130,7 +130,7 @@
                                                     </div>
                                                 </span>
                                             </div>
-                                        </div>
+                                        </div>  
                                     </td>
                                 </tr> -->
                                 <tr>
@@ -153,7 +153,7 @@
                                                     </div>
                                                 </span>
                                             </div>
-                                        </div>
+                                        </div>  
                                     </td>
                                 </tr>
 
@@ -165,7 +165,7 @@
                                             <div class="col-md-4 pt-3" style="height: 100%">
                                                 <span id="no_nota_kpa_proses"></span>
                                             </div>
-                                        </div>
+                                        </div>  
                                     </td>
                                 </tr>
 
@@ -176,7 +176,7 @@
                                             <div class="col-md-4 pt-3" style="height: 100%">
                                                 <span id="nota_dinas_kpa_proses"></span>
                                             </div>
-                                        </div>
+                                        </div>  
                                     </td>
                                 </tr>
                                 @endif
@@ -638,13 +638,13 @@
         $('#wrap-data').hide(700)
         $('#wrap-form').hide(700)
         $('#wrap-form-proses').show(700)
-
+        
         $('#form-ppk').hide()
         $('#form-kpa').hide()
         $('#form-ban').hide()
         $('#form-fasgub').hide()
         $('#form-bagren').hide()
-
+        
         if(form == "fasgub")
         {
             checkStatusFasgub()
@@ -665,13 +665,13 @@
             checkStatusBan()
             $('#form-ban').show()
         }
-
+        
         loadDetailProses(id)
     }
 
     function loadHistory(id_ticketing)
     {
-        $('.wrap-history').empty().load('{{route('ticketing.view-log')}}?id_ticketing='+id_ticketing)
+        $('.wrap-history').empty().load('{{route('ticketing.view-log')}}?id_ticketing='+id_ticketing)   
     }
 
     function checkStatusPpk()
@@ -816,7 +816,7 @@
             if (Array.isArray(e.kak_old) && e.kak_old.length)
             {
                 var no = 1;
-                e.kak_old.forEach(kak_old =>
+                e.kak_old.forEach(kak_old => 
                 {
                     var data = '<tr><td class="text-center">'+no+'.</td><td>'+kak_old+'</td></tr>'
                     $('#dokumen-kak > tbody:last-child').append(data);
@@ -833,7 +833,7 @@
             if (Array.isArray(e.nota_dinas_ppk_old) && e.nota_dinas_ppk_old.length)
             {
                 var no = 1;
-                e.nota_dinas_ppk_old.forEach(nota_dinas_ppk_old =>
+                e.nota_dinas_ppk_old.forEach(nota_dinas_ppk_old => 
                 {
                     var data = '<tr><td class="text-center">'+no+'.</td><td>'+nota_dinas_ppk_old+'</td></tr>'
                     $('#dokumen-ppk > tbody:last-child').append(data);
@@ -850,7 +850,7 @@
             if (Array.isArray(e.matrik_rab_old) && e.matrik_rab_old.length)
             {
                 var no = 1;
-                e.matrik_rab_old.forEach(matrik_rab_old =>
+                e.matrik_rab_old.forEach(matrik_rab_old => 
                 {
                     var data = '<tr><td class="text-center">'+no+'.</td><td>'+matrik_rab_old+'</td></tr>'
                     $('#dokumen-rab > tbody:last-child').append(data);
@@ -867,7 +867,7 @@
             if (Array.isArray(e.dokumen_pendukung_old) && e.dokumen_pendukung_old.length)
             {
                 var no = 1;
-                e.dokumen_pendukung_old.forEach(dokumen_pendukung_old =>
+                e.dokumen_pendukung_old.forEach(dokumen_pendukung_old => 
                 {
                     var data = '<tr><td class="text-center">'+no+'.</td><td>'+dokumen_pendukung_old+'</td></tr>'
                     $('#dokumen-pendukung > tbody:last-child').append(data);
@@ -1444,7 +1444,7 @@
         contentType: false,
         success: function (e)
         {
-            $('#content-surat-pengesahan').load('{{ asset('') }}ticketing/preview-pengesahan?token='+token,function(){
+            $('#content-surat-pengesahan').load('{{env('APP_URL')}}/ticketing/preview-pengesahan?token='+token,function(){
                 $('#modal-preview-surat-pengesahan').modal({show:true});
                 $('#title-btn-preview').empty().append("PREVIEW")
             });
@@ -1454,6 +1454,6 @@
     function downloadPreview()
     {
         var token = $('#token_revisi_proses').val()
-        window.open('{{ asset('') }}download/preview-pengesahan?token='+token);
+        window.open('{{env('APP_URL')}}/download/preview-pengesahan?token='+token);    
     }
 </script>

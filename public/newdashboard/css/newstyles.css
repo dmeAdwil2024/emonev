@@ -371,11 +371,17 @@ body {
 .table {
     background-image: linear-gradient(to right, #e6f2ff, #99ccff);
     font-weight: bold;
+    font-size: 0.9em;
+    text-align: center;
+    justify-content: center;
+    width: 100%;
 }
 
 .table thead th {
     background-color: rgba(0, 0, 0, 0.1);
     font-weight: 800;
+    text-align: center;
+    justify-content: center;
 }
 
 .table-striped tbody tr:nth-of-type(odd) {

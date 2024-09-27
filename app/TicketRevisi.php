@@ -35,17 +35,17 @@ class TicketRevisi extends Model
 
         $validStatus = array_keys(\App\TicketStatus::ACTIVITY);
         $where .= (empty($where) ? ' WHERE ' : ' AND ') . "status in ('" . implode("','", $validStatus) . "')";
-
+        
         $sql = "SELECT current_status, COUNT(id) AS jml FROM tb_ticket_rev {$where} GROUP BY current_status";
 
         $rekap = DB::select($sql);
 
         $rekapJml = [];
-        foreach (\App\TicketStatus::OPSI as $opsi) {
+        foreach(\App\TicketStatus::OPSI as $opsi) {
             $rekapJml[$opsi] = 0;
         }
 
-        foreach ($rekap as $data) {
+        foreach($rekap as $data) {
             if (isset($data->current_status)) {
                 $rekapJml[$data->current_status] = $data->jml;
             }
@@ -61,7 +61,7 @@ class TicketRevisi extends Model
         if (! empty($provinsi)) {
             $db->where('provinsi', $provinsi);
         }
-        if (! empty($satker) && $satker !== 'undefined') {
+        if (! empty($satker)) {
             $db->where('satker', $satker);
         }
         if (! empty($tahun)) {
@@ -89,19 +89,19 @@ class TicketRevisi extends Model
     {
         $fileType = '';
 
-        switch ($type) {
-            case 'nota_dinas_ppk':
+        switch($type) {
+            case 'nota_dinas_ppk' :
                 $fileType = 'NODIN';
                 break;
-
-            case 'matrik_rab':
+            
+            case 'matrik_rab' :
                 $fileType = 'RAB';
                 break;
-
-            case 'dokumen_pendukung':
+            
+            case 'dokumen_pendukung' :
                 $fileType = 'PENDUKUNG';
                 break;
-
+            
             default:
                 $fileType = $type;
         }

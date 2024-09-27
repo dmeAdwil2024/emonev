@@ -45,42 +45,21 @@
                             <i class="fas fa-plus"></i> Tambahkan File Realisasi
                         </a>
                     </div>
-
-                    
                     <table id="realisasiTable" class="table">
                         <thead>
                             <tr>
                                 <th>No</th>
-                                <th>Jumlah Revisi</th>
                                 <th>Bukti Revisi</th>
                                 <th>Pagu Pusat</th>
                                 <th>Pagu Dekonsentrasi</th>
                                 <th>Tanggal Dibuat</th>
                                 <th>Tanggal Diupdate</th>
-                                <th>Aksi</th>
                             </tr>
                         </thead>
                         <tbody>
                             @foreach($realisasis as $realisasi)
-                            
                             <tr>
-                                <td>{{ $realisasi->no }}</td>
-                                <td>
-                                    @if($realisasi->bukti_ref)
-                                        @php
-                                            $excelPath = storage_path('app/public/bukti_ref/' . $realisasi->bukti_ref);
-                                            $reader = \PhpOffice\PhpSpreadsheet\IOFactory::createReader('Xlsx');
-                                            $spreadsheet = $reader->load($excelPath);
-                                            $worksheet = $spreadsheet->getActiveSheet();
-                                            $an5Value = $worksheet->getCell('AN5')->getValue();
-                                            $an6Value = $worksheet->getCell('AN6')->getValue();
-                                            $jml_revisi = $an5Value + $an6Value;
-                                        @endphp
-                                        Rp {{ number_format($jml_revisi, 0, ',', '.') }}
-                                    @else
-                                        N/A
-                                    @endif
-                                </td>
+                                <td>{{ $loop->iteration }}</td>
                                 <td>
                                     @if($realisasi->bukti_ref)
                                         <a href="{{ url('tes/' . $realisasi->no . '/download') }}" target="_blank">
@@ -116,10 +95,6 @@
                                 </td>
                                 <td>{{ $realisasi->created_at }}</td>
                                 <td>{{ $realisasi->updated_at }}</td>
-                                <td>
-                                    <a href="{{ route('tes.edit', ['id' => $realisasi->id]) }}" class="btn btn-success btn-sm">Edit</a>
-                                    {{-- <button class="btn btn-danger btn-sm delete-btn" data-id="{{ $realisasi->id }}">Delete</button> --}}
-                                </td>
                             </tr>
                             @endforeach
                         </tbody>

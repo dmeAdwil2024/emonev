@@ -42,10 +42,6 @@
                     <form action="{{ route('tes.store') }}" method="POST" enctype="multipart/form-data" id="realisasiForm">
                         @csrf
                         <div class="mb-3">
-                            <label for="jml_revisi" class="form-label">Jumlah Revisi</label>
-                            <input type="number" class="form-control" id="jml_revisi" name="jml_revisi" required>
-                        </div>
-                        <div class="mb-3">
                             <label for="bukti_ref" class="form-label">Bukti Revisi (Excel File)</label>
                             <input type="file" class="form-control" id="bukti_ref" name="bukti_ref" accept=".xlsx,.xls" required>
                             <small class="form-text text-muted">Upload Excel file (.xlsx or .xls) as bukti_ref</small>
