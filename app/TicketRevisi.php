@@ -10,6 +10,14 @@ class TicketRevisi extends Model
     protected $table    = 'tb_ticket_rev';
     protected $fillable = ['token', 'key', 'tahun_anggaran', 'nomor_surat', 'tanggal_surat', 'satker', 'kode_satker', 'nama_satker', 'provinsi', 'direktorat', 'jenis_revisi', 'nama_pejabat', 'jabatan', 'perihal', 'nota_dinas_pptk', 'nota_dinas_pptk_old', 'nota_pptk_download_keu_at', 'nota_dinas_ppk', 'nota_dinas_ppk_old', 'nota_dinas_ppk_download_keu_at', 'matrik_rab', 'matrik_rab_old', 'rab_download_keu_at', 'kak', 'kak_old', 'kak_download_keu_at', 'dokumen_pendukung', 'dokumen_pendukung_old', 'dokumen_pendukung_download_keu_at', 'keterangan', 'status', 'current_status', 'status_approval', 'catatan_approval', 'catatan_verifikasi', 'approved_by', 'approved_at', 'verified_by', 'status_verifikasi', 'verified_at', 'status_kabagren', 'lampiran_kabagren', 'lampiran_kabagren_download_keu_at', 'kabagren_by', 'kabagren_at', 'status_kabagkeu', 'lampiran_kabagkeu', 'kabagkeu_by', 'kabagkeu_at', 'status_kpa', 'no_nota_kpa', 'lampiran_kpa', 'kpa_by', 'kpa_at', 'catatan_kabagkeu', 'status_fasgub', 'lampiran_fasgub', 'fasgub_by', 'fasgub_at', 'catatan_fasgub', 'status_ban', 'lampiran_ban', 'ban_by', 'ban_at', 'catatan_ban', 'type', 'tanggal_pengesahan', 'nomor_surat_pengesahan', 'deskripsi_pengesahan', 'tembusan', 'created_by', 'updated_by'];
 
+    const STATUS_SEMUA                   = 'all';
+    const STATUS_NEW                     = 'new';
+    const STATUS_BUTUH_PERBAIKAN         = 'butuh perbaikan';
+    const STATUS_PERBAIKAN_DISUBMIT      = 'Perbaikan Disubmit';
+    const STATUS_SELESAI_DIPROSES_PPK    = 'Selesai Diproses PPK';
+    const STATUS_SELESAI_DIPROSES_BAGREN = 'Selesai Diproses Bagren';
+    const STATUS_TOLAK                   = 'ditolak';
+
     protected $casts = [
         'kak_old'               => 'array',
         'tembusan'              => 'array',
@@ -22,7 +30,7 @@ class TicketRevisi extends Model
         'nota_dinas_ppk_old'    => 'array',
         'catatan_verifikasi'    => 'array',
         'nota_dinas_pptk_old'   => 'array',
-        'deskripsi_pengesahan'   => 'array',
+        'deskripsi_pengesahan'  => 'array',
         'dokumen_pendukung_old' => 'array',
     ];
 
@@ -35,17 +43,17 @@ class TicketRevisi extends Model
 
         $validStatus = array_keys(\App\TicketStatus::ACTIVITY);
         $where .= (empty($where) ? ' WHERE ' : ' AND ') . "status in ('" . implode("','", $validStatus) . "')";
-        
+
         $sql = "SELECT current_status, COUNT(id) AS jml FROM tb_ticket_rev {$where} GROUP BY current_status";
 
         $rekap = DB::select($sql);
 
         $rekapJml = [];
-        foreach(\App\TicketStatus::OPSI as $opsi) {
+        foreach (\App\TicketStatus::OPSI as $opsi) {
             $rekapJml[$opsi] = 0;
         }
 
-        foreach($rekap as $data) {
+        foreach ($rekap as $data) {
             if (isset($data->current_status)) {
                 $rekapJml[$data->current_status] = $data->jml;
             }
@@ -89,19 +97,19 @@ class TicketRevisi extends Model
     {
         $fileType = '';
 
-        switch($type) {
-            case 'nota_dinas_ppk' :
+        switch ($type) {
+            case 'nota_dinas_ppk':
                 $fileType = 'NODIN';
                 break;
-            
-            case 'matrik_rab' :
+
+            case 'matrik_rab':
                 $fileType = 'RAB';
                 break;
-            
-            case 'dokumen_pendukung' :
+
+            case 'dokumen_pendukung':
                 $fileType = 'PENDUKUNG';
                 break;
-            
+
             default:
                 $fileType = $type;
         }

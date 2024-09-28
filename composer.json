@@ -20,6 +20,7 @@
         "laravel/ui": "2.4",
         "phpoffice/phpspreadsheet": "^1.29",
         "simplesoftwareio/simple-qrcode": "^4.2",
+        "yajra/laravel-datatables-oracle": "^9.0",
         "zanysoft/laravel-zip": "^2.0"
     },
     "require-dev": {

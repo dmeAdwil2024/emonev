@@ -1,5 +1,7 @@
 <?php
 
+use App\Http\Controllers\RealisasisController;
+use App\Http\Controllers\TicketingNewController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -25,8 +27,8 @@ Route::post('/satker', 'LandersController@satker')->name('satker');
 
 Route::get('/profile', 'UserController@profile')->name('profile');
 
-Route::get('/dashboard','DashboardController@dashboard')->name('dashboard');
-Route::get('/dashboard-admin','DashboardController@dashboardadmin')->name('dashboard-admin');
+Route::get('/dashboard', 'DashboardController@dashboard')->name('dashboard');
+Route::get('/dashboard-admin', 'DashboardController@dashboardadmin')->name('dashboard-admin');
 
 Route::get('/rekapEselon3/{id_dir}', 'HomeController@rekapEselon3')->name('rekapEselon3');
 Route::post('/rekapEselon3', 'HomeController@rekapEselon3')->name('rekapEselon3');
@@ -40,8 +42,8 @@ Route::post('/sandingUke3', 'HomeController@sandingUke3')->name('sandingUke3');
 Route::post('/getsubdir', 'HomeController@getsubdir')->name('getsubdir');
 Route::post('/getsatker', 'HomeController@getsatker')->name('getsatker');
 Route::post('/getrev', 'HomeController@getrev')->name('getrev');
-Route::get('/homeuke2', 'HomeUke2Controller@dashboard')->name('homeuke2');
-Route::get('/homeuke3', 'HomeUke3Controller@dashboard')->name('homeuke3');
+// Route::get('/homeuke2', 'HomeUke2Controller@dashboard')->name('homeuke2');
+// Route::get('/homeuke3', 'HomeUke3Controller@dashboard')->name('homeuke3');
 // E-Ticketing
 $router->group(['prefix' => 'ticketing',  'as' => 'ticketing.'], function () use ($router) {
 
@@ -50,6 +52,9 @@ $router->group(['prefix' => 'ticketing',  'as' => 'ticketing.'], function () use
     $router->get('/revisi-sarpras', 'TicketingController@viewSarprasDaerah')->name('view-sarpras-daerah');
     $router->get('/revisi-pusat', 'TicketingController@viewRevisiPusat')->name('view-revisi-pusat');
     $router->get('/revisi-daerah', 'TicketingController@viewRevisiDaerah')->name('view-revisi-daerah');
+    $router->get('/revisi-pusat-new', 'TicketingNewController@viewRevisiPusat')->name('view-revisi-pusat-new.index');
+    $router->get('/datatable_etiketing_pusat', 'TicketingNewController@datatable_etiketing_pusat')->name('datatable_etiketing_pusat');
+    $router->post('/model_header_etiketing_pusat', 'TicketingNewController@models_header')->name('model_header_etiketing_pusat');
 
     // Revisi new
     $router->get('/revisi-gwpp', 'TicketingController@viewGwppDaerah')->name('revisi-gwpp');
@@ -75,7 +80,7 @@ $router->group(['prefix' => 'ticketing',  'as' => 'ticketing.'], function () use
 
     // Log Ticketing
     $router->get('/log', 'TicketingController@loadHistory')->name('view-log');
-    
+
     $router->post('/data-revisi', 'TicketingController@dataRevisi')->name('data-revisi');
     $router->post('/submit-revisi', 'TicketingController@submitRevisi')->name('submit-revisi');
     $router->post('/update-revisi', 'TicketingController@updateRevisi')->name('update-revisi');
@@ -162,7 +167,7 @@ $router->group(['prefix' => 'tools',  'as' => 'tools.'], function () use ($route
 $router->group(['prefix' => 'download',  'as' => 'download.'], function () use ($router) {
 
     // Download Dokumen
-	  $router->get('/dokumen-capaian/{id_dir}/{jenis_file}/{nama_file}', 'ToolsController@downloadCapaian')->name('dokumen-capaian');
+    $router->get('/dokumen-capaian/{id_dir}/{jenis_file}/{nama_file}', 'ToolsController@downloadCapaian')->name('dokumen-capaian');
     $router->get('/dokumen/{jenis_file}/{nama_file}', 'ToolsController@download')->name('dokumen');
     $router->get('/dokumen-pok/{pejabat}/{nama_file}', 'ToolsController@downloadPok')->name('dokumen-pok');
     $router->get('/dokumen-usulan/{jenis_file}/{nama_file}', 'ToolsController@downloadUsulan')->name('dokumen-usulan');
@@ -243,7 +248,7 @@ $router->group(['prefix' => 'master',  'as' => 'master.'], function () use ($rou
 });
 
 // User
-$router->group(['prefix' => 'users',  'as' => 'users.'], function () use ($router){
+$router->group(['prefix' => 'users',  'as' => 'users.'], function () use ($router) {
 
     Route::post("data", "UserController@data")->name('data');
     Route::post("submit", "UserController@submit")->name('submit');
@@ -259,7 +264,7 @@ $router->group(['prefix' => 'usulan',  'as' => 'usulan.'], function () use ($rou
 
     $router->get('/kegiatan', 'UsulanController@view')->name('kegiatan');
     $router->get('/log', 'UsulanController@loadHistory')->name('view-log');
-    
+
     $router->post('/data', 'UsulanController@data')->name('data');
     $router->post('/detail', 'UsulanController@detail')->name('detail');
     $router->post('/submit', 'UsulanController@submit')->name('submit');
@@ -272,26 +277,26 @@ $router->group(['prefix' => 'usulan',  'as' => 'usulan.'], function () use ($rou
 $router->group(['prefix' => 'capaian',  'as' => 'capaian.'], function () use ($router) {
 
     $router->get('/capaian-output/{mdl}', 'CapaianController@viewOutput')->name('capaian-output');
-  	$router->post('/capaian-output', 'CapaianController@viewOutput')->name('capaian-output');
-  	$router->get('/input-capaian', 'CapaianController@inputCapaian')->name('input-capaian');
-  	$router->post('/input-capaian', 'CapaianController@inputCapaian')->name('input-capaian');
-  	$router->post('/submit-input-capaian', 'CapaianController@submitInputCapaian')->name('submit-input-capaian');
-  	$router->post('/submit-validasi-capaian', 'CapaianController@submitValidasiCapaian')->name('submit-validasi-capaian');
-  	$router->get('/log-file', 'CapaianController@logfile')->name('log-file');
-  	$router->get('/log-approval', 'CapaianController@logapproval')->name('log-approval');
+    $router->post('/capaian-output', 'CapaianController@viewOutput')->name('capaian-output');
+    $router->get('/input-capaian', 'CapaianController@inputCapaian')->name('input-capaian');
+    $router->post('/input-capaian', 'CapaianController@inputCapaian')->name('input-capaian');
+    $router->post('/submit-input-capaian', 'CapaianController@submitInputCapaian')->name('submit-input-capaian');
+    $router->post('/submit-validasi-capaian', 'CapaianController@submitValidasiCapaian')->name('submit-validasi-capaian');
+    $router->get('/log-file', 'CapaianController@logfile')->name('log-file');
+    $router->get('/log-approval', 'CapaianController@logapproval')->name('log-approval');
     $router->get('/target-capaian-output', 'CapaianController@viewTargetCaput')->name('target-capaian-output');
     $router->post('/target-capaian-output', 'CapaianController@viewTargetCaput')->name('target-capaian-output');
-  	$router->get('/input-target', 'CapaianController@inputTarget')->name('input-target');
-  	$router->post('/input-target', 'CapaianController@inputTarget')->name('input-target');
-  	$router->post('/submit-input-target', 'CapaianController@submitInputTarget')->name('submit-input-target');
-  	$router->post('/check-input-capaian', 'CapaianController@checkInputCapaian')->name('check-input-capaian');
+    $router->get('/input-target', 'CapaianController@inputTarget')->name('input-target');
+    $router->post('/input-target', 'CapaianController@inputTarget')->name('input-target');
+    $router->post('/submit-input-target', 'CapaianController@submitInputTarget')->name('submit-input-target');
+    $router->post('/check-input-capaian', 'CapaianController@checkInputCapaian')->name('check-input-capaian');
     $router->get('/capaian-setting', 'CapaianController@inputSetting')->name('capaian-setting');
-  	$router->post('/capaian-setting', 'CapaianController@inputSetting')->name('capaian-setting');
-  	$router->post('/submit-input-setting', 'CapaianController@submitInputSetting')->name('submit-input-setting');
+    $router->post('/capaian-setting', 'CapaianController@inputSetting')->name('capaian-setting');
+    $router->post('/submit-input-setting', 'CapaianController@submitInputSetting')->name('submit-input-setting');
     $router->get('/import-sakti/{mdl}', 'CapaianController@importSakti')->name('import-sakti');
-  	$router->post('/import-sakti', 'CapaianController@importSakti')->name('import-sakti');
-  	$router->post('/submit-import-sakti', 'CapaianController@submitImportSakti')->name('submit-import-sakti');
- 
+    $router->post('/import-sakti', 'CapaianController@importSakti')->name('import-sakti');
+    $router->post('/submit-import-sakti', 'CapaianController@submitImportSakti')->name('submit-import-sakti');
+
     $router->get('/capaian-output-daerah', 'CapaianController@viewOutputDaerah')->name('capaian-output-daerah');
     $router->get('/preview-berita-acara', 'CapaianController@previewBeritaAcara')->name('preview-berita-acara');
     $router->get('/validasi-capaian-output', 'CapaianController@viewValidasiOutput')->name('validasi-capaian-output');
@@ -346,26 +351,24 @@ $router->group(['prefix' => 'sakti',  'as' => 'sakti.'], function () use ($route
     $router->get('/synch-tematik', 'SaktiController@synchTematik')->name('synch-tematik');
 
     $router->post('/sum-realisasi', 'HomeController@sumRealisasi')->name('sum-realisasi');
-    
 });
 
 Route::post('/rekap-eselon-3', 'HomeController@rekapEselon3')->name('rekap-eselon-3');
 
 
 // Realisasi
-Route::group(['prefix' => 'realisasi', 'as' => 'realisasi.'], function () {
-    Route::get('/', 'RealisasiController@index')->name('index');
-    Route::get('/create', 'RealisasiController@create')->name('create');
-    Route::post('/', 'RealisasiController@store')->name('store');
-    Route::get('/{id}', 'RealisasiController@show')->name('show');
-    Route::get('/{id}/edit', 'RealisasiController@edit')->name('edit');
-    Route::put('/{id}', 'RealisasiController@update')->name('update');
-    Route::delete('/{id}', 'RealisasiController@destroy')->name('destroy');
-    Route::get('/getData', 'RealisasiController@getData')->name('getData');
-    Route::get('/{id}/download', 'RealisasiController@download')->name('download1');
-    
-});
-Route::get('/export-excel', [RealisasiController::class, 'exportExcel']);
+// Route::group(['prefix' => 'realisasi', 'as' => 'realisasi.'], function () {
+//     Route::get('/', 'RealisasiController@index')->name('index');
+//     Route::get('/create', 'RealisasiController@create')->name('create');
+//     Route::post('/', 'RealisasiController@store')->name('store');
+//     Route::get('/{id}', 'RealisasiController@show')->name('show');
+//     Route::get('/{id}/edit', 'RealisasiController@edit')->name('edit');
+//     Route::put('/{id}', 'RealisasiController@update')->name('update');
+//     Route::delete('/{id}', 'RealisasiController@destroy')->name('destroy');
+//     Route::get('/getData', 'RealisasiController@getData')->name('getData');
+//     Route::get('/{id}/download', 'RealisasiController@download')->name('download1');
+// });
+// Route::get('/export-excel', 'RealisasiController@exportExcel');
 // Tes Routes
 Route::group(['prefix' => 'tes', 'as' => 'tes.'], function () {
     Route::get('/', 'TesController@index')->name('index');
