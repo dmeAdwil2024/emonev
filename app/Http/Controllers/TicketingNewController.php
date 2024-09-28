@@ -43,13 +43,13 @@ class TicketingNewController extends Controller
     {
         return DataTables::of($this->models($request))
             ->addColumn('tahap1', function ($data) {
-                return Carbon::parse($data->created_at)->format('d-m-Y H:i');
+                return Carbon::parse($data->created_at)->format('d/m/Y H:i');
             })
             ->addColumn('tahap2', function ($data) {
-                return Carbon::parse($data->kpa_at)->format('d-m-Y H:i');
+                return $data->approved_at == null ? '' : Carbon::parse($data->approved_at)->format('d/m/Y H:i');
             })
             ->addColumn('tahap3', function ($data) {
-                return Carbon::parse($data->bagren_at)->format('d-m-Y H:i');
+                return $data->verified_at == null ? '' : Carbon::parse($data->verified_at)->format('d/m/Y H:i');
             })
             ->addIndexColumn()
             ->make(true);

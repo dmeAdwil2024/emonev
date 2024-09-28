@@ -26,7 +26,7 @@
             </div>
         </div>
         {{-- <div class="row"> --}}
-        <h3>PUSAT</h3>
+        <h3>E-TIKETING PUSAT</h3>
         <div class="row">
             <div class="col-lg-12">
                 <div id="customerList">
@@ -68,12 +68,13 @@
                                 cellspacing="0" width="100%">
                                 <thead>
                                     <tr>
-                                        <th>No</th>
-                                        <th>Nomor Surat</th>
-                                        <th>Tahap 1 (Pengajuan)</th>
-                                        <th>Tahap 2 (Approval PPK)</th>
-                                        <th>Tahap 3 (Verifikasi Bagren)</th>
-                                        <th>Progress</th>
+                                        <th style="width:5%">ID</th>
+                                        <th style="width:20%">Nomor Surat</th>
+                                        <th style="width:15%">Satker</th>
+                                        <th style="width:15%">Tahap 1 (Pengajuan)</th>
+                                        <th style="width:15%">Tahap 2 (Approval PPK)</th>
+                                        <th style="width:15%">Tahap 3 (Verifikasi Bagren)</th>
+                                        <th style="width:15%">Progress</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -126,16 +127,16 @@
                 },
                 columns: [{
                     data: "id",
-                    sortable: false,
-                    render: function(data, type, row, meta) {
-                        return meta.row + meta.settings._iDisplayStart + 1;
-                    }
+                    name: "id",
                 }, {
                     data: 'nomor_surat',
                     name: 'Nomor Surat',
                     render: function(data, type, row, meta) {
                         return `<button type="button" class="btn btn-link" onclick="openDetail(${row.id})">${row.nomor_surat} <small> ${row.perihal} </small></button>`;
                     }
+                }, {
+                    data: 'satker',
+                    name: 'Satker'
                 }, {
                     data: 'tahap1',
                     name: 'Tanggal Surat'
@@ -331,8 +332,6 @@
                 'border-color': '#4E36E2',
                 'background-color': '#4E36E2'
             })
-
-
         });
     </script>
 @endsection
