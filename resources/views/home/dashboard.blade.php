@@ -17,7 +17,7 @@
 
         <!-- Theme style -->
         <link rel="stylesheet" href="{{ asset('newdashboard/css/newstyles.css') }}?v={{ time() }}" />
-        <link rel="stylesheet" href="{{env('APP_URL')}}/templates/dist/css/adminlte.css" />
+        {{-- <link rel="stylesheet" href="{{env('APP_URL')}}/templates/dist/css/adminlte.css" /> --}}
 		<style>
 			.outer {
 			  align-content: center;
@@ -38,9 +38,12 @@
     </head>
     <body>
         @php
-            $persen_realisasi = ($realisasi/$anggaran)*100;
-            $persen_selisih = ($selisih/$anggaran)*100;
-            $persen_pagu_pusat      = ($pagu_pusat/$anggaran)*100;
+            // $persen_realisasi = ($realisasi/$anggaran)*100;
+            $persen_realisasi = ($realisasi/$pagu_new)*100;
+            // $persen_selisih = ($selisih/$anggaran)*100;
+            $persen_selisih = ($selisih/$pagu_new)*100;
+            // $persen_pagu_pusat      = ($pagu_pusat/$anggaran)*100;
+            $persen_pagu_pusat      = ($pagu_pusat/$pagu_new)*100;
             $persen_realisasi_pusat = ($realisasi/$pagu_pusat)*100;
             $persen_sisa_pusat      = ($sisa_pusat/$pagu_pusat)*100;
             if($pagu_dekon === 0)
@@ -51,14 +54,16 @@
             }
             else
             {
-                $persen_pagu_dekon      = ($pagu_dekon/$anggaran)*100;
+                // $persen_pagu_dekon      = ($pagu_dekon/$anggaran)*100;
+                $persen_pagu_dekon      = ($pagu_dekon/$pagu_new)*100;
                 $persen_realisasi_dekon = ($realisasi_dekon/$pagu_dekon)*100;
                 $persen_sisa_dekon      = $sisa_dekon/$pagu_dekon*100;
             }
 
             if($pagu_tp <> 0)
             {
-                $persen_pagu_tp      = $pagu_tp/$anggaran*100;
+                // $persen_pagu_tp      = $pagu_tp/$anggaran*100;
+                $persen_pagu_tp      = $pagu_tp/$pagu_new*100;
                 $persen_realisasi_tp = $realisasi_tp/$pagu_tp*100;
                 $persen_sisa_tp      = $sisa_tp/$pagu_tp*100;
             }
@@ -80,8 +85,16 @@
             $persen_realisasi_rm    = 100-$persen_sisa_rm;
 
             $persen_pagu_phln       = ($phln_pusat/$pagu_pusat)*100;
-            $persen_realisasi_phln  = ($realisasi_phln/$phln_pusat)*100;
-            $persen_sisa_phln       = (($phln_pusat-$realisasi_phln)/$phln_pusat)*100;
+            if ($phln_pusat != 0) {
+                $persen_realisasi_phln  = ($realisasi_phln/$phln_pusat)*100;
+            } else {
+                $persen_realisasi_phln = 0;
+            }
+            if ($phln_pusat != 0) {
+                $persen_sisa_phln = (($phln_pusat - $realisasi_phln) / $phln_pusat) * 100;
+            } else {
+                $persen_sisa_phln = 0; // Atur nilai default jika $phln_pusat adalah 0
+            }
 			
 			//$pln_pusat=$pagu_pusat-$rm_pusat-$phln_pusat;
 			//$persen_pln_pusat=($pln_pusat/$pagu_pusat)*100;
@@ -472,7 +485,7 @@
                         <div class="card card-dongker text-center">
                             <div class="card-body">
                                 <h5 class="card-title h6">Realisasi Anggaran Ditjen Bina Adwil</h5>
-                                <p class="h5">Rp {{number_format($realisasi_anggaran_new,0,',','.')}}<br>({{number_format($persen_realisasi,0,',','.')}}%)</p>
+                                <p class="h5">Rp {{number_format($realisasi,0,',','.')}}<br>({{number_format($persen_realisasi,0,',','.')}}%)</p>
                                 <div class="progress mb-2" role="progressbar" aria-label="Success example 4px high" aria-valuenow="25" aria-valuemin="0" aria-valuemax="100" style="height: 4px">
                                     <div class="progress-bar bg-success" style="width:{{number_format($persen_realisasi,2)}}%"></div>
                                 </div>
@@ -485,7 +498,7 @@
                         <div class="card card-dongker text-center">
                             <div class="card-body">
                                 <h5 class="card-title h6">Sisa Anggaran Ditjen Bina Adwil</h5>
-                                <p class="h5">Rp {{number_format($pagu_new - $realisasi_anggaran_new,0,',','.')}}<br>&nbsp;</p>
+                                <p class="h5">Rp {{number_format($pagu_new - $realisasi,0,',','.')}}<br>&nbsp;</p>
                                 <div class="progress mb-2" role="progressbar" aria-label="Success example 4px high" aria-valuenow="25" aria-valuemin="0" aria-valuemax="100" style="height: 4px">
                                     <div class="progress-bar bg-success" style="width: {{number_format((float)$persen_selisih, 0, '.', '')}}%"></div>
                                 </div>
@@ -503,21 +516,21 @@
                         <div class="row fw-semibold">
                             <div class="col-md-4 text-center">
                                 <h4 class="h6">PUSAT (Total)</h4>
-                                <p>Rp. {{number_format($realisasi_pusat_new,0,',','.')}}</p>
+                                <p>Rp. {{number_format($realisasi_pusat,0,',','.')}}</p>
                                 <div class="chart-box">
                                     <canvas id="chartPusat"></canvas>
                                 </div>
                             </div>
                             <div class="col-md-4 text-center">
                                 <h4 class="h6">DEKONSENTRASI</h4>
-                                <p>Rp. {{number_format($realisasi_dekon_new,0,',','.')}}</p>
+                                <p>Rp. {{number_format($realisasi_dekon,0,',','.')}}</p>
                                 <div class="chart-box">
                                     <canvas id="chartDekon"></canvas>
                                 </div>
                             </div>
                             <div class="col-md-4 text-center">
                                 <h4 class="h6">TUGAS PEMBANTUAN</h4>
-                                <p>Rp. {{number_format($realisasi_tp_new,0,',','.')}}</p>
+                                <p>Rp. {{number_format($realisasi_tp,0,',','.')}}</p>
                                 <div class="chart-box">
                                     <canvas id="chartTugas"></canvas>
                                 </div>
@@ -1704,7 +1717,7 @@
 			  label_uke2=label_uke2_data.trim()
 			  var form_data = new FormData();
 			  form_data.append('alias_dir', label_uke2);
-			  form_data.append('realisasi', {{$anggaran}});
+			  form_data.append('realisasi', {{$pagu_new}});
 			  form_data.append('rata2_realisasi_eselon2', {{$rata2_realisasi_eselon2}});
 			  form_data.append('_token', '{{csrf_token()}}')
 			  $.ajax({

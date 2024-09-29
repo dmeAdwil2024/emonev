@@ -18,7 +18,7 @@ class TesController extends Controller
      */
     public function index()
     {
-        $modul = 'Tes';
+        $modul = 'Import Realisasi';
         $current = 'Index';
         $realisasis = Tes::all();
         
@@ -32,7 +32,7 @@ class TesController extends Controller
      */
     public function create()
     {
-        $modul = 'Tes';
+        $modul = 'Import Realisasi';
         $current = 'Create';
         return view('contents.realisasi.create', compact('modul', 'current'));
     }
@@ -75,7 +75,7 @@ class TesController extends Controller
      */
     public function edit($id)
     {
-        $modul = 'Tes';
+        $modul = 'Import Realisasi';
         $current = 'Edit';
         $realisasi = Tes::where('id', $id)->firstOrFail();
 

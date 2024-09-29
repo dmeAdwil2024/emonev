@@ -14,7 +14,6 @@
         <link href="{{ env('APP_URL') }}/templates/plugins/sweetalert/sweetalert.css" rel="stylesheet" />
         <!-- Theme style -->
         <link rel="stylesheet" href="{{ asset('newdashboard/css/styles.css') }}?v=3" />
-        
     </head>
     <body>
         @php 
@@ -49,7 +48,19 @@
                 $persen_sisa_tp      = 100;
             }
 
-            
+            $persen_rm_pusat        = $rm_pusat/$pagu_pusat*100;
+            $persen_realisasi_rm    = $realisasi_pusat/$rm_pusat*100;
+            $persen_sisa_rm         = $sisa_rm_pusat/$rm_pusat*100;
+
+            $realisasi_rm_pusat     = $realisasi_pusat-$realisasi_phln;
+            $sisa_rm_pusat          = $rm_pusat-$realisasi_rm_pusat;
+
+            $persen_sisa_rm         = ($sisa_rm_pusat/$rm_pusat)*100;
+            $persen_realisasi_rm    = 100-$persen_sisa_rm;
+
+            $persen_pagu_phln       = $phln_pusat/$pagu_pusat*100;
+            $persen_realisasi_phln  = $realisasi_phln/$phln_pusat*100;
+            $persen_sisa_phln       = (($phln_pusat-$realisasi_phln)/$phln_pusat)*100;
         @endphp
         <div class="container">
             <div class="row">
@@ -73,7 +84,7 @@
                     <div class="card card-dongker text-center">
                         <div class="card-body">
                             <h5 class="card-title h6">Pagu Anggaran Ditjen Bina Adwil</h5>
-                            <p class="h5">Rp {{number_format($anggaran,2,',','.')}}<br>&nbsp;</p>
+                            <p class="h5">Rp {{number_format($data_pagu->pagu,2,',','.')}}<br>&nbsp;</p>
                             <div class="progress mb-2" role="progressbar" aria-label="Success example 4px high" aria-valuenow="25" aria-valuemin="0" aria-valuemax="100" style="height: 4px">
                                 <div class="progress-bar bg-success" style="width: 100%"></div>
                             </div>

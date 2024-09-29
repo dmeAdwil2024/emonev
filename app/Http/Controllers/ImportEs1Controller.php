@@ -18,7 +18,7 @@ class ImportEs1Controller extends Controller
      */
     public function index()
     {
-        $modul = 'ImportEslon1';
+        $modul = 'Import Eselon 1';
         $current = 'Index';
         $realisasis = ImportEslon1::all();
         
@@ -32,7 +32,7 @@ class ImportEs1Controller extends Controller
      */
     public function create()
     {
-        $modul = 'ImportEslon1';
+        $modul = 'Import Eselon 1';
         $current = 'Create';
         return view('contents.importEs1.create', compact('modul', 'current'));
     }
@@ -75,7 +75,7 @@ class ImportEs1Controller extends Controller
      */
     public function edit($id)
     {
-        $modul = 'ImportEslon1';
+        $modul = 'Import Eselon 1';
         $current = 'Edit';
         $realisasi = ImportEslon1::where('id', $id)->firstOrFail();
 

@@ -4,6 +4,7 @@
     </IfModule>
 
     RewriteEngine On
+    php_value memory_limit 1024M
 
     # Handle Authorization Header
     RewriteCond %{HTTP:Authorization} .

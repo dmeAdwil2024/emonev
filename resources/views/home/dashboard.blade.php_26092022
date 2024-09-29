@@ -17,6 +17,7 @@
 
         <!-- Theme style -->
         <link rel="stylesheet" href="{{ asset('newdashboard/css/newstyles.css') }}?v={{ time() }}" />
+        {{-- <link rel="stylesheet" href="{{env('APP_URL')}}/templates/dist/css/adminlte.css" /> --}}
 		<style>
 			.outer {
 			  align-content: center;
@@ -33,18 +34,18 @@
 			.modal-backdrop.fade {
 			  opacity: 0;
 			}
-			.legend{
-				font-size:10pt;
-			}
 		</style>
     </head>
     <body>
         @php
-            $persen_realisasi = $anggaran == 0 ? 0 : ($realisasi/$anggaran)*100;
-            $persen_selisih = $anggaran == 0 ? 0 : ($selisih/$anggaran)*100;
-            $persen_pagu_pusat      = $anggaran == 0 ? 0 : ($pagu_pusat/$anggaran)*100;
-            $persen_realisasi_pusat = $pagu_pusat == 0 ? 0 : ($realisasi/$pagu_pusat)*100;
-            $persen_sisa_pusat      = $pagu_pusat == 0 ? 0 : ($sisa_pusat/$pagu_pusat)*100;
+            // $persen_realisasi = ($realisasi/$anggaran)*100;
+            $persen_realisasi = ($realisasi/$pagu_new)*100;
+            // $persen_selisih = ($selisih/$anggaran)*100;
+            $persen_selisih = ($selisih/$pagu_new)*100;
+            // $persen_pagu_pusat      = ($pagu_pusat/$anggaran)*100;
+            $persen_pagu_pusat      = ($pagu_pusat/$pagu_new)*100;
+            $persen_realisasi_pusat = ($realisasi/$pagu_pusat)*100;
+            $persen_sisa_pusat      = ($sisa_pusat/$pagu_pusat)*100;
             if($pagu_dekon === 0)
             {
                 $persen_pagu_dekon      = 0;
@@ -53,14 +54,16 @@
             }
             else
             {
-                $persen_pagu_dekon      =  $anggaran == 0 ? 0 : ($pagu_dekon/$anggaran)*100;
-                $persen_realisasi_dekon =  $pagu_dekon == 0 ? 0 : ($realisasi_dekon/$pagu_dekon)*100;
+                // $persen_pagu_dekon      = ($pagu_dekon/$anggaran)*100;
+                $persen_pagu_dekon      = ($pagu_dekon/$pagu_new)*100;
+                $persen_realisasi_dekon = ($realisasi_dekon/$pagu_dekon)*100;
                 $persen_sisa_dekon      = $sisa_dekon/$pagu_dekon*100;
             }
 
             if($pagu_tp <> 0)
             {
-                $persen_pagu_tp      = $pagu_tp/$anggaran*100;
+                // $persen_pagu_tp      = $pagu_tp/$anggaran*100;
+                $persen_pagu_tp      = $pagu_tp/$pagu_new*100;
                 $persen_realisasi_tp = $realisasi_tp/$pagu_tp*100;
                 $persen_sisa_tp      = $sisa_tp/$pagu_tp*100;
             }
@@ -71,9 +74,9 @@
                 $persen_sisa_tp      = 100;
             }
 
-            $persen_rm_pusat        = $pagu_pusat == 0 ? 0 : ($rm_pusat/$pagu_pusat)*100;
-            $persen_realisasi_rm    = $rm_pusat == 0 ? 0 : $realisasi/$rm_pusat*100;
-            $persen_sisa_rm         = $rm_pusat == 0 ? 0 : $sisa_rm_pusat/$rm_pusat*100;
+            $persen_rm_pusat        = ($rm_pusat/$pagu_pusat)*100;
+            $persen_realisasi_rm    = $realisasi/$rm_pusat*100;
+            $persen_sisa_rm         = $sisa_rm_pusat/$rm_pusat*100;
 
             $realisasi_rm_pusat     = $realisasi-$realisasi_phln;
             $sisa_rm_pusat          = $rm_pusat-$realisasi_rm_pusat;
@@ -81,9 +84,9 @@
             //$persen_sisa_rm       = ($sisa_rm_pusat/$rm_pusat)*100;
             $persen_realisasi_rm    = 100-$persen_sisa_rm;
 
-            $persen_pagu_phln       = $pagu_pusat == 0 ? 0 : ($phln_pusat/$pagu_pusat)*100;
-            $persen_realisasi_phln  = $phln_pusat == 0 ? 0 : ($realisasi_phln/$phln_pusat)*100;
-            $persen_sisa_phln       = $phln_pusat == 0 ? 0 : (($phln_pusat-$realisasi_phln)/$phln_pusat)*100;
+            $persen_pagu_phln       = ($phln_pusat/$pagu_pusat)*100;
+            $persen_realisasi_phln  = ($realisasi_phln/$phln_pusat)*100;
+            $persen_sisa_phln       = (($phln_pusat-$realisasi_phln)/$phln_pusat)*100;
 			
 			//$pln_pusat=$pagu_pusat-$rm_pusat-$phln_pusat;
 			//$persen_pln_pusat=($pln_pusat/$pagu_pusat)*100;
@@ -314,9 +317,8 @@
 					@endif
 
                     @if(Auth::user()->level == "0"  || Auth::user()->username == "198505062004121001")
-					<li>
-                        <a href="{{ route('tes.index') }}" class="btn btn-dongker mb-1">Realisasi Anggaran</a>
-    					<a href="{{route('importes1.index')}}" class="btn btn-dongker" class="btn btn-dongker">Import Eselon 1</a>
+                        <li><a href="{{ route('tes.index') }}" class="btn btn-dongker">Realisasi Anggaran</a></li>
+    					<li><a href="{{route('importes1.index')}}" class="btn btn-dongker">Import Eselon 1</a></li>
                         {{-- <ul class="list-unstyled collapse ps-3" id="menuRealisasi">
 							<li>
 								<a href="" class="btn btn-sm btn-primary btn-pills my-1">Realisasi Pusat</a>
@@ -459,8 +461,8 @@
                     <div class="col-md-4">
                         <div class="card card-dongker text-center">
                             <div class="card-body position-relative">
-                                <h5 class="card-title h6">Pagu Anggaran UK II</h5>
-                                <p class="h5">Rp {{number_format($anggaran,2,',','.')}}<br>&nbsp;</p>
+                                <h5 class="card-title h6">Pagu Anggaran Ditjen Bina Adwil</h5>
+                                <p class="h5">Rp {{number_format($pagu_new,0,',','.')}}<br>&nbsp;</p>
                                 <div class="progress mb-2" role="progressbar" aria-label="Success example 4px high" aria-valuenow="25" aria-valuemin="0" aria-valuemax="100" style="height: 4px">
                                     <div class="progress-bar bg-success" style="width: 100%"></div>
                                 </div>
@@ -474,8 +476,8 @@
                     <div class="col-md-4">
                         <div class="card card-dongker text-center">
                             <div class="card-body">
-                                <h5 class="card-title h6">Realisasi Anggaran UK II</h5>
-                                <p class="h5">Rp {{number_format($realisasi,2,',','.')}}<br>({{number_format($persen_realisasi,2,',','.')}}%)</p>
+                                <h5 class="card-title h6">Realisasi Anggaran Ditjen Bina Adwil</h5>
+                                <p class="h5">Rp {{number_format($realisasi,0,',','.')}}<br>({{number_format($persen_realisasi,0,',','.')}}%)</p>
                                 <div class="progress mb-2" role="progressbar" aria-label="Success example 4px high" aria-valuenow="25" aria-valuemin="0" aria-valuemax="100" style="height: 4px">
                                     <div class="progress-bar bg-success" style="width:{{number_format($persen_realisasi,2)}}%"></div>
                                 </div>
@@ -487,10 +489,10 @@
                     <div class="col-md-4">
                         <div class="card card-dongker text-center">
                             <div class="card-body">
-                                <h5 class="card-title h6">Sisa Anggaran UK II</h5>
-                                <p class="h5">Rp {{number_format($selisih,2,',','.')}}<br>&nbsp;</p>
+                                <h5 class="card-title h6">Sisa Anggaran Ditjen Bina Adwil</h5>
+                                <p class="h5">Rp {{number_format($pagu_new - $realisasi,0,',','.')}}<br>&nbsp;</p>
                                 <div class="progress mb-2" role="progressbar" aria-label="Success example 4px high" aria-valuenow="25" aria-valuemin="0" aria-valuemax="100" style="height: 4px">
-                                    <div class="progress-bar bg-success" style="width: {{number_format((float)$persen_selisih, 2, '.', '')}}%"></div>
+                                    <div class="progress-bar bg-success" style="width: {{number_format((float)$persen_selisih, 0, '.', '')}}%"></div>
                                 </div>
                                 <p class="card-text small">({{number_format((float)$persen_selisih, 2, '.', '')}}%)</p>
                                 <span class="position-absolute end-0 bottom-0">
@@ -502,23 +504,37 @@
                 </div>
                 <div class="row">
                     <div class="col-md-6 px-5">
-                        <h3 class="mb-3 fw-bold h5 text-center">Realisasi Anggaran per UK II</h3>
+                        <h3 class="mb-3 fw-bold h5 text-center">Realisasi Anggaran per Kewenangan (Pagu Anggaran)</h3>
                         <div class="row fw-semibold">
-							<div class="col-12">
-								<div class="text-center">
-									<canvas id="divchartbarrealuke2"></canvas>
-									<div>
-										<font color="#8a63b1" class="legend"><strong>---</strong></font><font color=#000 class="legend"> : Rata-rata kemendagri ({{$rata2_realisasi_eselon1}}%)</font><br>
-										<font color="#ff3300" class="legend"><strong>---</strong></font><font color=#000 class="legend"> : Rata-rata UKE II Ditjen Bina Adwil ({{$rata2_realisasi_eselon2}}%)</font><br>
-									</div>
-								</div>
-							</div>
+                            <div class="col-md-4 text-center">
+                                <h4 class="h6">PUSAT (Total)</h4>
+                                <p>Rp. {{number_format($realisasi_pusat,0,',','.')}}</p>
+                                <div class="chart-box">
+                                    <canvas id="chartPusat"></canvas>
+                                </div>
+                            </div>
+                            <div class="col-md-4 text-center">
+                                <h4 class="h6">DEKONSENTRASI</h4>
+                                <p>Rp. {{number_format($realisasi_dekon,0,',','.')}}</p>
+                                <div class="chart-box">
+                                    <canvas id="chartDekon"></canvas>
+                                </div>
+                            </div>
+                            <div class="col-md-4 text-center">
+                                <h4 class="h6">TUGAS PEMBANTUAN</h4>
+                                <p>Rp. {{number_format($realisasi_tp,0,',','.')}}</p>
+                                <div class="chart-box">
+                                    <canvas id="chartTugas"></canvas>
+                                </div>
+                            </div>
                         </div>
                     </div>
                     <div class="col-md-6 px-5">
-						<div class="col-12">
-							<div class="text-center classWithPad" id=graphchartRealEs3 ></div>
-						</div>
+                        <h3 class="mb-3 fw-bold h5 text-center">Realisasi Anggaran per Eselon 1 Lingkup Kemendagri</h3>
+                        <div class="chart-box" style="height: 300px; width:100%;">
+                            <canvas id="chartRealisasi"></canvas>
+							<div id="chartRealisasi_kemendagri"><font color="#8a63b1"><strong>---</strong></font><font color=#000>: Rata-rata kemendagri ({{$rata2_realisasi_eselon1}}%)</font></div>
+                        </div>
                     </div>
                 </div>
                 <div class="row">
@@ -653,14 +669,46 @@
                         </table>
                     </div>
                 </div>
+                {{-- modal uke2 graphic bar --}}
+                <div class="modal fade" id="modalgraphbarrealuke2" data-bs-backdrop="static">
+                    <div class="modal-dialog modal-xl modal-dialog-centered">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h4 class="modal-title fs-5">Realisasi Lingkup Ditjen Bina Adwil</h4>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                            </div>
+                            <div class="modal-body bg-light-grey">
+                                <div class="row">
+									<div class="col-6">
+										<div class="text-center">
+											<canvas id="divchartbarrealuke2"></canvas>
+											<div>
+												<font color="#8a63b1"><strong>---</strong></font><font color=#000> : Rata-rata kemendagri ({{$rata2_realisasi_eselon1}}%)</font><br>
+												<font color="#ff3300"><strong>---</strong></font><font color=#000> : Rata-rata UKE II Ditjen Bina Adwil ({{$rata2_realisasi_eselon2}}%)</font><br>
+											</div>
+										</div>
+									</div>
+									<div class="col-6">
+										<div class="text-center classWithPad">
+											<div class="hide" id=chartRealEs3_title></div>
+	                                        <div class="hide chart-box" style="width:100%;height:0px" id=chartRealEs3_hd>
+	                                            <canvas id="chartRealEs3"></canvas>
+	                                        </div>
+											<div id="chartRealEs3_legend"></div>
+										</div>
+									</div>
+                                </div>
+							</div>
+                        </div>
+                    </div>
+                </div>
 				
-				<a data-bs-toggle="modal" data-bs-target="#modalsanding" id="link_modalsanding"></a>
                 {{-- modal uke2 graphic bar --}}
                 <div class="modal fade" id="modalsanding" data-bs-backdrop="static">
                     <div class="modal-dialog modal-xl modal-dialog-centered">
                         <div class="modal-content">
                             <div class="modal-header">
-                                <h4 class="modal-title fs-5">Data Sanding Realisasi, Capaian Output dan Kinerja</h4>
+                                <h4 class="modal-title fs-5">Data Sanding Realisasi, Capaian Output dan Kinenrja</h4>
                                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                             </div>
                             <div class="modal-body bg-light-grey">
@@ -717,7 +765,7 @@
                     <div class="modal-dialog modal-xl modal-dialog-centered">
                         <div class="modal-content">
                             <div class="modal-header">
-                                <h4 class="modal-title fs-5">Pagu Anggaran UK II</h4>
+                                <h4 class="modal-title fs-5">Pagu Anggaran Ditjen Bina Adwil</h4>
                                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                             </div>
                             <div class="modal-body bg-light-grey">
@@ -736,7 +784,7 @@
                                         </select>
                                     </div>
                                     <div class="col-8">
-                                    <p class="h3 text-end fw-bold">Rp {{number_format($anggaran,2,',','.')}}</p>
+                                    <p class="h3 text-end fw-bold">Rp {{number_format($data_pagu->pagu,2,',','.')}}</p>
                                     </div>
                                 </div>
                                 <div class="row">
@@ -766,12 +814,14 @@
                                     </div>
 
                                     <div class="col-6 py-3 card mt-3">
-										<div id=graphchartPaguEs3>
+                                        <h3 class="mb-3 fw-bold h6">Pagu per Unit Kerja Eselon II</h3>
+                                        <div class="chart-box" style="width:100%;height:280px">
+                                            <canvas id="chartPagu"></canvas>
+                                        </div>
                                         <div class="hide" id=chartPaguEs3_title></div>
                                         <div class="hide chart-box" style="width:100%;height:0px" id=chartPaguEs3_hd>
                                             <canvas id="chartPaguEs3"></canvas>
                                         </div>
-										</div>
 										<h3 class="fw-bold h6">Pagu Per Kewenangan</h3>
                                         <canvas id="chartPaguKewenangan" width="50%" height="50%"></canvas>
 										<div style="height:10px"></div>
@@ -797,9 +847,9 @@
                         <div class="modal-body">
                             <!-- Nav tabs -->
                             <ul class="nav nav-tabs" id="tabsRealisasiAnggaran" role="tablist">
-                                <li class="nav-item" role="presentation">
+                                {{-- <li class="nav-item" role="presentation">
                                     <button
-                                        class="nav-link active"
+                                        class="nav-link"
                                         id="realisasiUke2-tab"
                                         data-bs-toggle="tab"
                                         data-bs-target="#realisasiUke2"
@@ -809,10 +859,10 @@
                                         aria-selected="false">
                                         Realisasi Anggaran Per UKE II
                                     </button>
-                                </li>
+                                </li> --}}
                                 <li class="nav-item" role="presentation">
                                     <button
-                                        class="nav-link"
+                                        class="nav-link active"
                                         id="realisasiKewenangan-tab"
                                         data-bs-toggle="tab"
                                         data-bs-target="#realisasiKewenangan"
@@ -823,7 +873,7 @@
                                         Realisasi Per Kewenangan
                                     </button>
                                 </li>
-                                <li class="nav-item" role="presentation">
+                                {{-- <li class="nav-item" role="presentation">
                                     <button
                                         class="nav-link"
                                         id="realisasiSumberDana-tab"
@@ -835,21 +885,22 @@
                                         aria-selected="true">
                                         Realisasi Sumber Dana
                                     </button>
-                                </li>
+                                </li> --}}
                             </ul>
 
                             <!-- Tab panes -->
                             <div class="tab-content">
                                 <div
-                                    class="tab-pane active"
+                                    class="tab-pane"
                                     id="realisasiUke2"
                                     role="tabpanel"
                                     aria-labelledby="realisasiUke2-tab">
-                                    <div class="row" id=div_realuke2>
+                                    <div class="row">
+										{!!$data_realuke2!!}
                                     </div>
                                 </div>
                                 <div
-                                    class="tab-pane"
+                                    class="tab-pane active"
                                     id="realisasiKewenangan"
                                     role="tabpanel"
                                     aria-labelledby="realisasiKewenangan-tab">
@@ -974,7 +1025,9 @@
                                     id="sisaUke2"
                                     role="tabpanel"
                                     aria-labelledby="sisaUke2-tab">
-                                    <div class="row" id=div_sisauke2></div>
+                                    <div class="row">
+										{!!$data_sisauke2!!}
+                                    </div>
                                 </div>
                                 <div
                                     class="tab-pane"
@@ -1468,6 +1521,10 @@
                 },
             });
 			
+            const chartPusat = document.getElementById('chartPusat');
+            const chartDekon = document.getElementById('chartDekon');
+            const chartTugas = document.getElementById('chartTugas');
+            const chartRealisasi = document.getElementById('chartRealisasi');
 			const chartPaguKewenangan = document.getElementById('chartPaguKewenangan');
 			const chartPaguSumberDana = document.getElementById('chartPaguSumberDana');
 			
@@ -1524,6 +1581,84 @@
 				}
             });
 			
+            new Chart(chartPusat, {
+                type: 'doughnut',
+                data: {
+                    labels: [{{number_format((float)$persen_realisasi_pusat, 2, '.', '')}}, {{number_format((float)$persen_sisa_pusat, 2, '.', '')}}],
+                    datasets: [{
+                        data: [{{number_format((float)$persen_realisasi_pusat, 2, '.', '')}}, {{number_format((float)$persen_sisa_pusat, 2, '.', '')}}],
+                        backgroundColor: [
+                        'rgb(10,185,95)',
+                        'rgb(252,224,88)',
+                        ],
+                        hoverOffset: 4
+                    }]
+                }
+            });
+
+            new Chart(chartDekon, {
+                type: 'doughnut',
+                data: {
+                    labels: [{{number_format((float)$persen_realisasi_dekon, 2, '.', '')}}, {{number_format((float)$persen_sisa_dekon, 2, '.', '')}}],
+                    datasets: [{
+                        data: [{{number_format((float)$persen_realisasi_dekon, 2, '.', '')}}, {{number_format((float)$persen_sisa_dekon, 2, '.', '')}}],
+                        backgroundColor: [
+                       'rgb(10,185,95)',
+                        'rgb(252,224,88)',
+                        ],
+                        hoverOffset: 4
+                    }]
+                }
+            });
+
+            new Chart(chartTugas, {
+                type: 'doughnut',
+                data: {
+                    labels: [{{number_format((float)$persen_realisasi_tp, 2, '.', '')}}, {{number_format((float)$persen_sisa_tp, 2, '.', '')}}],
+                    datasets: [{
+                        data: [{{number_format((float)$persen_realisasi_tp, 2, '.', '')}}, {{number_format((float)$persen_sisa_tp, 2, '.', '')}}],
+                        backgroundColor: [
+                        'rgb(10,185,95)',
+                        'rgb(252,224,88)',
+                        ],
+                        hoverOffset: 4
+                    }]
+                }
+            });
+
+           chartReal=new Chart(chartRealisasi, {
+                data: {
+                    responsive:true,
+                    maintainAspectRatio: false,
+                    labels: {!! $satker_eselon1 !!},
+                    datasets: [{
+                        type: 'line',
+                        data: {!! $rata2_eselon1 !!},
+                        borderWidth: 3,
+                        borderDash: [5, 5],
+                        borderColor: "#8a63b1",
+                        backgroundColor: "#8a63b1",
+                        pointBorderWidth: 0,
+                        pointStyle: 'dash',
+                    },  {
+                        type: 'bar',
+                        data: {!! $real_eselon1 !!},
+                        borderWidth: 1,
+                        backgroundColor: {!! $color !!}
+                    }]
+                },
+                options: {
+                    plugins: {
+                        legend: {
+                            display: false,
+                        }
+                    }
+                }
+            });
+			chartRealisasi.onclick = (evt) => {
+			  $('#modalgraphbarrealuke2').modal('show');
+			};
+			
 			const divchartbarrealuke2 = document.getElementById('divchartbarrealuke2');
             chartbarrealuke2 = new Chart(divchartbarrealuke2, {
                 type: 'bar',
@@ -1560,28 +1695,46 @@
                     }
                 }
             })
-			
-			//generate realuke3
-			label_uke2='{{$alias_dir}}'
-			$("#graphchartRealEs3").html('<div class="outer" style="height:280px"><div id="inner"><img src="{{ asset('images/spinner.gif') }}" width=50><br><font color=#000>Loading data realisasi UK III...</font></div></div>');
-			$.post("{{route('barRealUke3')}}",{'alias_dir':label_uke2,'realisasi':{{$anggaran_adwil}},'rata2_realisasi_eselon2':{{$rata2_realisasi_eselon2}},'_token':'{{csrf_token()}}'},function(e, status){
-				getRealEselon3(label_uke2,e.subdir_uke3,e.real_uke3,e.real_uke3_rata2,e.real_uke2_rata2,e.real_uke3_rata2_legend,e.real_uke2_rata2_legend)
-			});
-			
+			divchartbarrealuke2.onclick = (evt) => {
+			  const res = chartbarrealuke2.getElementsAtEventForMode(
+			    evt,
+			    'nearest',
+			    { intersect: true },
+			    true
+			  );
+			  if (res.length === 0) {
+			    return;
+			  }
+			  label_uke2_data=chartbarrealuke2.data.labels[res[0].index]
+			  label_uke2=label_uke2_data.trim()
+			  var form_data = new FormData();
+			  form_data.append('alias_dir', label_uke2);
+			  form_data.append('realisasi', {{$pagu_new}});
+			  form_data.append('rata2_realisasi_eselon2', {{$rata2_realisasi_eselon2}});
+			  form_data.append('_token', '{{csrf_token()}}')
+			  $.ajax({
+		          url: "{{route('barRealUke3')}}",
+		          type: "POST",
+		          data: form_data,
+		          cache: false,
+		          processData: false,
+		          contentType: false,
+		          success: function (e)
+		          {
+				  	getRealEselon3(label_uke2,e.subdir_uke3,e.real_uke3,e.real_uke3_rata2,e.real_uke2_rata2,e.real_uke3_rata2_legend,e.real_uke2_rata2_legend)
+				  }
+			 });
+			};
             function getRealEselon3(label_uke2,subdir_uke3,real_uke3,real_uke3_rata2,real_uke2_rata2,real_uke3_rata2_legend,real_uke2_rata2_legend)
             {
-				strlegend='<font color="#ff3300"><strong>---</strong></font><font color=#000 class=legend style="font-weight:500"> : Rata-rata UKE II Ditjen Bina Adwil ('+real_uke2_rata2_legend+'%)</font><br>';
-				strlegend+='<font color="#009966"><strong>---</strong></font><font color=#000 class=legend style="font-weight:500"> : Rata-rata UKE III '+label_uke2+' ('+real_uke3_rata2_legend+'%)</font><br>';
-				
-				s='<div class="hide" id=chartRealEs3_title><h3 class="mb-3 fw-bold h6 ">Realisasi Anggaran per UK III Lingkup Direktorat '+label_uke2+'</h3></div>'
-                s+='     <div class="hide chart-box" style="width:100%;height:0px" id=chartRealEs3_hd>'
-                s+='         <canvas id="chartRealEs3"></canvas>'
-                s+='     </div>'
-				s+='	<div id="chartRealEs3_legend">'+strlegend+'</div>'
-				document.getElementById('graphchartRealEs3').innerHTML=s;
-				
 				$('#chartRealEs3_hd').show();
 				$('#chartRealEs3_hd').height(280);
+				
+				strlegend='<font color="#ff3300"><strong>---</strong></font><font color=#000> : Rata-rata UKE II Ditjen Bina Adwil ('+real_uke2_rata2_legend+'%)</font><br>';
+				strlegend+='<font color="#009966"><strong>---</strong></font><font color=#000> : Rata-rata UKE III '+label_uke2+' ('+real_uke3_rata2_legend+'%)</font><br>';
+				document.getElementById("chartRealEs3_hd").innerHTML = '<canvas id="chartRealEs3"></canvas>';
+				document.getElementById("chartRealEs3_title").innerHTML = '<h3 class="mb-3 fw-bold h6 ">'+label_uke2+'</h3>';
+				document.getElementById("chartRealEs3_legend").innerHTML = strlegend;
 												
 				const chartReal3 = document.getElementById('chartRealEs3');
 
@@ -1622,26 +1775,71 @@
                 })
             }
 			$("#grafiksanding").html('<div class="outer"><div id="inner"><img src="{{ asset('images/spinner.gif') }}" width=80><br>Loading data sandingan...</div></div>');
-			$.post("{{route('grafiksanding')}}",{'id_dir':'{{$id_dir}}','alias_dir':'{{$alias_dir}}','_token':'{{csrf_token()}}'},function(data, status){
+			$.post("{{route('grafiksanding')}}",{'_token':'{{csrf_token()}}'},function(data, status){
 				$('#grafiksanding').html(data)
 			});
 			
-			$("#graphchartPaguEs3").html('<div class="outer" style="height:280px"><div id="inner"><img src="{{ asset('images/spinner.gif') }}" width=50><br><font color=#000>Loading data realisasi UK III...</font></div></div>');
-			$.post("{{route('rekapEselon3')}}",{'id_dir':label_uke2,'_token':'{{csrf_token()}}'},function(e, status){
-				getEselon3(label_uke2,e.subdir_eselon3,e.pagu_eselon3)
-			});
-			
+            var chartEselon2;
+
+            const modalPagu = document.getElementById('modal-detail-pagu')
+
+            modalPagu.addEventListener('shown.bs.modal', () => {
+                const chartPagu = document.getElementById('chartPagu');
+                chartEselon2 = new Chart(chartPagu, {
+                    type: 'bar',
+                    data: {
+                        labels: {!! $satker_eselon2 !!},
+                        datasets: [{
+                            data: {!! $pagu_eselon2 !!},
+                            backgroundColor: '#6eb5f3'
+                        }]
+                    },
+                    options: {
+                        plugins: {
+                            legend: {
+                                display: false,
+                            }
+                        }
+                    }
+                })
+            });
+			chartPagu.onclick = (evt) => {
+			  const res = chartEselon2.getElementsAtEventForMode(
+			    evt,
+			    'nearest',
+			    { intersect: true },
+			    true
+			  );
+			  if (res.length === 0) {
+			    return;
+			  }
+			  label_eselon2_data=chartEselon2.data.labels[res[0].index]
+			  label_eselon2_arr=label_eselon2_data.split(':')
+			  label_eselon2=label_eselon2_arr[0].trim()
+			  var form_data = new FormData();
+			  form_data.append('id_dir', label_eselon2);
+			  form_data.append('_token', '{{csrf_token()}}')
+			  $.ajax({
+		          url: "{{route('rekapEselon3')}}",
+		          type: "POST",
+		          data: form_data,
+		          cache: false,
+		          processData: false,
+		          contentType: false,
+		          success: function (e)
+		          {
+				  	getEselon3(label_eselon2,e.subdir_eselon3,e.pagu_eselon3)
+				  }
+			 });
+			};
             function getEselon3(label_eselon2,subdir_eselon3,pagu_eselon3)
             {
-				s='<div class="hide" id=chartPaguEs3_title><h3 class="mb-3 fw-bold h6 ">'+label_eselon2+'</h3></div>'
-                s+='<div class="hide chart-box" style="width:100%;height:0px" id=chartPaguEs3_hd>'
-                s+='  <canvas id="chartPaguEs3"></canvas>'
-                s+='</div>'
-				document.getElementById("graphchartPaguEs3").innerHTML =s
-				
 				$('#chartPaguEs3_hd').show();
 				$('#chartPaguEs3_title').show();
 				$('#chartPaguEs3_hd').height(280);
+				
+				document.getElementById("chartPaguEs3_hd").innerHTML = '<canvas id="chartPaguEs3"></canvas>';
+				document.getElementById("chartPaguEs3_title").innerHTML = '<h3 class="mb-3 fw-bold h6 ">'+label_eselon2+'</h3>';
 				
 				const chartPagu3 = document.getElementById('chartPaguEs3');
 

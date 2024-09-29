@@ -37,16 +37,14 @@
         <div class="col-12">
             <div class="card">
                 <div class="card-header">
-                    <h3 class="card-title">Data Eslon 1</h3>
+                    <h3 class="card-title">Data Eselon 1</h3>
                 </div>
                 <div class="card-body">
                     <div class="mb-3">
                         <a href="{{ route('importes1.create') }}" class="btn btn-primary">
-                            <i class="fas fa-plus"></i> Tambahkan File Eslon 1
+                            <i class="fas fa-plus"></i> Tambahkan File Eselon 1
                         </a>
                     </div>
-
-                    
                     <table id="realisasiTable" class="table">
                         <thead>
                             <tr>
@@ -54,13 +52,12 @@
                                 <th>Bukti Revisi</th>
                                 <th>Tanggal Dibuat</th>
                                 <th>Tanggal Diupdate</th>
-                                <th>Aksi</th>
                             </tr>
                         </thead>
                         <tbody>
                             @foreach($realisasis as $realisasi)
                             <tr>
-                                <td>{{ $realisasi->no }}</td>
+                                <td>{{ $loop->iteration }}</td>
                                 <td>
                                     @if($realisasi->bukti_ref)
                                         <a href="{{ url('importeslon1/' . $realisasi->no . '/download') }}" target="_blank">
@@ -72,10 +69,6 @@
                                 </td>
                                 <td>{{ $realisasi->created_at }}</td>
                                 <td>{{ $realisasi->updated_at }}</td>
-                                <td>
-                                    <a href="{{ route('tes.edit', ['id' => $realisasi->id]) }}" class="btn btn-success btn-sm">Edit</a>
-                                    {{-- <button class="btn btn-danger btn-sm delete-btn" data-id="{{ $realisasi->id }}">Delete</button> --}}
-                                </td>
                             </tr>
                             @endforeach
                         </tbody>

@@ -48,12 +48,11 @@ class HomeController extends Controller
 
 	public function dashboard()
 	{
-		// if (Auth::user()->level == 27 || Auth::user()->level == 2) {
-		// 	return $this->dashboarduke2();
-		// } else
-		// if (Auth::user()->level == 3) {
-		// 	return $this->dashboarduke3();
-		// }
+		if (Auth::user()->level == 27 || Auth::user()->level == 2) {
+			return $this->dashboarduke2();
+		} elseif (Auth::user()->level == 3) {
+			return $this->dashboarduke3();
+		}
 		// variable tambahan
 		$modul      = "Home";
 		$current    = "Dashboard";
@@ -69,10 +68,10 @@ class HomeController extends Controller
 		// ====================
 		// pagu anggaran ditjen
 		// query data anggaran
-		// $anggaran   = $ang->where([
-		//     'urutan_header1'    => 0,
-		//     'urutan_header2'    => 0
-		// ])->sum('total');
+		$anggaran   = $ang->where([
+			'urutan_header1'    => 0,
+			'urutan_header2'    => 0
+		])->sum('total');
 
 		$realisasi = Tes::latest()->first();
 		$realisasi_anggaran = 0;
@@ -96,25 +95,25 @@ class HomeController extends Controller
 		$an5 += $worksheet->getCell('AN5')->getValue();
 		$an6 += $worksheet->getCell('AN6')->getValue();
 		$an7 += $worksheet->getCell('AN7')->getValue();
-		// $realisasi_anggaran = $an5+$an6+$an7;
+		$realisasi_anggaran = $an5 + $an6 + $an7;
 
 		$am5 += $worksheet->getCell('AM5')->getValue();
 		$am6 += $worksheet->getCell('AM6')->getValue();
 		$am7 += $worksheet->getCell('AM7')->getValue();
-		// $pagu_anggaran = $am5+$am6+$am7;
+		$pagu_anggaran = $am5 + $am6 + $am7;
 
-		// $pagu_pusat_new = $worksheet->getCell('AM5')->getValue();
-		// $realisasi_pusat_new = $worksheet->getCell('AN5')->getValue();
+		$pagu_pusat_new = $worksheet->getCell('AM5')->getValue();
+		$realisasi_pusat_new = $worksheet->getCell('AN5')->getValue();
 
-		// $pagu_dekon_new = $worksheet->getCell('AM6')->getValue();
-		// $realisasi_dekon_new = $worksheet->getCell('AN6')->getValue();
+		$pagu_dekon_new = $worksheet->getCell('AM6')->getValue();
+		$realisasi_dekon_new = $worksheet->getCell('AN6')->getValue();
 
-		// $pagu_tp_new = $worksheet->getCell('AM7')->getValue();
-		// $realisasi_tp_new = $worksheet->getCell('AN7')->getValue();
+		$pagu_tp_new = $worksheet->getCell('AM7')->getValue();
+		$realisasi_tp_new = $worksheet->getCell('AN7')->getValue();
 		// }
-		// $realisasi_anggaran_new = $realisasi_anggaran;
-		// $pagu_new = $pagu_anggaran;
-		$pagu_new = $am5 + $am6 + $am7;
+		$realisasi_anggaran_new = $realisasi_anggaran;
+		$pagu_new = $pagu_anggaran;
+
 		// set tahun
 		$tahun  = date("Y");
 		// query data pagu
@@ -125,14 +124,12 @@ class HomeController extends Controller
 		// =====================
 		// realisasi anggaran ditjen
 		// query realisasi
-
-		// $realisasi  = $real->whereNotNull('no_sp2d')->sum('nilai_rupiah');
+		$realisasi  = $real->whereNotNull('no_sp2d')->sum('nilai_rupiah');
 		//
-		// $pagu_pusat = $ang->where([
-		//     'urutan_header1'    => 0,
-		//     'urutan_header2'    => 0
-		// ])->where('kdsatker', '027486')->sum('total');
-		$pagu_pusat = $am5;
+		$pagu_pusat = $ang->where([
+			'urutan_header1'    => 0,
+			'urutan_header2'    => 0
+		])->where('kdsatker', '027486')->sum('total');
 
 		$rm_pusat = $ang->where('kode_register', 'NOT LIKE', '1CZ6CF2A')->where([
 			'urutan_header1'    => 0,
@@ -154,31 +151,25 @@ class HomeController extends Controller
 		$rm_pusat   = $pagu_pusat - $phln_pusat;
 
 		// $realisasi_pusat = $real->where('kdsatker', '027486')->whereNotNull('no_sp2d')->sum('nilai_rupiah');
-		// $realisasi_pusat    = getSumRealisasiPusat();
-		$realisasi_pusat    = $an5;
+		$realisasi_pusat    = getSumRealisasiPusat();
 		$sisa_pusat         = $pagu_pusat - $realisasi_pusat;
 		$sisa_rm_pusat      = $rm_pusat - $realisasi_pusat;
 
-		// $pagu_dekon = $ang->where([
-		//     'urutan_header1'    => 0,
-		//     'urutan_header2'    => 0
-		// ])->whereNotIn('kdsatker', ['027486', '356000', '417936', '690639'])->sum('total');
-		$pagu_dekon = $am6;
+		$pagu_dekon = $ang->where([
+			'urutan_header1'    => 0,
+			'urutan_header2'    => 0
+		])->whereNotIn('kdsatker', ['027486', '356000', '417936', '690639'])->sum('total');
 
 		// $realisasi_dekon = $real->whereNotIn('kdsatker', ['027486', '356000', '417936', '690639'])->sum('nilai_rupiah');
-		// $realisasi_dekon    = getSumRealisasiDekon();
-		$realisasi_dekon    = $an6;
+		$realisasi_dekon    = getSumRealisasiDekon();
 		$sisa_dekon         = $pagu_dekon - $realisasi_dekon;
 
-		// $pagu_tp = $ang->whereIn('kdsatker', ['356000', '417936', '690639'])->sum('total'); update_terbaru
-		// $realisasi_tp = $real->where('status_data', 'Upload SP2D')->whereIn('kdsatker', ['356000', '417936', '690639'])->sum('nilai_rupiah');
-		$pagu_tp = $am7;
-		$realisasi_tp = $an7;
+		$pagu_tp = $ang->whereIn('kdsatker', ['356000', '417936', '690639'])->sum('total');
+		$realisasi_tp = $real->where('status_data', 'Upload SP2D')->whereIn('kdsatker', ['356000', '417936', '690639'])->sum('nilai_rupiah');
 		$sisa_tp = $pagu_tp - $realisasi_tp;
 
 		$last_synch_ang = $ang->max('created_at');
 		$last_synch_real = $real->max('created_at');
-		// dd($last_synch_real);
 
 		$data_dekon = DB::SELECT('SELECT sum(nilai_rupiah) as total, kdsatker, nama_satker FROM tb_sakti_realisasi 
         LEFT OUTER JOIN tbm_satker ON tbm_satker.kode=tb_sakti_realisasi.kdsatker
@@ -187,8 +178,7 @@ class HomeController extends Controller
         ORDER BY SUM(nilai_rupiah) DESC');
 
 		$realisasi          = $realisasi_pusat + $realisasi_dekon + $realisasi_tp;
-		// $selisih            = $anggaran-$realisasi;
-		$selisih            = $pagu_new - $realisasi;
+		$selisih            = $anggaran - $realisasi;
 
 		$sum_real_eselon1   = 0;
 		$sum_pagu_eselon1   = 0;
@@ -219,16 +209,13 @@ class HomeController extends Controller
 		}
 
 		$color   = json_encode($color);
-		// $real_eselon1   = json_encode($real_eselon1);
+		$real_eselon1   = json_encode($real_eselon1);
 		$satker_eselon1 = json_encode($satker_eselon1);
 		// $real_eselon1 = "["60.95","44.19","42.46","40.01","39.59","39.19","38.56","38.42","35.56","32.96","32.42","30.89","24.44"]";
 		// $real_eselon1 = "["POLPUM","PEMDES","IPDN","BSKDN","DKPP","BANGDA","ITJEN","BPSDM","OTDA","SETJEN","ADWIL","KEUDA","DUKCAPIL"]"
 		// dd($real_eselon1);
-		$color   = json_encode(['#007bff', '#007bff', '#007bff', '#F39C12', '#007bff', '#007bff', '#007bff', '#007bff', '#007bff', '#007bff', '#007bff', '#007bff', '#007bff']);
 
 		$real_eselon1 = ImportEslon1::latest()->first();
-		$last_synch_real = $real_eselon1->max('created_at');
-		// dd($last_synch_real, $real_eselon1);
 		$excelPath = storage_path('app/public/bukti_ref/' . $real_eselon1->bukti_ref);
 		$reader = \PhpOffice\PhpSpreadsheet\IOFactory::createReader('Xlsx');
 		$spreadsheet = $reader->load($excelPath);
@@ -246,8 +233,6 @@ class HomeController extends Controller
 			str_replace("(", '', str_replace("%)", '', $worksheet->getCell('AO14')->getValue())),
 			str_replace("(", '', str_replace("%)", '', $worksheet->getCell('AO15')->getValue())),
 		];
-		$sum_eselon1 = array_sum($real_eselon1_new);
-		$data_eselon1_count = count($real_eselon1_new); // Count the data and store it in $data_eselon1_count
 		$real_eselon1 = json_encode($real_eselon1_new);
 		$satker_eselon1_new = [
 			"SETJEN",
@@ -264,13 +249,10 @@ class HomeController extends Controller
 		];
 		$satker_eselon1 = json_encode($satker_eselon1_new);
 
-		$data_realisasi_eselon_1 = Collect();
-		// dd($data_realisasi_eselon_1);
-
 		//$rata2_realisasi_eselon1 = ($sum_real_eselon1/$sum_pagu_eselon1) * 100;
-		// $rata2_realisasi_eselon1=($real_eselon1_totalpersen/$data_es1_cnt);
-		$rata2_realisasi_eselon1 = ($sum_eselon1 / $data_eselon1_count);
-
+		$rata2_realisasi_eselon1 = ($real_eselon1_totalpersen / $data_es1_cnt);
+		// dd($rata2_realisasi_eselon1);
+		// $realisasi = Tes::latest()->first();
 		$rata2_realisasi_eselon2 = ($sum_real_eselon2 / $sum_pagu_eselon2) * 100;
 
 		foreach ($data_es1 as $row) {
@@ -302,8 +284,7 @@ class HomeController extends Controller
 		$total_eselon2 = array_sum($pagu_eselon2);
 
 		foreach ($satker_eselon2 as $key => $es2) {
-
-			$total_eselon2 == 0 ? $satker_eselon2[$key] = 0 : $satker_eselon2[$key] = ($es2 . ' : ' . number_format(($pagu_eselon2[$key] / $total_eselon2 * 100), 2) . '%');
+			$satker_eselon2[$key] = ($es2 . ' : ' . number_format($total_eselon2 == 0 ? 0 : ($pagu_eselon2[$key] / $total_eselon2 * 100), 2) . '%');
 		}
 
 		$satker_eselon2 = json_encode($satker_eselon2);
@@ -350,14 +331,11 @@ class HomeController extends Controller
 		$bgcolor_abu = 'rgb(206,206,206)';
 		foreach ($data_dir as $item) {
 			$dir_uke2[] = $item->alias_dir;
-			// $real_uke2[]=number_format((float)($item->realisasi/$anggaran)*100, 2);
-			$real_uke2[] = number_format((float)($item->realisasi / $pagu_new) * 100, 2);
-			// $real_uke2_totalpersen+=number_format((float)($item->realisasi/$anggaran)*100, 2);
-			$real_uke2_totalpersen += number_format((float)($item->realisasi / $pagu_new) * 100, 2);
+			$real_uke2[] = number_format((float)($item->realisasi / $anggaran) * 100, 2);
+			$real_uke2_totalpersen += number_format((float)($item->realisasi / $anggaran) * 100, 2);
 			$dir_uke2_ratakemendagri[] = $rata2_realisasi_eselon1;
 
-			// $persen_realuke2=($item->realisasi/$anggaran)*100;
-			$persen_realuke2 = ($item->realisasi / $pagu_new) * 100;
+			$persen_realuke2 = ($item->realisasi / $anggaran) * 100;
 			$persen_sisa = 100 - $persen_realuke2;
 			$bgcolor = '';
 			if ($persen_realuke2 <= 30) {
@@ -408,7 +386,7 @@ class HomeController extends Controller
 					  var form_data = new FormData();
 					  form_data.append('id_dir', '" . $item->id_dir . "');
 					  form_data.append('alias_dir', '" . $item->alias_dir . "');
-					  form_data.append('realisasi_dir', '" . $pagu_new . "');
+					  form_data.append('realisasi_dir', '" . $anggaran . "');
 					  form_data.append('_token', '" . csrf_token() . "')
 					  $.ajax({
 				          url: '" . route('realUke3') . "',
@@ -537,6 +515,7 @@ class HomeController extends Controller
 			'data_sisauke2_js',
 			'data_realuke2',
 			'data_realuke2_js',
+			'anggaran',
 			'data_pagu',
 			'realisasi',
 			'selisih',
@@ -551,6 +530,7 @@ class HomeController extends Controller
 			'realisasi_tp',
 			'sisa_tp',
 			'last_synch_ang',
+			'realisasi_anggaran_new',
 			'pagu_new',
 			'last_synch_real',
 			'data_dekon',
@@ -561,6 +541,12 @@ class HomeController extends Controller
 			'satker_eselon1',
 			'real_eselon1',
 			'data_es1',
+			'pagu_pusat_new',
+			'realisasi_pusat_new',
+			'pagu_dekon_new',
+			'realisasi_dekon_new',
+			'pagu_tp_new',
+			'realisasi_tp_new',
 			'color',
 			'rata2_eselon1',
 			'rata2_eselon2',
@@ -569,7 +555,6 @@ class HomeController extends Controller
 			'pagu_eselon2'
 		));
 	}
-
 	public function getsubdir(Request $request)
 	{
 		$subdir = new Subdirektorat;
@@ -580,7 +565,6 @@ class HomeController extends Controller
 		}
 		echo json_encode($subdir_data);
 	}
-
 	public function getsatker(Request $request)
 	{
 		$satker = new Satker;
@@ -591,7 +575,6 @@ class HomeController extends Controller
 		}
 		echo json_encode($satker_data);
 	}
-
 	public function getrev(Request $request)
 	{
 		$tipe = $request->tipe;
@@ -1688,7 +1671,7 @@ class HomeController extends Controller
 		$total_eselon2 = array_sum($pagu_eselon2);
 
 		foreach ($satker_eselon2 as $key => $es2) {
-			$satker_eselon2[$key] = ($es2 . ' : ' . number_format($total_eselon2 == 0 ? 0 : ($pagu_eselon2[$key] / $total_eselon2 * 100), 2) . '%');
+			$satker_eselon2[$key] = ($es2 . ' : ' . number_format(($pagu_eselon2[$key] / $total_eselon2 * 100), 2) . '%');
 		}
 
 		$satker_eselon2 = json_encode($satker_eselon2);
@@ -1743,7 +1726,7 @@ class HomeController extends Controller
 			$real_uke2_totalpersen = $real_uke2_totalpersen + $pct;
 			$dir_uke2_ratakemendagri[] = $rata2_realisasi_eselon1;
 
-			$persen_realuke2 = $anggaran == 0 ? 0 : ($item->realisasi / $anggaran) * 100;
+			$persen_realuke2 = ($item->realisasi / $anggaran) * 100;
 			$persen_sisa = 100 - $persen_realuke2;
 			$bgcolor = '';
 			if ($persen_realuke2 <= 30) {
@@ -1798,7 +1781,7 @@ class HomeController extends Controller
 			FROM tbm_dir d WHERE d.id_eselon <> '0' order by kode";
 		$data_dir = DB::select($str);
 		foreach ($data_dir as $item) {
-			$persen_sisauke2 = $selisih == 0 ? 0 : ($item->sisa / $selisih) * 100;
+			$persen_sisauke2 = ($item->sisa / $selisih) * 100;
 			$persen_sisa = 100 - $persen_sisauke2;
 			$bgcolor = '';
 			if ($persen_sisauke2 <= 30) {

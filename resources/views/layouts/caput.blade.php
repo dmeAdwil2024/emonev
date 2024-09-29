@@ -52,7 +52,7 @@
 
         <!-- Theme style -->
         <link rel="stylesheet" href="{{ asset('newdashboard/css/newstyles.css') }}?v={{ time() }}" />
-        <link rel="stylesheet" href="{{env('APP_URL')}}/templates/dist/css/adminlte.css" />
+        {{-- <link rel="stylesheet" href="{{env('APP_URL')}}/templates/dist/css/adminlte.css" /> --}}
 		
     </head>
     <body>
@@ -281,6 +281,50 @@
         <script src="{{env('APP_URL')}}/templates/plugins/datatables-buttons/js/buttons.print.min.js"></script>
         <script src="{{env('APP_URL')}}/templates/plugins/datatables-buttons/js/buttons.colVis.min.js"></script><!-- Chartjs -->
         <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.2/dist/chart.umd.min.js"></script>
+        <!-- REQUIRED SCRIPTS -->
+        <!-- jQuery -->
+        <script src="{{env('APP_URL')}}/templates/plugins/jquery/jquery.min.js"></script>
+        <!-- Bootstrap -->
+        <script src="{{env('APP_URL')}}/templates/plugins/bootstrap/js/bootstrap.bundle.min.js"></script>
+        <!-- overlayScrollbars -->
+        <script src="{{env('APP_URL')}}/templates/plugins/overlayScrollbars/js/jquery.overlayScrollbars.min.js"></script>
+        <!-- AdminLTE App -->
+        <script src="{{env('APP_URL')}}/templates/dist/js/adminlte.js"></script>
+
+        <!-- PAGE PLUGINS -->
+        <!-- jQuery Mapael -->
+        <script src="{{env('APP_URL')}}/templates/plugins/jquery-mousewheel/jquery.mousewheel.js"></script>
+        <script src="{{env('APP_URL')}}/templates/plugins/raphael/raphael.min.js"></script>
+        <script src="{{env('APP_URL')}}/templates/plugins/jquery-mapael/jquery.mapael.min.js"></script>
+        <script src="{{env('APP_URL')}}/templates/plugins/jquery-mapael/maps/usa_states.min.js"></script>
+        <!-- Select2 -->
+        <script src="{{env('APP_URL')}}/templates/plugins/select2/js/select2.full.min.js"></script>
+        <!-- Bootstrap4 Duallistbox -->
+        <script src="{{env('APP_URL')}}/templates/plugins/bootstrap4-duallistbox/jquery.bootstrap-duallistbox.min.js"></script>
+        <!-- InputMask -->
+        <script src="{{env('APP_URL')}}/templates/plugins/moment/moment.min.js"></script>
+        <script src="{{env('APP_URL')}}/templates/plugins/inputmask/jquery.inputmask.min.js"></script>
+        <!-- date-range-picker -->
+        <script src="{{env('APP_URL')}}/templates/plugins/daterangepicker/daterangepicker.js"></script>
+        <!-- bootstrap color picker -->
+        <script src="{{env('APP_URL')}}/templates/plugins/bootstrap-colorpicker/js/bootstrap-colorpicker.min.js"></script>
+        <!-- Tempusdominus Bootstrap 4 -->
+        <script src="{{env('APP_URL')}}/templates/plugins/tempusdominus-bootstrap-4/js/tempusdominus-bootstrap-4.min.js"></script>
+        <!-- BS-Stepper -->
+        <script src="{{env('APP_URL')}}/templates/plugins/bs-stepper/js/bs-stepper.min.js"></script>
+        <!-- dropzonejs -->
+        <script src="{{env('APP_URL')}}/templates/plugins/dropzone/min/dropzone.min.js"></script>
+        <!-- SweetAlert2 -->
+        <script src="{{env('APP_URL')}}/templates/plugins/sweetalert2/sweetalert2.min.js"></script>
+        <!-- Toastr -->
+        <script src="{{env('APP_URL')}}/templates/plugins/toastr/toastr.min.js"></script>
+        <!-- SweetAlert Plugin Js -->
+        <script src="{{ env('APP_URL') }}/templates/plugins/sweetalert/sweetalert.min.js"></script>
+        <!-- bs-custom-file-input -->
+        <script src="{{ env('APP_URL') }}/templates/plugins/bs-custom-file-input/bs-custom-file-input.min.js"></script>
+        <!-- ChartJS -->
+        <script src="{{env('APP_URL')}}/templates/plugins/chart.js/Chart.min.js"></script>
+
 		{{-- <script>
             var Toast = Swal.mixin({
                 toast: true,
@@ -316,6 +360,7 @@
 			list.forEach((item) =>
 			item.addEventListener('mouseover', activelink));
 		</script>
+        
 		@yield('js')
     </body>
 </html>
