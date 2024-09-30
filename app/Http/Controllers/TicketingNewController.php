@@ -89,7 +89,9 @@ class TicketingNewController extends Controller
                 $q->where('status', $request->q);
             })
             ->whereYear('created_at', '2024')
-            ->orderBy('id', 'desc')
+            ->where('provinsi', 'undefined')
+            // ->orWhereIsNull('provinsi')
+            ->orderBy('created_at', 'desc')
             ->get();
     }
 }
